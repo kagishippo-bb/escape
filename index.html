@@ -110,6 +110,8 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .say.mike .who{color:var(--pink)}
 .think{position:absolute;left:10px;right:10px;bottom:10px;text-align:center;font-weight:700;font-size:clamp(15px,4vw,18px);line-height:1.6;color:var(--ink);text-shadow:0 1px 0 #000,0 0 10px #000,0 0 18px #000;opacity:0;transition:opacity .2s;pointer-events:none;text-wrap:balance;z-index:3}
 .think.on{opacity:1}
+.think.pop{animation:thinkpop .28s ease-out}
+@keyframes thinkpop{0%{transform:scale(1.1)}100%{transform:none}}
 .think.mid{bottom:auto;top:57%}   
 
 #sayt,.think,.cover p,.sbtn,.act{word-break:keep-all;overflow-wrap:anywhere}
@@ -1979,6 +1981,7 @@ function think(t, ms, at) {
   fx++;
   if (!/^(ちょい|ちょい、ちょい|ポトッ|ゴロゴロ…)$/.test(t)) keepLine('タマ', t);
   $('think').textContent = t; $('think').classList.toggle('mid', at === 'mid'); $('think').classList.add('on');
+  const th = $('think'); th.classList.remove('pop'); void th.offsetWidth; th.classList.add('pop');   // 出るたびに ぽんっと（入れかわったことが 分かるように・10/17）
   clearTimeout(thinkTimer); thinkTimer = setTimeout(() => $('think').classList.remove('on'), readMs(t, ms, 220));
 }
 function toast(t) { $('toast').textContent = t; $('toast').classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('on'), 2600); }
@@ -2184,7 +2187,7 @@ $('heights').addEventListener('click', async e => {
   if (!S.done[1] && b.dataset.h === 'box') { audio(); SFX.pof(); think('まっくらで、跳び箱が見えない…', 1800); return; }   // 明かりの前：押しても ひとこと返す（10/17 再審査）
   // 押したらすぐ ボタンの色をかえて、短く すっと動く（10/17 作者「切りかえに 少し時間がかかる」）
   document.querySelectorAll('#heights button').forEach(x => x.classList.toggle('on', x === b));
-  audio(); paw.hide(); busy = true; await go(b.dataset.h, 240, ease.out); busy = false;
+  audio(); paw.hide(); busy = true; await go(b.dataset.h, 160, ease.out); busy = false;
   if (b.dataset.h !== 'floor') think(b.dataset.h === 'shelf' ? '棚の上' : '跳び箱の上', 1400);
 });
 
@@ -2606,7 +2609,10 @@ G.wallJump = async (msg, line) => {
   G.busy = false;
 };
 
-G.shake = async (dx = 1.2) => { G.svg.style.transform = `translateX(${dx}%)`; await G.sleep(120); G.svg.style.transform = ''; };
+
+G.shake = async (dx = 1.2) => { const s = G.svg.style, a = Math.sign(dx || 1) * Math.max(Math.abs(dx), 1); s.transition = 'none';
+  for (const k of [1, -.7, .4]) { s.transform = `translateX(${a * k}%)`; await G.sleep(60); }
+  s.transform = ''; await G.sleep(20); s.transition = ''; };
 
 
 
@@ -3913,7 +3919,9 @@ const def = {
       if (!G.S.ended) { G.SFX.pof(); G.think('（あいた…でも、あとにしよう。いまは、サンマといっしょに 出るのが先）', 3200); return; }
       G.act(null); await this.open(); G.VIEWS.dbox.box = BOX_WIDE; G.busy = true; await G.camTo('dbox', 380); G.busy = false; return;
     }
-    G.SFX.thud(); await G.shake(.4); G.think('（ガタッ）…あかない', 2000); G.say('…さわるな');
+    G.SFX.thud(); G.buzz([10, 30, 10]); G.think('（ガタッ）…あかない', 2000);
+    const b = G.$('p10box'); await G.tween(240, k => b.setAttribute('transform', `rotate(${6 * Math.sin(k * Math.PI * 3) * (1 - k)} 671 870)`), G.ease.lin); b.removeAttribute('transform');   // 箱そのものが ガタッ
+    G.say('…さわるな');
   },
   restore() {
     draw();
