@@ -32,6 +32,12 @@
     icons:[{src:document.getElementById('icon').href, sizes:'192x192', type:'image/png', purpose:'any'}]};
   const l = document.createElement('link'); l.rel = 'manifest';
   l.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(m));
+  // 公開の置き場（http）では、manifest のファイルを使う（deploy.py がいっしょに入れる。英語版は manifest-en）
+  if (/^https?:$/.test(location.protocol)) {
+    let en = !/^ja\b/i.test(navigator.language || '');
+    try { const q = new URLSearchParams(location.search).get('lang'), s = localStorage.getItem('kagishippo-escape-lang'); en = (q || s) ? (q || s) === 'en' : en; } catch (e) {}
+    l.href = en ? 'manifest-en.webmanifest' : 'manifest.webmanifest';
+  }
   document.head.appendChild(l);
 })();
 </script>
@@ -695,6 +701,620 @@ h1{word-break:keep-all;font-family:var(--ui);font-weight:900;font-size:clamp(28p
 
 <script>
 
+const I18N = (() => {
+'use strict';
+const KEY = 'kagishippo-escape-lang';
+const JP = /[぀-ヿ㐀-鿿　-〿！-｠]/;
+let lang = 'ja';
+try {
+  const q = new URLSearchParams(location.search).get('lang');
+  const s = localStorage.getItem(KEY);
+  lang = q === 'en' || q === 'ja' ? q : s === 'en' || s === 'ja' ? s : /^ja\b/i.test(navigator.language || '') ? 'ja' : 'en';
+} catch (e) { lang = /^ja\b/i.test(navigator.language || '') ? 'ja' : 'en'; }
+
+const EN = {
+
+"今回、": "This time,",
+"あなたは猫です。": "you're the cat.",
+"このゲームは、うちのドラとタマから生まれました。": "This game was born from our own Dora and Tama.",
+"あなたのそばの猫にも、": "To the cat beside you, too:",
+"きょう、いいひなたがありますように。": "may you find a good sunny spot today.",
+"つくった人　カギしっぽバスケ部": "Made by: Kagishippo Basketball Club",
+"「カギしっぽの用具倉庫」": "“The Kagishippo Storeroom”",
+"…まだ、だれも見つけてないものがある": "…There's still something nobody's found.",
+"音を出して遊ぶと、もっと楽しい（音にも手がかりがあります）": "More fun with sound on (some clues are sounds).",
+"…8。…前足、おわり": "…8. …That's all my front paws.",
+"…9。…うしろ足": "…9. …Back paws.",
+"…18。…しっぽ": "…18. …Tail.",
+"…19。…もう、ない": "…19. …I'm out.",
+"…20。……タマ。すきまから、足、出せ": "…20. ……Tama. Stick a paw through the gap.",
+"…25。…もう片方": "…25. …Other paw.",
+"…30。……もう、数えない": "…30. ……I'm done counting.",
+"…50。……ちょっと、見直した": "…50. ……Okay. I'm a little impressed.",
+"…おれは、外で待ってただけだ": "…All I did was wait out here.",
+"…おれ、いらなかったな": "…Guess you didn't need me.",
+"…なんで、そんなに知ってる": "…How do you know all that?",
+"…100回。…おれは、ゼロだ": "…100 pets. …I've had zero.",
+"…おれも、知ってる。…しょっぱい": "…I know it too. …Salty.",
+"…まばたき、した。…おれの負けだ": "…I blinked. …You win.",
+"…15回。……おれも、ひまだった": "…15 times. ……I was bored too.",
+"…そこには、なにもない。…30回、言った": "…There's nothing there. …I've said it 30 times.",
+"…うつった": "…Now I'm yawning.",
+"…踏切板は、あそび道具じゃない。……おれも、やった": "…The springboard isn't a toy. ……I did it too.",
+"…はやいな。…おれ、まだ数えてる": "…Fast. …I'm still counting.",
+"…今度は、外から押せ": "…Next time, push from the outside.",
+"（ノートの間から、名刺が おちた）\n\n長しっぽ　主将　タダシ\n\nうら：「この名刺は、いちばん低いところで\nお受けとりください」": "(a business card fell out of the notebook)\n\nTadashi\nCaptain, Long-Tails\n\nOn the back: \"Kindly receive this card\nfrom the lowest possible position.\"",
+"…ひくく。…ひくく（棚の上で、板みたいに平らになった）": "…lower. …lower. (flattened out on the shelf like a board)",
+"…タマ、何してる": "…Tama, what are you doing?",
+"名刺、受けとってる": "receiving a business card",
+"…………それで、合ってる": "…………That's actually correct.",
+"「ドラジ ダンク」って書いてある": "it says \"Dorajee Dunk\"",
+"…………": "…………",
+"ドラせんぱいの、こと？": "is that about you, Dora?",
+"…ちがう。…別のドラだ": "…No. …A different Dora.",
+"このへん、ドラは1ぴきだよ": "there's only one Dora around here",
+"…………消しといてくれ": "…………Erase it for me.",
+"…消したか": "…Did you erase it?",
+"…まだか": "…Not yet?",
+"…………消さなくていい": "…………Actually, leave it.",
+"タマ君 研究ノート（サクジ）\n　…さいごのページ\n\n　　なぞ": "Tama Research Notes (Sakuji)\n   …last page\n\n      A MYSTERY",
+"…ぼくのこと、研究して、なぞ？": "…you studied me, and the answer is… a mystery?",
+"…ああ": "…Yep.",
+"ぼく、なぞなの？": "am i a mystery?",
+"…おれも、ずっと いっしょに住んでる。…………なぞだ": "…I've lived with you this whole time. …………Still a mystery.",
+"…ひげが、ピクッ。はかってからにしよう": "…whiskers twitched. better measure first.",
+"…かごの中だけじゃないぞ。倉庫じゅうだ。おれは、ぜんぶ数えた": "…Not just the cart. The whole storeroom. I counted every one.",
+"…ひまだろ。倉庫じゅうのボールを、数えてから来い": "…Bored? Count every ball in the storeroom, then come talk.",
+"…ひまだろ。\n倉庫じゅうのボールを、\n数えてから来い。\n\n　オレンジ □\n　白　　　 □\n　黄色　　 □\n\n（ドラの字）": "…Bored?\nCount every ball\nin the storeroom.\n\n  Orange □\n  White  □\n  Yellow □\n\n(Dora's handwriting)",
+"ドラの紙「倉庫じゅうのボールを数えてから来い。オレンジ□ 白□ 黄色□」": "Dora's note: \"Count every ball in the storeroom. Orange □ White □ Yellow □\"",
+"…ちがうな": "…Nope.",
+"…それじゃない": "…Not that.",
+"…おれのクセ、聞いてたか？": "…Were you listening to my habit?",
+"…ドン、を数えろ": "…Count the bounces.",
+"↑ いちばん上へ": "↑ To the very top",
+"…扉のレバーは、高いぞ。上から、なにか落とせないか": "…That door lever's high. Could you drop something on it from above?",
+"（あいた…でも、あとにしよう。いまは、サンマといっしょに 出るのが先）": "(it opened… but later. getting out with Sanma comes first.)",
+"ドン": "Bonk",
+
+'カギしっぽの用具倉庫': 'The Kagishippo Storeroom',
+'ついた明かり': "Lights lit",
+'体育館の用具倉庫': 'Storeroom',
+'音': 'Sound', '効果音だけ': 'SFX only', '音なし': 'Muted',
+'はじめから': 'Restart', 'もう一度押す': "Sure? Tap again",
+'棚': 'Shelf', '跳び箱': 'Box', '床': 'Floor',
+'↓ おりる': "↓ Hop down",
+'ドラ': 'Dora', 'ミケ': 'Miké',
+'タマをなでる': 'Pet Tama',
+'ドラに聞く': 'Ask Dora',
+'ヒント': 'Hint',
+'ごろん': 'Flop',
+'手帳': 'Notes',
+'タマの手帳': "Tama's notebook",
+'大事な字や絵を押すと、ここに写ります。': 'Tap important writing or pictures and they get copied here.',
+'カギしっぽバスケ部の脱出ゲーム': "A Kagishippo Basketball Club escape game",
+'今回、あなたは猫です。': "This time, you're the cat.",
+'脱出ゲーム好きのあなたへ。': "Calling all escape-game fans:",
+'裏のエンディングに、たどり着けますか？': "Can you find the secret ending?",
+'はじめる': 'Start',
+'つづきから': 'Continue',
+'無料・登録なし・スマホOK・途中から続けられる': 'Free · No sign-up · Works on phones · Saves your progress',
+'音が出ます': "This game has sound.",
+'タマの宝物、魚のぬいぐるみの「サンマ」が、': "Tama's treasure — a stuffed fish named Sanma —",
+'用具倉庫へころがっていった。': 'rolled away into the gym storeroom.',
+'追いかけて入ると、扉が': 'Tama chased it inside, and the door went…',
+'ガチャン。': 'CLANK.',
+'「…タマ？ またか」': '"…Tama? Again?"',
+'タマの日記': "Tama's diary",
+'つづける': 'Keep going',
+'クリアしたことを、シェアしてね（答えは書かないでね）': "Share your escape! (No spoilers, please.)",
+'X でシェア': 'Share on X',
+'Threads でシェア': 'Share on Threads',
+'漫画「カギしっぽバスケ部」毎日20時に連載中': 'The manga "Kagishippo Basketball Club" — a new strip every day at 8 pm (JST, in Japanese)',
+'・': ' · ',
+'・グッズは': ' · Merch at',
+'第2の部屋、準備中。公開はカギしっぽのアカウントでお知らせします。': "Room 2 is in the works. Follow Kagishippo for updates.",
+'倉庫を見てまわる': 'Look around the storeroom',
+'はじめからあそぶ': 'Play again from the start',
+'とじる': 'Close',
+
+'脱出、成功。': "Escape successful.",
+'ドラは、ぜんぶ数えていた。': 'Dora had been counting the whole time.',
+'扉の外がわには、ふつうの取っ手。': 'On the outside of the door: a perfectly normal handle.',
+'数えるのに夢中で、言うのをわすれていた。': 'He was so busy counting, he forgot to mention it.',
+'…出たか': "…You're out.",
+'‥え？': '…Huh?',
+'スッ': 'Swish',
+'外からは、': 'From out here,',
+'押せば開く': 'you just push.',
+'ポロッ': 'Plop',
+'用具倉庫': '用具倉庫',          // 4コマの扉の札は、絵の字なので そのまま
+
+
+'…1。今回も、数えるぞ': "…1. Yep. Counting again.",
+'…20。前の回も、このへんで言ったな': "…20. You hit 20 right about here last time, too.",
+'…20。いい数だ': '…20. Nice round number.',
+'…50。記録だな': "…50. New record.",
+'手帳に写した': 'Copied to notebook',
+'まだ、なにも書いてない。': 'Nothing written yet.',
+'…ここに、何かある気がする': "…I feel like there's something here",
+'…なにもない': "…There's nothing there.",
+'（おきた）': '(woke up)',
+'…すぅ…': '…zzz…',
+'…むにゃ…': '…mumble…',
+'…もう、出られるだろ': '…You can get out now, right?',
+'…それは、おれも知らない。…タマ、寝てたか？': "…Even I don't know that one. …Tama, were you asleep?",
+'…まだ10秒だ。2回目でも、10秒は10秒だ': "…It's only been 10 seconds. Second time or not, 10 seconds is 10 seconds.",
+'…まだ10秒だ': "…It's only been 10 seconds.",
+'ゴロゴロ…（とけそう）': "purrrr… (melting)",
+'ゴロゴロゴロゴロ…': "purrrrrrrrr…",
+'…ゴロゴロ（50回目）': "…purrr (pet #50)",
+'ゴロゴロ…（ラッキーセブン）': "purrr… (lucky sevens)",
+'ゴロゴロ…ゴロゴロ…': "purrr… purrr…",
+'…なでられすぎだ。100回だぞ': "…That's a lot of petting. 100 times.",
+'ゴロゴロ…': "purrr…",
+'…今回も、なでられてるな': "…Getting petted again, huh.",
+'…そこで、くつろぐな': "…Don't get comfy in there.",
+'…まだ、聞かないのか。…えらいな': "…Still not asking? …Impressive.",
+'…聞くか？': '…Want a hint?',
+'試し版': "Demo",
+'脱出': 'Escaped',
+'ここまで、遊べます。': "That's all you can play for now.",
+'サンマといっしょに、外へ。': 'Out the door, with Sanma.',
+'つづきの謎は、いま作っています。': "More puzzles coming soon.",
+'かくし要素の答えは、漫画の中に。': "Every secret is a nod to the manga.",
+
+'ひとりで 出られた猫': 'Solo Cat',
+'ドラに一度も助けてもらわなかった': 'Never once needed Dora',
+'まっすぐな猫': 'Straight-Shooting Cat',
+'まちがい0回': 'Zero mistakes',
+'カギしっぽ通': 'Kagishippo Expert',
+'ぜんぶの かくし要素を見つけた': 'Found every secret',
+'なでられ名人': 'Petting Champion',
+'なでた回数 100回': 'Got petted 100 times',
+'扉の味を知る猫': 'Door Connoisseur',
+'扉を10回なめた': 'Licked the door 10 times',
+'すきまの見つめあい': 'Staring Contest',
+'ドラの目を10回つついた': "Booped Dora's eye 10 times",
+'ドラせんぱいの話し相手': "Dora's Chat Buddy",
+'ドラに15回 聞いた': 'Asked Dora 15 times',
+'なにもない所の専門家': 'Expert in Nothing',
+'なにもない所を30回 押した': "Tapped empty spots 30 times",
+'あくびの達人': 'Master Yawner',
+'ひまで3回 あくびした': 'Yawned out of boredom 3 times',
+'ぼよん好き': 'Boing Enthusiast',
+'ふみきり板で10回 ぼよんとした': 'Boinged on the springboard 10 times',
+'風のように': 'Like the Wind',
+'20分以内に 脱出': 'Escaped in under 20 minutes',
+'また来た猫': 'Back Again',
+'もう一度 遊んで 脱出': "Escaped on a second run",
+'ドラに たよらない': "Don't lean on Dora",
+'まちがえない': 'No mistakes',
+'かくし要素は 5つ': 'There are 5 secrets',
+'タマの顔を…': "Tama's face…",
+'扉を…なめる？': 'The door… lick it?',
+'すきまの目': 'The eye in the gap',
+'ドラに たくさん聞く': 'Ask Dora a lot',
+'なにもない所': 'Nothing at all',
+'じっと待つ': 'Just wait',
+'ふみきり板': 'The springboard',
+'いそぐ': 'Hurry',
+'もう一度': 'One more time',
+'？？？': '???',
+'ヒント：': 'Hint: ',
+'「…タマ？ …またか。2回目だぞ」': '"…Tama? …Again. That\'s twice now."',
+'まっくら…（なんだか、見おぼえがある）': 'pitch black… (this feels familiar)',
+'まっくら…': 'pitch black…',
+'ここまでに、わかったこと。': 'What I know so far:',
+'真のエンディング': 'True ending',
+
+
+'かべは、つるつる。ずるっ': 'the wall is slippery. sliiide',
+'…また来たのか': '…Back again, huh.',
+'…じろじろ見るな。前も言った': "…Don't stare. I said that last time.",
+'…ヒントなら、下のボタンだ。知ってるだろ': '…Hints are the button below. You know that.',
+'…2回目でも、目は目だ': "…Second time or not, it's still just my eye.",
+'…………まばたき、してもいいか': '…………Can I blink now?',
+'…なんだ': '…What.',
+'…じろじろ見るな': "…Don't stare.",
+'…ヒントなら、下のボタンだ': '…Hints are the button below.',
+'…にらめっこなら、負けないぞ': "…Staring contest? I don't lose.",
+'…なめても、開かない': "…Licking it won't open it.",
+'…また なめた': '…You licked it again.',
+'…味は、どうだ': '…How does it taste?',
+'…5回目だ。数えてるぞ': "…That's five. I'm counting.",
+'…そんなに うまいのか、その扉': '…Is that door really that tasty?',
+'…10回。もう、扉の味は おぼえたな': '…Ten. You know that door by taste now.',
+'（なめてみた）': '(gave it a lick)',
+'（ぺろぺろ。…あじが、しない）': '(lick lick. …tastes like nothing)',
+'（また、なめてみた）': '(licked it again)',
+'…前の回も、なめてたな': '…You licked it last time too.',
+'…（外からも、なめてみた）…しょっぱいな': '…(I licked it from out here too.) …Salty.',
+'（おしてみた）': '(pushed it)',
+'…外から、カギがかかってる': "…It's locked from the outside.",
+'（ひっぱってみた）': '(pulled it)',
+'…引いても、同じだ': "…Pulling won't help either.",
+'扉は、びくともしない': "the door won't budge",
+'（体当たりしてみた）': '(threw my whole body at it)',
+'（ノックしてみた。コン、コン）': '(knocked. knock, knock)',
+'…びくともしないだろ': "…Won't budge, will it.",
+'…体当たりでも、開かないぞ': "…Tackling it won't work either.",
+'…ノックしても、おれしかいないぞ': "…Knock all you want. It's just me out here.",
+'ふみきり板。ぼよん、とする': 'a springboard. it goes boing',
+'ぼよん！': 'boing!',
+'ぼよよん！ …たのしい': 'boiiing! …this is fun',
+'ぼよん、ぼよん、ぼよん': 'boing, boing, boing',
+'…あそんでるだろ。音で わかるぞ': "…You're playing, aren't you. I can hear it.",
+'たおれたコーン。…ねてるみたい': 'the cone fell over. …looks like it\'s napping',
+'コーンは、もう おきない': "the cone isn't getting up again",
+'（コーンの中を のぞいた）…からっぽ': '(peeked inside the cone) …empty',
+'コーンだ。…食べられないほうの': 'a cone. …not the ice cream kind',
+'（コーンを かぶってみたい）': '(I kinda want to wear it)',
+'とんがってる': "it's pointy",
+'（においを かいだ）…ゴムのにおい': '(sniff sniff) …smells like rubber',
+'高いまど。暗幕が、しまってる': 'a high window. the blackout curtain is closed',
+'まど…いまは、まっくら': "the window… it's all dark right now",
+'（じっと見た）…なにも見えない': "(stared at it) …can't see a thing",
+'とび箱。あとで、のぼれそう': 'the vaulting box. I could climb it later',
+'とび箱。くらくて、上がよく見えない': "the vaulting box. too dark to see the top",
+'とび箱…くらくて、こわい': "the vaulting box… it's dark and scary",
+'（とび箱に、ほおずりした）': '(rubbed my cheek on the vaulting box)',
+'トウモロコシ！ …ドラせんぱいには、ないしょにしよう': "corn! …I'll keep this a secret from Dora",
+'からっぽの箱': 'an empty box',
+'下に、ふみきり板が見える': 'I can see the springboard down there',
+'ふぁ〜あ…': 'yaaawn…',
+'（ぺろぺろ。毛づくろい）': '(lick lick. grooming)',
+'…ねむい': '…sleepy',
+'（顔を、あらった）': '(washed my face)',
+'ふぁ…。サンマ、どこ？': "yawn… where's Sanma?",
+'…今回も、ひまそうだな': "…Bored again, huh.",
+'…ねるなよ': "…Don't fall asleep.",
+
+
+'まっくら': 'Pitch Black',
+'…スイッチが高いな。タマじゃ、とどかない': "…That switch is high. You can't reach it.",
+'…上から何かおとしたら、どうなる？': '…What happens if you drop something from up high?',
+'棚に乗れ。ボールを、板の上におとせ': "Get on the shelf. Drop the ball onto the springboard.",
+'スイッチ…とどかない': "the switch… can't reach",
+'棚の上。ボールが、目の前にある': "on the shelf. the ball is right in front of me",
+'棚の上。ここから、倉庫がよく見える': 'on the shelf. I can see the whole storeroom from here',
+'（ボールを、かじってみた）': '(tried biting the ball)',
+'…それは、食べものじゃない': "…That's not food.",
+'ちょい': 'tap',
+'ちょい、ちょい': 'tap, tap',
+'ポトッ': 'plop',
+'…ついたか': '…Lights on?',
+"あかるい！ …サンマは、どこ？": "it's bright! …where's Sanma?",
+
+
+'…監督、どれだけ寝てるんだ': "…Just how much does the coach sleep?",
+'ひなたの席': "The Sunny Spot",
+'…監督のメモ、読んだか。ひなたの席って、どこだ？': '…Read the coach\'s note? So where\'s this "sunny spot"?',
+'…まどがしまってたら、ひなたはできないな': "…No sunny spot with the window covered.",
+'跳び箱から、暗幕にとびつけ。床をよく見ろ': "Jump from the vaulting box to the curtain. Then look closely at the floor.",
+'かべに、紙が はってある': "there's a note stuck to the wall",
+'ひなたが できてる。…床の色が、ちがう？': "there's a sunny spot now. …is the floor a different color?",
+'ここは わしの\nひなたの席ゾウ。\n（ゆずらないゾウ）\n\n　　　　　　　ギンゾー': "This here is MY\nsunny spot.\nNot budging.\nNo ifs, ands, or tusks.\n\n              — Ginzo",
+'ギンゾー監督のメモ：ここは わしの ひなたの席ゾウ': "Coach Ginzo's note: \"This here is MY sunny spot.\"",
+'跳び箱の上。高いまどが、近い': 'on the vaulting box. the high window is close',
+'跳び箱の上': 'on the vaulting box',
+'跳び箱の上。…ちょっと、高い': "on the vaulting box. …it's kinda high",
+'跳び箱の上。見はらしが いい': 'on the vaulting box. nice view',
+'（跳び箱で、のびをした）': "(stretched out on the vaulting box)",
+'跳び箱の上。暗幕が、すぐそこ': 'on the vaulting box. the curtain is right there',
+'暗幕…とどかない': "the curtain… can't reach",
+'ひなた。ぽかぽか': 'sunshine. so warm',
+'まどの光が、まぶしい': 'the window is so bright',
+'（目を細めた）': '(squinted)',
+'…あそこで ねたら、気持ちよさそう': '…a nap there would feel nice',
+'床板。もう、なにも入ってない': "a floorboard. nothing under it anymore",
+'床板。…かたい': "a floorboard. …it's stuck",
+'しっぽが、ゾウの鼻みたい。…どこかを 指してる': "the tail looks like an elephant's trunk. …it's pointing somewhere",
+'…ねこの形？ 大きい。ここだけ、日焼けしてない': "…a cat shape? a big one. this part isn't sun-faded",
+'まどの外は、いい天気': "it's a nice day outside",
+'（鳥が とんでいった）': '(a bird flew by)',
+'…外に、出たい': '…I wanna go outside',
+'雲が、サンマの形…じゃなかった': 'that cloud looks like Sanma… nope',
+'（とびついた）': "(jumped and grabbed on)",
+'よじ、よじ…': 'climb, climb…',
+'…カーテンは、のぼるものじゃない': "…Curtains aren't for climbing.",
+'まぶしい！ 日なたが できた。…床の色が、ちがう？': "so bright! …is the floor a different color?",
+'床板の下に…ノート？ 「礼儀ノート　100冊目」': "a notebook? \"Book of Manners, Vol. 100\"",
+'タダシさんのだ。…棚のお茶セットの となりに、立てておこう': "Tadashi's! …I'll put it by the tea set",
+'ひなた…ぽかぽか…': 'sunshine… so warm…',
+'「ごろん」を おぼえた': "New move: Flop!",
+'さかさま！ …下の「ごろん」で、おきられる': 'upside down! …the "Flop" button below gets me up',
+
+
+'お茶の作法': "Tea Etiquette",
+'…タダシのノート、読んだか。あいつは、作法にうるさい': "…Read Tadashi's notebook? He's a stickler for manners.",
+'…まず、正面を決めろ。魚は、どっちを向いてる？': '…First, find the front. Which way is the fish looking?',
+'魚をこっちに向けて、そこから手前に2回だ': 'Turn the fish to face you. Then two more turns.',
+'お茶セットが、気になる': "something about that tea set…",
+'お茶セットと、礼儀ノート': 'the tea set, and the Book of Manners',
+'お茶セット。タダシさんの、わすれもの？': 'a tea set. did Tadashi forget it?',
+'「100冊目」…タダシさん、100冊も 書いたの？': '"Vol. 100"… Tadashi wrote a HUNDRED of these?',
+'礼儀ノート　100冊目　　　タダシ\n\n・お茶の作法：茶わんの正面は、絵の魚が こちらを むいている ところです。正面は さけて、手前に 2回 まわしてから いただきます。\n\n・新しい作法（きのうの試合で拝見）：カギしっぽのタマさんは、茶わんの魚を なめてから まわします。':
+  "BOOK OF MANNERS, Vol. 100    — Tadashi\n\n• Tea etiquette: The front of the bowl is where the painted fish is looking at you. One must never drink from the front. Kindly turn the bowl toward yourself twice, then drink.\n\n• New etiquette (observed at yesterday's game): Tama-san of Kagishippo licks the fish on the bowl before turning it.",
+'タダシのノート：魚が こちらを むいている ところが 正面。手前に 2回 まわす': "Tadashi's notes: the front is where the fish looks at you. Turn it toward yourself 2 times.",
+'コーンの絵。…もう、まわさなくていい': "a picture of a cone. …no more turning needed",
+'タダシさんの 茶わん。魚の絵が かいてある': "Tadashi's tea bowl. there's a fish painted on it",
+'（魚の絵を、なめてみた）': '(licked the painted fish)',
+'…それは、絵だ': "…That's a painting.",
+'お盆。川みたいな 青い線が かいてある': 'a tray. blue lines on it, like a river',
+'ボールの絵だった。…でも、なにもない': "it was a picture of the ball. …but there's nothing here",
+'跳び箱の絵だった。…でも、なにもない': "it was the vaulting box picture. …but there's nothing here",
+'線が つながった！ …三角コーンの絵？': 'the lines connect! …a traffic cone?',
+'線が つながった。…ボールの絵？': 'the lines connect. …a ball?',
+'線が つながった。…跳び箱の絵？': 'the lines connect. …a vaulting box?',
+'魚が、こっちを 見てる': 'the fish is looking at me',
+'コーンの下に…ねこの顔？': 'under the cone… cat faces?',
+
+
+'長すぎる作戦名': "A Play Name That's Way Too Long",
+'…サクジ監督の作戦名、長いな。でも、ぜんぶ意味がある': "…Coach Sakuji's play names are long. But every word means something.",
+'…作戦名のとおりに、顔をならべてみろ': '…Put the faces where the play says.',
+'全員ならべたら、みんなの目を見ろ。どこを見てる？': "Once they're all placed, look at their eyes. What are they looking at?",
+'作戦ボードに、顔を ならべる': 'line the faces up on the play board',
+'作戦ボード…とどかない': "the play board… can't reach",
+'かべの高いところに、作戦ボード': "a play board, high up on the wall",
+'みんなの目線が、集まってた': 'everyone was looking at the same spot',
+'作戦ボード。顔を ならべよう': "the play board. let's place the faces",
+'サクジ監督の 作戦ボード。コートの絵だ': "Coach Sakuji's play board. it's a drawing of a court",
+'本日の作戦　　　　　　サクジ\n・ゴール下に ドラ君。\n・まんなかの線の上に、タダシ君と ギンゾー監督が ならんで 守る。左が タダシ君、右が 監督。\n・この3人で、三角おにぎりの 形。\n・ミケさんは、おにぎりの まんなかの うめぼし。フリースローの線の上。\n・タマ君は、右の角。\n・左の角は、わざと あけておく。\n名づけて\n『全員の目が光る 三角おにぎり 鉄壁包囲網』':
+  "TODAY'S PLAY        — Sakuji\n• Dora: under the basket.\n• Tadashi and Coach Ginzo guard side by side on the center line. Tadashi on the left, Coach Ginzo on the right.\n• Those three form a triangle, like an onigiri rice ball.\n• Miké is the pickled plum in the middle of the onigiri. On the free-throw line.\n• Tama: the right corner.\n• The left corner stays empty. On purpose.\nI hereby name it:\n\"Operation All-Eyes-Gleaming Onigiri Triangle Iron Wall Total Lockdown\"",
+'サクジ監督の作戦：ゴール下ドラ／まんなかの線に 左タダシ・右監督／ミケは フリースローの線（うめぼし）／タマは 右の角／左の角は あける': "Sakuji's play: Dora under the basket / center line: Tadashi left, Coach Ginzo right / Miké on the free-throw line (the plum) / Tama right corner / left corner empty",
+'みんなが 見ていた ところ': 'the spot everyone was looking at',
+'コートの絵。丸いしるしが 6つ': 'a court drawing. six round marks',
+'ここに、顔を おけそう': 'a face could go here',
+'まず、顔を えらぶ': 'pick a face first',
+'かべ': 'the wall',
+'扉に つけても、しかたない': 'no point sticking it on the door',
+'猫の顔の マグネット。ドラ先輩・タマ・ミケさん・タダシさん・監督。…かべの作戦ボードに、はれそう': "face magnets: Dora, me, Miké, Tadashi, Coach Ginzo",
+'…全員、同じところを 見てる！': "…they're all looking at the same spot!",
+'…目が光る、って そういうことか': '…"All eyes gleaming." So that\'s what it meant.',
+'目線が、ばらばら…': "eyes looking every which way…",
+'ぽとっ': 'plop',
+'…それは、鉄じゃない': "…The wall's not metal.",
+'みんなが 見てる ところ…ここ？': "the spot everyone's looking at… here?",
+
+
+'ドラの紙「数えてから来い。オレンジ□ 白□ 黄色□」': 'Dora\'s note: "Go count. Orange □ White □ Yellow □"',
+'数えてから来い': 'Go Count First',
+'…ちゃんと数えたか。おれは、ぜんぶ数えたぞ': '…Did you count properly? I counted every one.',
+'…目線をかえろ。床から見ると、ちがうものが見える': "…Change your eye level. From the floor, you'll see different things.",
+'棚の下、まどのわく。それと、おまえが最初におとしたやつもだ': 'Under the shelf. The window frame. And the one you dropped at the very start.',
+'…ひまだろ。数えてから来い': "…Bored? Go count.",
+'…ひまだろ。数えてから来い。\n\n　オレンジ □\n　白　　　 □\n　黄色　　 □\n\n（ドラの字）': "…Bored? Go count.\n\n  Orange □\n  White  □\n  Yellow □\n\n(Dora's handwriting)",
+'まどのわくに、テニスボールがはさまってる': "there's a tennis ball stuck in the window frame",
+'棚の下に、ボールがころがってる。床からだと、よく見える': "balls rolled under the shelf. easy to see from the floor",
+'上から、かごの中が見える': 'I can see into the cage from up here',
+'ボールかご。からっぽ': 'the ball cage. empty',
+'かごの中。もう、なにもない': "inside the cage. nothing left",
+'ボールかご。色のダイヤルがついてる': 'the ball cage. it has color dials',
+'…ちがう。数えなおせ': "…Nope. Count again.",
+'かごの中に、巻き尺！': 'a tape measure in the cage!',
+'…ちゃんと数えたな': '…You counted right.',
+
+
+'サクジ監督のタマ研究ノート「ひげのはば 11cm。ただし、ひげより頭が大きい（13cm）」': 'Sakuji\'s Tama research: "Whiskers 11 cm wide. BUT his head is wider than his whiskers (13 cm)."',
+'すきまは3つ': 'Three Gaps',
+'…すきまは3つ。ぜんぶ通れるとは、かぎらない': "…Three gaps. Doesn't mean you fit through all of them.",
+'…はかるものがあるだろ。それと、サクジ監督のノートだ': "…You've got something to measure with. And Coach Sakuji's notes.",
+'おまえは、ひげより頭がでかい。13cmより広いところだ': 'Your head is bigger than your whiskers. Find one wider than 13 cm.',
+'巻き尺…なにかを はかれそう': 'a tape measure… I could measure something',
+'タマ君 研究ノート（サクジ）\n\n・ひげのはば：11cm\n・ただし、タマ君は\n　ひげより頭が大きい（13cm）\n・好きな寝どこ：ひなた、\n　やわらかいところ、せまいところ\n\n研究の結果': "TAMA: RESEARCH NOTES (Sakuji)\n\n• Whisker width: 11 cm\n• HOWEVER, Tama's head is\n  wider than his whiskers (13 cm)\n• Favorite nap spots: sunny places,\n  soft places, narrow places\n\n(Confirmed by research.)",
+'（じゃれてみた）': '(pounced on it)',
+'…それは、おもちゃじゃない': "…That's not a toy.",
+'巻き尺を、くわえた。すきまを はかれる': 'picked up the tape measure. now I can measure the gaps',
+'奥の部屋': 'the back room',
+'ふみきり板のうら': 'behind the springboard',
+'その右': 'right of that',
+'棚の下のおく': 'deep under the shelf',
+'ひげが、両がわに当たる。通れない': "my whiskers hit both sides. can't get through",
+'ひげは通った。…でも、頭がつっかえた（おしりだけ出てる）': "whiskers fit. head didn't. (butt sticking out)",
+'通れた！ 奥に、もう1つ部屋がある': "made it! there's another room back here",
+'…頭、通ったか': '…Head made it through?',
+
+
+'ギンゾー監督のメモ「ドラくんは、考えごとをすると、ロッカーの番号をドリブルするクセがあるゾウ」': 'Coach Ginzo\'s note: "When Dora is thinking, he dribbles his locker number."',
+'外のドリブル': 'Dribbling Outside',
+'…なんだ。おれは、ひまだからドリブルしてるだけだ': "…What? I'm just dribbling because I'm bored.",
+'…監督のメモ、読んだか。…おれ、そんなクセあったか？': '…Read the coach\'s note? …Do I really have that habit?',
+'ドン、のかたまりを数えろ。かたまりごとに、1けただ': 'Count the bounces in each burst. One burst, one digit.',
+'ロッカーに「ドラ」の名札…': 'a locker with a name tag: "ドラ" — Dora…',
+'ドラくんは、考えごとをすると、\nロッカーの番号を\nドリブルするクセがあるゾウ。\n\n（ギンゾー）': "When Dora is thinking,\nhe has a habit of dribbling\nhis locker number.\nNo ifs, ands, or tusks.\n\n(Ginzo)",
+'ドラのロッカー。開いてる': "Dora's locker. it's open",
+'（ガリガリ）': '(scratch scratch)',
+'…それ、おれのロッカーだ': "…That's my locker.",
+'ロッカーの中に…ねこじゃらし！': 'inside the locker… a feather toy!',
+'…おれのクセ、ばれたか': "…So my habit's out, huh.",
+
+
+'…なにしてるの？ さがしもの？ それなら、さっき見えたわよ。右の箱の、手前のほう': "…What are you doing? Looking for something? I saw it just now. The box on the right — the near half.",
+'ミケの「右の箱よ」': 'Miké Says "Box on the Right"',
+'…み、ミケか。…い、いや、なんでもない': "…M-Miké? …N-never mind. It's nothing.",
+'ミ、ミケの右は…お、おまえの、ひだ、左だ': "M-Miké's right is… y-your… l-left.",
+'て、手前も…ぎゃ、逆だ。…ミケ、き、きょうも…いや、なんでもない': "N-near and far… th-they flip too. …Miké, you look n-nice tod— …never mind.",
+'…ロッカーに、なにか入ってたか': '…Was there anything in the locker?',
+'（がまんできない！）': "(can't… resist!)",
+'ミケ「右の箱の、手前のほう」（まどの外から）': 'Miké (outside the window): "The box on the right — the near half."',
+'…み、ミケ…？': '…M-Miké…?',
+'…まだ やってるのか': '…Still at it?',
+'段ボール箱。手前と奥に、しきりがある': "a cardboard box. a divider splits it into a near half and a far half",
+'左の箱の、奥…からっぽ。でも、サンマのにおいがする！': "left box, far half… empty. but it smells like Sanma!",
+'…ミ、ミケ、帰ったか。…ふう': "…M-Miké's gone? …Phew.",
+
+
+'サンマはどこ': "Where's Sanma?",
+'…サンマ、見つかったか。よかったな': "…Found Sanma? Good. I'm glad.",
+'…レバーは高いぞ。上から、なにか落とせないか': "…That lever's high. Can you drop something on it from above?",
+'跳び箱の上だ。まどのわくに、まだ1つあっただろ': "Up on the vaulting box. There was still one in the window frame, right?",
+'…いろいろ動かしたな。散らかしすぎだ': "…You've moved a lot of stuff. What a mess.",
+'…いちばん高いところから、見下ろしてみろ': '…Look down from the highest spot.',
+'形が見えたか。口の向いてる先だ': "See the shape? Look where the mouth is pointing.",
+'サンマのにおい…でも、どこ？': "I smell Sanma… but where?",
+'棚のいちばん上。倉庫が、ぜんぶ見下ろせる': "the very top of the shelf. I can see everything",
+'…しっぽ、体、背びれ、目。…サンマの形！': "…tail, body, fin, eye. …it's Sanma's shape!",
+'上から見ると、床の物がサンマの形。口の先に床板': "From above, the stuff on the floor makes Sanma's shape. A floorboard where the mouth points.",
+'サンマの口の先の、床板': "the floorboard where Sanma's mouth points",
+'サンマはいる。…でも、レバーが高い': "I've got Sanma. …but the lever is so high",
+'サンマ！！': 'SANMA!!',
+'…見つけたか。…よかったな': "…Found it? …Good. Really.",
+'サンマといっしょなら、もう出られる。…でも、レバーが高い': "got Sanma. time to go… but that lever's so high",
+'…出たか。…サンマも、いっしょか': "…You're out. …Sanma too, huh.",
+
+
+'ひなた': 'the sunny spot',
+'…ドラジーの…はこ…': "…Dorajee's… box…",
+'マットの上': 'on the mat',
+'…てんすうの…いた…': '…score… board…',
+'ボールかごの中': 'in the ball cage',
+'…さかさまに…ねると…ちがう…': '…sleep… upside down… looks… different…',
+'裏の謎': 'Secret Puzzle',
+'ドラの箱。…ないしょにしておこう': "Dora's box. …I'll keep this a secret",
+'得点板…「61 − 89」？': 'the scoreboard… "61 − 89"?',
+'古い得点板。「68 − 19」': 'an old scoreboard. "68 − 19"',
+'跳び箱の上に、箱。「ドラ　さわるな」': 'a box on top of the vaulting box. it says "ドラ さわるな": "DORA\'S. DON\'T TOUCH."',
+'…さわるな': "…Don't touch that.",
+'「ドラ　さわるな」。4けたの錠': '"DORA\'S. DON\'T TOUCH." a 4-digit lock',
+'中に…ドラせんぱいの、古い練習ノート': "inside… Dora's old practice notebook",
+'とばす': 'Skip',
+'（ねごと）…ドラジー…': '(sleep-talking) …Dorajee…',
+'（ねごと）…ドラジー、とぶ…': '(sleep-talking) …Dorajee… flies…',
+'カギしっぽバスケ部': 'Kagishippo Basketball Club',
+'決勝は、12月。': 'The finals: December.',
+'毎日20時に、連載中。': 'New strip every day at 8 pm (JST).',
+'…タマ、ねてたか？ …なにを見た': '…Tama, were you asleep? …What did you see?',
+};
+
+
+const RULES = [
+  [/^用具倉庫　明かり (\d+)\/9$/, m => `Storeroom · Lights ${m[1]}/9`],
+  [/^ドラ「([\s\S]+)」$/, m => sub(m[1]) && `Dora: "${sub(m[1])}"`],
+  [/^用具倉庫　かくし要素 (\d+)\/5$/, m => `Storeroom · Secrets ${m[1]}/5`],
+  [/^かくし要素 (\d+)\/5 みつけた$/, m => `Secret found! (${m[1]}/5)`],
+  [/^かくし要素 (\d+)\/5$/, m => `Secrets ${m[1]}/5`],
+  [/^ヒント (\d+)\/3$/, m => `Hint ${m[1]}/3`],
+  [/^明かり (\d+)\/9$/, m => `Lights ${m[1]}/9`],
+  [/^(\d+)分(\d+)秒$/, m => `${m[1]}m ${m[2]}s`],
+  [/^ヒント (\d+)回$/, m => `Hints: ${m[1]}`],
+  [/^まちがい (\d+)回$/, m => `Mistakes: ${m[1]}`],
+  [/^…まちがい、(\d+)回。$/, m => `…Mistakes: ${m[1]}.`],
+  [/^ヒント、(\d+)回$/, m => `Hints: ${m[1]}.`],
+  [/^称号 (\d+)\/(\d+)$/, m => `Titles ${m[1]}/${m[2]}`],
+  [/^「…またか。(\d+)回目だぞ」$/, m => `"…Again. That's ${m[1]} times now."`],
+  [/^…ためいき、(\d+)$/, m => `…*sigh* That's ${m[1]}.`],
+  [/^(\d+)cmのすきま$/, m => `a ${m[1]} cm gap`],
+  [/^このすきまは、(\d+)cm$/, m => `this gap is ${m[1]} cm`],
+  [/^すきま：(.+) (\d+)cm$/, m => sub(m[1]) && `Gap ${sub(m[1])}: ${m[2]} cm`],
+  [/^(左|まんなか|右)の箱の、(奥|手前)。からっぽ$/, m => `${{左:'left', まんなか:'middle', 右:'right'}[m[1]]} box, ${m[2] === '奥' ? 'far' : 'near'} half. empty`],
+  [/^（ねごと）(.+)$/, m => sub(m[1]) && `(sleep-talking) ${sub(m[1])}`],
+  [/^寝言（(.+)）「(.+)」$/, m => sub(m[1]) && sub(m[2]) && `Sleep talk (${sub(m[1])}): "${sub(m[2])}"`],
+  [/^ヒント：(.+)$/, m => sub(m[1]) && `Hint: ${sub(m[1])}`],
+  [/^(.+)…$/, m => sub(m[1]) && `${sub(m[1])}…`],          // つづきから：「謎の名前…」
+];
+const sub = s => (EN[s] !== undefined ? EN[s] : (rule(s) || null));
+function rule(s) { for (const [re, f] of RULES) { const m = s.match(re); if (m) { const r = f(m); if (r) return r; } } return null; }
+
+const missing = new Set();
+
+function t(s) {
+  if (lang !== 'en' || s == null) return s;
+  s = String(s);
+  if (!JP.test(s)) return s;
+  if (EN[s] !== undefined) return EN[s];
+  const r = rule(s); if (r) return r;
+  // 何行かあるもの（タマの日記など）は、1行ずつ
+  if (s.includes('\n')) return s.split('\n').map(line => {
+    const b = line.match(/^(\s*・)(.*)$/);
+    return b ? '• ' + t(b[2]) : t(line);
+  }).join('\n');
+  if (!missing.has(s)) { missing.add(s); try { console.warn('[I18N] no English for:', s); } catch (e) {} }
+  return s;
+}
+
+
+const ORIG = new WeakMap();      // テキスト → もとの日本語
+const SKIP = n => { const e = n.parentElement; return !e || e.closest('#scene, script, style, title, #tama, #hero, .lang'); };
+let writing = false;
+function fix(node) {
+  if (node.nodeType !== 3 || SKIP(node)) return;
+  let o = ORIG.get(node);
+  if (!o || (node.data !== o.out && node.data !== o.ja)) { o = {ja:node.data}; ORIG.set(node, o); }   // コードが新しく書いた字
+  o.out = tr1(o.ja);
+  if (node.data !== o.out) { writing = true; node.data = o.out; writing = false; }
+}
+function tr1(ja) {   // まわりの空白は そのまま
+  if (!JP.test(ja)) return ja;
+  const m = ja.match(/^(\s*)([\s\S]*?)(\s*)$/);
+  return m[1] + t(m[2]) + m[3];
+}
+function walk(root) {
+  if (root.nodeType === 3) return fix(root);
+  if (root.nodeType !== 1 || root.closest && root.closest('#scene')) return;
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  let n; while ((n = w.nextNode())) fix(n);
+}
+const AORIG = new WeakMap();
+function attrs() {
+  document.querySelectorAll('[aria-label]').forEach(e => {
+    let o = AORIG.get(e); if (o === undefined) { o = e.getAttribute('aria-label'); AORIG.set(e, o); }
+    e.setAttribute('aria-label', t(o));
+  });
+}
+const obs = new MutationObserver(list => {
+  if (writing) return;
+  for (const r of list) {
+    if (r.type === 'characterData') fix(r.target);
+    else r.addedNodes.forEach(walk);
+  }
+});
+function all() {
+  walk(document.body); attrs();
+  document.title = t('カギしっぽの用具倉庫');
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang button').forEach(b => b.setAttribute('aria-pressed', b.dataset.l === lang));
+}
+
+
+function ui() {
+  const css = document.createElement('style');
+  css.textContent = `
+.lang{display:flex;align-items:center;flex:none;border:1.5px solid var(--line);border-radius:999px;padding:2px;font-size:12px;font-weight:700;background:var(--bg)}
+.lang button{background:transparent;border:none;border-radius:999px;padding:5px 8px;font-size:12px;font-weight:700;color:var(--muted);line-height:1.2}
+.lang button[aria-pressed="true"]{background:var(--pink);color:#3A1E22}
+.lang i{font-style:normal;color:var(--line);margin:0 -2px}
+html[lang="en"] .think{font-style:italic}
+.langfix{position:fixed;top:max(10px,env(safe-area-inset-top));right:16px;z-index:26;display:none}
+body:has(.cover:not([hidden])) .langfix{display:flex}
+@media (max-width:400px){.top{gap:6px}.top .chip{padding:6px 9px}.lang button{padding:5px 6px}}`;
+  document.head.appendChild(css);
+  const make = cls => {
+    const d = document.createElement('div'); d.className = 'lang ' + cls; d.setAttribute('role', 'group');
+    d.innerHTML = '<button type="button" data-l="ja" lang="ja">日本語</button><i>/</i><button type="button" data-l="en" lang="en">English</button>';
+    d.addEventListener('click', e => { const b = e.target.closest('button'); if (b) set(b.dataset.l); });
+    return d;
+  };
+  const top = document.querySelector('.top'), snd = document.getElementById('snd');
+  if (top) top.insertBefore(make(''), snd || null);
+  document.body.appendChild(make('langfix'));
+}
+function set(l) {
+  if (l !== 'en' && l !== 'ja') return;
+  lang = l;
+  try { localStorage.setItem(KEY, l); } catch (e) {}
+  all();
+  dispatchEvent(new Event('langchange'));
+}
+
+ui(); all();
+obs.observe(document.body, {childList:true, subtree:true, characterData:true});
+return {t, set, missing, get lang() { return lang; }, get en() { return lang === 'en'; }, EN};
+})();
+
+</script>
+<script>
+
 const G = (() => {
 'use strict';
 const $ = id => document.getElementById(id);
@@ -869,14 +1489,16 @@ paw.hide = (d = 200) => paw.move(150, 1700, d);
 
 
 let sayTimer, thinkTimer, toastTimer;
+
+const readMs = (t, ms, per) => (typeof I18N !== 'undefined' && I18N.en) ? Math.max(ms || 0, 2200, I18N.t(t).length * 70) : (ms || Math.max(2200, t.length * per));
 function say(t, ms, who = 'ドラ') {
   $('saywho').textContent = who; $('say').classList.toggle('mike', who !== 'ドラ');
   $('sayt').textContent = t; $('say').classList.add('on');
-  clearTimeout(sayTimer); sayTimer = setTimeout(() => $('say').classList.remove('on'), ms || Math.max(2200, t.length * 160));
+  clearTimeout(sayTimer); sayTimer = setTimeout(() => $('say').classList.remove('on'), readMs(t, ms, 160));
 }
 function think(t, ms) {
   $('think').textContent = t; $('think').classList.add('on');
-  clearTimeout(thinkTimer); thinkTimer = setTimeout(() => $('think').classList.remove('on'), ms || Math.max(2200, t.length * 140));
+  clearTimeout(thinkTimer); thinkTimer = setTimeout(() => $('think').classList.remove('on'), readMs(t, ms, 140));
 }
 function toast(t) { $('toast').textContent = t; $('toast').classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('on'), 2600); }
 function shun() { const b = $('tama'); b.classList.add('shun'); setTimeout(() => b.classList.remove('shun'), 900); }
@@ -1111,9 +1733,10 @@ function ending() {
   $('clp').textContent = last ? 'つづきの謎は、いま作っています。' : 'かくし要素の答えは、漫画の中に。';
   // シェア（答えは書かない）
   const shareText = last ? '' : `「カギしっぽの用具倉庫」から脱出しました🐾 ${Math.floor(t / 60)}分${String(t % 60).padStart(2, '0')}秒・ヒント${hints}回${S.endTrue ? '・裏のエンディングも！' : ''}\n今回、あなたは猫です。\n#カギしっぽ脱出 #脱出ゲーム`;
+  const en = typeof I18N !== 'undefined' && I18N.en, shareEn = `I escaped from "The Kagishippo Storeroom" 🐾 ${Math.floor(t / 60)}m ${String(t % 60).padStart(2, '0')}s · ${hints} hint${hints === 1 ? '' : 's'}${S.endTrue ? ' · found the secret ending!' : ''}\nThis time, you're the cat.\n#KagishippoEscape #EscapeGame`;
   const shareUrl = 'https://kagishippo-bb.github.io/escape/';
-  $('shx').href = 'https://x.com/intent/post?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(shareUrl);
-  $('shth').href = 'https://www.threads.com/intent/post?text=' + encodeURIComponent(shareText + '\n' + shareUrl);
+  $('shx').href = 'https://x.com/intent/post?text=' + encodeURIComponent(en && !last ? shareEn : shareText) + '&url=' + encodeURIComponent(shareUrl);
+  $('shth').href = 'https://www.threads.com/intent/post?text=' + encodeURIComponent((en && !last ? shareEn : shareText) + '\n' + shareUrl);
   $('share').hidden = last;
   $('ura').hidden = last || S.endTrue;
   // クリア後の4コマ（作る/ending4.py）。2コマ目の吹き出しに、本当の数を入れる
@@ -1163,6 +1786,8 @@ function titles() {
   ul.querySelectorAll('li:not(.on)').forEach((li, i) => { const t = TITLES.filter(x => !got.includes(x))[i]; if (open > 0 && t) { open--; li.lastChild.textContent = 'ヒント：' + TITLE_HINT[t[0]]; } });
 }
 new MutationObserver(() => { if (!$('clear').hidden) titles(); }).observe($('clear'), {attributes:true, attributeFilter:['hidden']});
+
+addEventListener('langchange', () => { if (!$('clear').hidden && S.ended) ending(); });
 
 
 
@@ -1218,7 +1843,12 @@ function welcomeBack() {
   $('back').hidden = false;
 }
 $('backgo').addEventListener('click', () => { audio(); enter(); });
-$('start').addEventListener('click', () => { audio(); const snd = S.sound; S = fresh(); S.sound = snd; S.started = true; S.round = CLEARS + 1; save(); intro(); });
+// はじめる：前の遊びの絵が残らないように、前の記録があるときは まっさらにして読みなおしてから始める（10/16 見つけた不具合）
+$('start').addEventListener('click', () => {
+  audio(); const snd = S.sound, mus = S.music, had = S.started; S = fresh(); S.sound = snd; S.music = mus; S.started = true; S.round = CLEARS + 1; save();
+  if (had) { try { sessionStorage.setItem('kagishippo-autostart', '1'); } catch (e) {} location.reload(); return; }
+  intro();
+});
 $('cont').addEventListener('click', () => { audio(); welcomeBack(); });
 
 return {get S() { return S; }, save, count, rep, again, get round() { return S.round; }, bgm, SFX, tween, ease, lerp, sleep, buzz, $, svg, VIEWS, camTo, setCam, setView, go, get view() { return view; },
@@ -1230,6 +1860,8 @@ return {get S() { return S; }, save, count, rep, again, get round() { return S.r
     setCam(VIEWS.floor.box); ball.draw(); paw.draw();
     for (const p of P) if (p.restore) p.restore(!!S.done[p.id]);
     $('hero').innerHTML = $('tama').innerHTML;
+    let auto = false; try { auto = sessionStorage.getItem('kagishippo-autostart') === '1'; sessionStorage.removeItem('kagishippo-autostart'); } catch (e) {}
+    if (auto && S.started && !Object.keys(S.done).length) { $('title').hidden = true; intro(); }
   }};
 })();
 </script>
@@ -2287,5 +2919,9 @@ async function movie() {
 
 </script>
 <script>G.boot();</script>
+<script>
+
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+</script>
 
 </html>

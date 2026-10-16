@@ -1,0 +1,13 @@
+{
+  "name": "The Kagishippo Storeroom",
+  "short_name": "Storeroom",
+  "description": "An escape game from the Kagishippo Basketball Club. This time, you are the cat.",
+  "lang": "en",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#15121C",
+  "theme_color": "#15121C",
+  "icons": [{"src": "icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any"}]
+}

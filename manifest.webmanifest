@@ -1,0 +1,13 @@
+{
+  "name": "カギしっぽの用具倉庫",
+  "short_name": "用具倉庫",
+  "description": "カギしっぽバスケ部の脱出ゲーム。今回、あなたは猫です。",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#15121C",
+  "theme_color": "#15121C",
+  "icons": [{"src": "icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any"}]
+}
