@@ -104,6 +104,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .say.mid{top:31%}
 .say.low.on,.say.mid.on{opacity:1}
 .stage.saylow .think{bottom:auto;top:10px}
+.stage.sayup .think{bottom:auto;top:46%}   
 .say .who{font-family:var(--ui);font-size:12px;font-weight:900;color:var(--orange);letter-spacing:.08em;flex:none;display:flex;flex-direction:column;align-items:center;gap:2px}
 .say .who svg{width:30px;height:20px}
 .say.mike .who{color:var(--pink)}
@@ -183,6 +184,8 @@ button,a.big,a.sbtn{transition:transform .2s cubic-bezier(.3,1.7,.5,1),filter .1
 .hint{flex:1;min-width:110px}
 .note-b,.goron-b{flex:none;width:64px;flex-direction:column;gap:2px;font-size:13px}
 @media (max-width:400px){.note-b,.goron-b{width:56px;padding-inline:4px}}  
+.hint span{white-space:nowrap}
+@media (max-width:400px){.hint{gap:4px;padding-inline:6px}.hint svg{width:24px;height:18px}}   
 .goron-b[aria-pressed="true"]{background:var(--pink);color:#3A1E22;border-color:var(--pink)}
 .cover{position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:center;padding-inline:16px;padding-block:24px;background:var(--bg);z-index:10;overflow:auto}
 .cover[hidden]{display:none!important}
@@ -258,6 +261,19 @@ h1{word-break:keep-all;font-family:var(--ui);font-weight:900;font-size:clamp(28p
 .titles li.on b{color:var(--pink)}
 
 .lsay{display:none}
+
+html.short .top{display:none}
+html.short .stage{width:min(100%,calc((100dvh - 152px) * .7143))}
+html.short .nav,html.short .hud{max-width:min(560px,max(330px,calc((100dvh - 152px) * .7143)))}
+html.short .stage > .place{position:absolute;top:4px;left:50%;transform:translateX(-50%);z-index:2;pointer-events:none;white-space:nowrap;background:rgba(21,18,28,.78);border:1px solid var(--line);border-radius:999px;padding:0 9px;font-size:11px;line-height:17px;font-weight:700;color:var(--muted)}   
+html.short .stage > .place .pn{display:none}
+html.short .stage > .place{opacity:0;transition:opacity .4s}   
+html.short .stage > .place.show{opacity:1}
+html.short .stage > .place .pc{color:var(--ink);font-weight:900}
+html.short .height button{padding:0 8px}
+html.short .nav #snd{flex:none}
+html.short .act{font-size:14px;padding:0 10px;white-space:normal;line-height:1.2;text-overflow:clip}
+.page #reset{display:block;margin:12px auto 0;min-height:44px;border:none;background:none;color:#8A6E52;font-size:13px;font-weight:700;text-decoration:underline;opacity:1}
 @media (orientation: landscape) and (max-height: 520px){
   .app{display:grid;grid-template-columns:calc((100dvh - 12px) * .7143) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr) auto auto;
     grid-template-areas:"st top" "st say" "st side" "st nav" "st hud";gap:6px 12px;padding:6px max(12px,env(safe-area-inset-right)) 6px max(12px,env(safe-area-inset-left));justify-content:stretch}
@@ -934,6 +950,18 @@ try {
 } catch (e) { lang = /^ja\b/i.test(navigator.language || '') ? 'ja' : 'en'; }
 
 const EN = {
+"…茶わんの絵は、お盆の線とつながると、倉庫にある物の絵になる。…タダシのノートは、お茶セットの横だ": "…Line the cup's picture up with the tray, and it becomes something in this storeroom. …Tadashi's notebook is right by the tea set.",
+"…正面は、魚が こっちを 見てる向きだ。新しい作法も 書いてあったろ。そこから 手前に2回": "…The front is where the fish is looking right at you. And there was a new rule in there, too. From the front, turn it toward you twice.",
+"魚をなめろ。それから 魚をこっちに向けて、手前に2回だ。その絵の物の ところへ行け": "Lick the fish. Then turn the fish to face you, and turn it toward you twice. Go to whatever the picture shows.",
+"…監督のメモに、おれのクセが 書いてあるらしいな。…そんなクセ、あったか？": "…Apparently the coach wrote down one of my habits. …Do I really have one?",
+"…ドンは、ひと息ずつ 区切れてるだろ。かたまりで 数えてみろ": "…The thumps come in bursts, with a breath between. Count them by bursts.",
+"…み、ミケは、まどの 外だ。む、向こうから 見て、い、言ってるんだ。…い、いや、なんでもない": "…M-Miké's outside the window. Sh-she's saying it from h-her side. …N-never mind.",
+"…ボールを数えたとき、まどのわくに 1つあっただろ": "…When you counted balls, there was one in the window frame, right?",
+"跳び箱の上だ。まどのわくの テニスボールを、ちょい、ちょい、ポトッ": "Up on the vaulting box. The tennis ball in the window frame: tap, tap, plop.",
+"レバーが高い。上から、なにか落とせないか": "The lever is high. Drop something on it from above?",
+"ふみきり板。ぼよん、とする。…重くて、動かせない": "a springboard. it goes boing. …too heavy to move",
+"ぼよん！ …重くて、動かない": "boing! …it won't budge",
+"ぼよよん！ …たのしい。でも、動かせない": "boiiing! …fun. but it won't move",
 "タマのからだ": "Tama's body",
 "前足": "paws",
 "つめ": "claws",
@@ -1621,6 +1649,7 @@ const RULES = [
   [/^(左|まんなか|右)の箱の、(奥|手前)の、(上|下)。からっぽ$/, m => `${{左:'left', まんなか:'middle', 右:'right'}[m[1]]} box, ${m[3] === '上' ? 'top' : 'bottom'} level, ${m[2] === '奥' ? 'far' : 'near'} half. empty`],
   
   [/^線が 光った！ …(まど|マット|コーン|かご|ボール|跳び箱)の絵？$/, m => `the lines glow! …a ${PIC[m[1]]}?`],
+  [/^線が 光った！ …(まど|マット|コーン|かご|ボール|跳び箱)の絵？ (魚が、こっちを 見てる|魚が、ななめ|魚は、うら)$/, m => `the lines glow! …a ${PIC[m[1]]}? ${{'魚が、こっちを 見てる':'the fish is looking right at me', '魚が、ななめ':'the fish is turned sideways', '魚は、うら':'the fish is around the back'}[m[2]]}`],
   [/^茶わんの線が、光った！ …(まど|マット|コーン|かご|ボール|跳び箱)の絵？$/, m => `the lines on the bowl glow! …a ${PIC[m[1]]}?`],
   [/^(まど|マット|コーン|かご|ボール|跳び箱)の絵だった。…でも、なにもない$/, m => `so the picture was the ${PIC[m[1]]}. …but there's nothing here`],
   [/^（ねごと）(.+)$/, m => sub(m[1]) && `(sleep-talking) ${sub(m[1])}`],
@@ -1930,7 +1959,7 @@ let sayTimer, thinkTimer, toastTimer;
 
 
 const readMs = (t, ms, per) => { const en = typeof I18N !== 'undefined' && I18N.en, s = en ? I18N.t(t) : t;
-  return Math.max(ms || 2200, s.length <= (en ? 14 : 6) ? 0 : 4200, s.length * (en ? 75 : per)); };   // 7字より長いものは 4.2秒より長く（10/17 再審査）
+  return Math.max(ms || 2600, s.length <= (en ? 14 : 6) ? 0 : 5000, s.length * (en ? 85 : per + 60)); };   // もう少し長く（10/17 名人の審査：大事なひとことを 見落とす）   // 7字より長いものは 4.2秒より長く（10/17 再審査）
 const LINES = [];
 function keepLine(who, t) { if (LINES[0] && LINES[0][0] === who && LINES[0][1] === t) return;   // 同じことばは、つづけて写さない
   LINES.unshift([who, t]); LINES.length = Math.min(LINES.length, 8); if (!$('notebook').hidden) drawNotes(); drawNotes($('sidenotes')); }
@@ -1938,10 +1967,13 @@ function say(t, ms, who = 'ドラ') {
   fx++;
   keepLine(who, t);
   $('saywho').textContent = who; $('say').classList.toggle('mike', who !== 'ドラ');
-  const v = VIEWS[view], at = v && v.sayAt ? (typeof v.sayAt === 'function' ? v.sayAt(who) : v.sayAt) : '';   // だいじな顔に かけない（10/18）
-  $('say').classList.toggle('low', at === 'low'); $('say').classList.toggle('mid', at === 'mid'); stage.classList.toggle('saylow', at === 'low');
+  const v = VIEWS[view];
+  let up = false, at = v && v.sayAt ? (typeof v.sayAt === 'function' ? v.sayAt(who) : v.sayAt) : '';   // だいじな顔に かけない（10/18）
+  // 上のほう（まどのカーテンなど）を押した すぐあとは、下に出す。さわった所の 変わりかたが 見えるように（10/17 作者・スマホ）
+  if (!at && v && v.box && lastTap && lastTap.view === view && Date.now() - lastTap.t < 4000 && lastTap.p.y < v.box[1] + v.box[3] * .3) { at = 'low'; up = true; }
+  $('say').classList.toggle('low', at === 'low'); $('say').classList.toggle('mid', at === 'mid'); stage.classList.toggle('saylow', at === 'low' && !up); stage.classList.toggle('sayup', up);
   $('sayt').textContent = t; $('say').classList.add('on');
-  clearTimeout(sayTimer); sayTimer = setTimeout(() => { $('say').classList.remove('on'); stage.classList.remove('saylow'); }, readMs(t, ms, 260));
+  clearTimeout(sayTimer); sayTimer = setTimeout(() => { $('say').classList.remove('on'); stage.classList.remove('saylow', 'sayup'); }, readMs(t, ms, 260));
 }
 function think(t, ms, at) {
   fx++;
@@ -2049,16 +2081,18 @@ function lastLines(box) {
   for (const [who, t] of LINES) { const li = document.createElement('li'); li.textContent = (who === 'タマ' ? '' : who + '「') + t + (who === 'タマ' ? '' : '」'); ul.appendChild(li); }
   box.appendChild(ul);
 }
-$('noteb').addEventListener('click', () => { audio(); SFX.paper(); drawNotes(); $('notebook').hidden = false; });
+$('noteb').addEventListener('click', () => { audio(); SFX.paper(); drawNotes(); $('notebook').hidden = false; $('notebook').querySelector('.page').scrollTop = 0; });   // いつも「いま」から見える（10/17）
 $('noteclose').addEventListener('click', () => { $('notebook').hidden = true; });
 $('notebook').addEventListener('click', e => { if (e.target === $('notebook')) $('notebook').hidden = true; });   // 外を押しても とじる
 
 
+const SHORT = matchMedia('(orientation: portrait) and (max-width: 600px) and (max-height: 700px)');
 function placeLine() {
   const n = Object.keys(S.done).filter(k => +k <= 9).length, pl = $('place'); pl.textContent = '';
   const a = document.createElement('span'); a.className = 'pn'; a.textContent = '体育館の用具倉庫'; a.style.marginRight = '.8em';
   const b = document.createElement('span'); b.className = 'pc'; b.textContent = S.ended ? `かくし ${Object.keys(S.found).length}/5` : `明かり ${n}/9`;   // 「かくし要素」だと、たての画面で 切れる（10/18）
   pl.append(a, b);
+  if (SHORT.matches) { pl.classList.add('show'); clearTimeout(placeLine.t); placeLine.t = setTimeout(() => pl.classList.remove('show'), 3000); }
 }
 function hide(key, line) {
   SFX.find();
@@ -2133,7 +2167,7 @@ stage.addEventListener('pointerdown', async e => {
     if (emptyNow) pp.classList.add('miss');
     else if (fx !== fx0 || busy) { pp.classList.add('hit'); SFX.hit(); buzz([0, 30, 14]); }
   }, 45);
-  const p = toWorld(e); lastTap = {view, p};
+  const p = toWorld(e); lastTap = {view, p, t: Date.now()};
   // いまの謎 → 解いた謎（見てまわる用）→ 共通 → 何もない
   const c = cur();
   // first: true の登録（真のエンディングのあとの「かたづけ」など）は、いちばん先に聞く
@@ -2255,6 +2289,15 @@ $('snd').addEventListener('click', () => {
   if (S.sound && S.music !== false) S.music = false; else if (S.sound) { S.sound = false; S.music = true; } else { S.sound = true; S.music = true; }
   save(); audio(); if (bgmBus) bgm(bgmOn); toast(sndLabel());
 });
+
+function fitShort() {
+  const on = SHORT.matches, top = document.querySelector('.top');
+  document.documentElement.classList.toggle('short', on);
+  if (on) { stage.appendChild($('place')); $('nav').appendChild($('snd')); $('notebook').querySelector('.page').appendChild($('reset')); }
+  else { top.prepend($('place')); top.appendChild($('snd')); top.appendChild($('reset')); }
+}
+fitShort(); SHORT.addEventListener('change', fitShort);
+addEventListener('resize', () => { if (SHORT.matches !== document.documentElement.classList.contains('short')) fitShort(); });   // change が来ない ブラウザのため
 let resetArm = 0;
 $('reset').addEventListener('click', () => {
   if (Date.now() - resetArm > 3000) { resetArm = Date.now(); $('reset').textContent = 'もう一度押す'; setTimeout(() => $('reset').textContent = 'はじめから', 3000); return; }
@@ -2353,7 +2396,7 @@ async function dribble() {
       donPlace(); const s = document.createElement('span'); s.textContent = 'ドン'; box.appendChild(s);
       await sleep(170); sh.setAttribute('opacity', 0); await sleep(330);
     }
-    await sleep(1000); box.classList.add('out'); await sleep(650);
+    await sleep(2200); box.classList.add('out'); await sleep(750);   // かたまりを 長めに残して、音なしでも 数えられるように（10/17 名人の審査）
   }
   box.innerHTML = ''; box.classList.remove('out');
   dribbling = false; lastDrib = performance.now();
@@ -2492,6 +2535,7 @@ function blink() {
 }
 function enter() {
   $('title').hidden = true; $('intro').hidden = true; $('back').hidden = true;
+  setTimeout(placeLine, 600);   // せまい画面では、部屋に入ったときに 明かりの札を3秒出す
   setCam(VIEWS.floor.box); setView('floor'); ball.draw(); paw.draw();
   for (const p of P) if (p.restore) p.restore(!!S.done[p.id]);
   for (const p of P) if (p.onView) p.onView('floor');
@@ -2611,7 +2655,7 @@ G.flavor({view:'floor', test:p => G.inR(p, 762, 540, 1000, 1160), async run() {
 G.flavor({view:'floor', test:p => G.inR(p, 370, 1170, 580, 1255), async run() {
   G.busy = true; G.SFX.jump(); G.svg.style.transform = 'translateY(-4%)'; await G.sleep(160); G.SFX.boing(); G.svg.style.transform = ''; G.busy = false;
   const n = G.S.c.r_board || 0;
-  G.think(G.rep('board', ['ふみきり板。ぼよん、とする', 'ぼよん！', 'ぼよよん！ …たのしい', 'ぼよん、ぼよん、ぼよん']));
+  G.think(G.rep('board', ['ふみきり板。ぼよん、とする。…重くて、動かせない', 'ぼよん！ …重くて、動かない', 'ぼよよん！ …たのしい。でも、動かせない', 'ぼよん、ぼよん、ぼよん']));   // 本編では動かないことを ことばで（10/17 名人の審査）
   if (n + 1 === 10) setTimeout(() => G.say('…あそんでるだろ。音で わかるぞ'), 700);
 }});
 G.flavor({view:'floor', test:p => G.inR(p, 100, 1200, 220, 1320), run() {
@@ -2927,7 +2971,7 @@ G.puzzle({
   const pero = () => G.tamaMode(G.view === 'tea' && G.cur() && G.cur().id === 3 && G.S.f.p3note && !licked() ? () => (fishShown() ? def.lick() : G.think('…魚の絵が、見えない', 2000)) : null);
   const def = {
     id: 3, name: 'お茶の作法',
-    hints: ['…タダシのノート、読んだか。あいつは、作法にうるさい', '…新しい作法も、書いてあったろ。それと、正面は 魚の向きで決まる', '魚をなめろ。それから 魚をこっちに向けて、手前に2回だ'],
+    hints: ['…茶わんの絵は、お盆の線とつながると、倉庫にある物の絵になる。…タダシのノートは、お茶セットの横だ', '…正面は、魚が こっちを 見てる向きだ。新しい作法も 書いてあったろ。そこから 手前に2回', '魚をなめろ。それから 魚をこっちに向けて、手前に2回だ。その絵の物の ところへ行け'],   // 1つ目にも 新しい手がかり（10/17 名人の審査）
     restore(done) {
       G.$('teaset').setAttribute('opacity', G.S.done[1] ? 1 : 0);
       G.$('teanote').setAttribute('opacity', G.S.done[2] ? 1 : 0);
@@ -2993,7 +3037,7 @@ G.puzzle({
       G.S.f.p3rot = r1; G.save(); trapped = -1; front();
       // どの向きも 絵になる。答えだけ 音や字を かえない（総当たりで 当てられないように）
       if (!licked()) G.think(r1 === 0 ? '魚が、こっちを 見てる。…線は、うすいまま' : G.rep('p3faint', ['…作法が、ちがう気がする', '線が、うすい…', '…作法が、ちがう気がする。線が 光らない']), 2200);
-      else { G.SFX.find(); G.think(`線が 光った！ …${PICS[r1]}の絵？`, 2400); }
+      else { G.SFX.find(); G.think(`線が 光った！ …${PICS[r1]}の絵？ ${['魚が、こっちを 見てる', '魚が、ななめ', '魚は、うら', '魚は、うら', '魚は、うら', '魚が、ななめ'][r1]}`, 2600); }   // 正面が ひと目で分かるように（10/17 名人の審査）
       G.busy = false;
     },
     
@@ -3483,7 +3527,7 @@ async function listen() {
 const def = {
   id: 7, name: '外のドリブル',
   onView(name) { if (name === 'locker' && !G.S.done[7] && G.cur() && G.cur().id === 7) G.act('開けてみる', () => def.tryOpen()); },
-  hints: ['…なんだ。おれは、ひまだから ドリブルしてるだけだ', '…監督のメモ、読んだか。…おれ、そんなクセあったか？', 'ドン、のかたまりを数えろ。かたまりごとに、1けただ'],
+  hints: ['…監督のメモに、おれのクセが 書いてあるらしいな。…そんなクセ、あったか？', '…ドンは、ひと息ずつ 区切れてるだろ。かたまりで 数えてみろ', 'ドン、のかたまりを数えろ。かたまりごとに、1けただ'],   // 1つ目にも 新しい手がかり（10/17 名人の審査）
   start() { setTimeout(() => G.think('ロッカーに「ドラ」の名札…', 2400), 2800); },
   restore(done) {
     draw();
@@ -3549,7 +3593,7 @@ G.VIEWS.oku.sayAt = () => (+G.$('p8mike').getAttribute('opacity') > 0 ? 'mid' : 
 
 G.puzzle({
   id: 8, name: 'ミケの「右の箱よ」',
-  hints: ['…み、ミケか。…い、いや、なんでもない', 'ミ、ミケの右は…お、おまえの、ひだ、左だ。て、手前も…ぎゃ、逆だ', 'う、上は…う、上だ。ぜ、ぜんぶ逆じゃない。…ミケ、き、きょうも…いや、なんでもない'],
+  hints: ['…み、ミケは、まどの 外だ。む、向こうから 見て、い、言ってるんだ。…い、いや、なんでもない', 'ミ、ミケの右は…お、おまえの、ひだ、左だ。て、手前も…ぎゃ、逆だ', 'う、上は…う、上だ。ぜ、ぜんぶ逆じゃない。…ミケ、き、きょうも…いや、なんでもない'],
   hintGate() { if (!G.S.f.p8mike) { G.say('…ロッカーに、なにか入ってたか'); return true; } return false; },
   restore(done) { showMike(G.S.f.p8mike && !done); },
   async tap(view, p, isCur) {
@@ -3664,7 +3708,7 @@ async function reveal() {
 G.puzzle({
   id: 9, name: 'サンマはどこ',
   hints() {
-    if (G.S.f.p9fish) return ['…サンマ、見つかったか。よかったな', '…レバーは高いぞ。上から、なにか落とせないか', '跳び箱の上だ。まどのわくに、まだ1つあっただろ'];
+    if (G.S.f.p9fish) return ['…レバーは高いぞ。上から、なにか落とせないか', '…ボールを数えたとき、まどのわくに 1つあっただろ', '跳び箱の上だ。まどのわくの テニスボールを、ちょい、ちょい、ポトッ'];
     if (G.S.f.p9hole) return ['…前足で かくと、奥へ 行くだけだ。猫は、みんな それをやる', '…先の まがったものが あれば、わっかに ひっかけられるな。…おまえの うしろに ないか', 'しっぽだ。おまえの カギしっぽを、うしろ向きに 入れろ'];
     return ['…いろいろ動かしたな。散らかしすぎだ', '…いちばん高いところから、見下ろしてみろ', '形が見えたか。口の向いてる先だ'];
   },
@@ -3794,7 +3838,8 @@ G.puzzle({
     G.$('hintc').textContent = 'ヒント 0/3';
     G.busy = false;
     await G.sleep(3000);
-    G.say('…扉のレバーは、高いぞ。上から、なにか落とせないか', 4200);
+    G.say('…扉のレバーは、高いぞ。上から、なにか落とせないか', 5200);
+    G.note('レバーが高い。上から、なにか落とせないか');   // 見のがしても、手帳に残る（10/17 名人の審査）
     G.busy = false;
   },
   
