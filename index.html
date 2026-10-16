@@ -16,7 +16,7 @@
 <title>カギしっぽの用具倉庫</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="カギしっぽバスケ部の脱出ゲーム。今回、あなたは猫です。">
-<!-- スマホのホーム画面に置ける（アイコンはタマの顔。オフラインは GitHub Pages に出すときに足す） -->
+
 <meta name="theme-color" content="#15121C">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -39,7 +39,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Yomogi&display=swap">
 <style>
-/* 夜の用具倉庫：暗い紫がかった黒に、すきまの光のクリーム色と、ドラの肉球のピンク。1画面のゲーム（暗い見た目に決めている） */
+
 :root{
   --bg:#15121C; --panel:#221D2C; --line:#3A3248; --ink:#F3E9D7; --muted:#B4A68F;
   --pink:#F29CA3; --pink-deep:#E4677A; --orange:#E8762B; --light:#FFF0C4; --paper:#FBF3E4; --paper-ink:#4A2F18;
@@ -56,7 +56,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .app{height:100%;display:flex;justify-content:center;gap:24px;padding-inline:16px;padding-block:8px 10px}
 .main{height:100%;width:100%;min-width:0;display:flex;flex-direction:column;align-items:center;gap:8px}
 .side{display:none}
-/* パソコンの横長の画面：あいている右に、手帳を出しっぱなしにする */
+
 @media (min-width:900px){
   .main{flex:0 1 560px}
   .side{display:flex;flex-direction:column;flex:0 0 clamp(260px,26vw,360px);padding-top:42px;min-height:0}
@@ -88,7 +88,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .height span{font-size:11px;font-weight:900;padding:3px 7px;border-radius:999px;background:rgba(21,18,28,.75);color:var(--muted);text-align:center;letter-spacing:.06em}
 .height span.on{background:var(--pink);color:#3A1E22}
 .height span.off{opacity:.35}
-/* おりるボタンは右下：どの高さの画面でも、右下には押す物がない（左下は 棚のかご・跳び箱のボード・サクジ監督のメモに かさなっていた） */
+
 .down{position:absolute;right:10px;bottom:52px;background:rgba(21,18,28,.85);border:1.5px solid var(--line);border-radius:999px;padding:10px 16px;font-weight:900;font-size:15px;z-index:2}
 .pp{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;pointer-events:none;animation:pp .6s ease-out forwards;z-index:4}
 .hint.call{animation:callme 1s ease-in-out 4;border-color:var(--orange)}
@@ -106,7 +106,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .hb svg{width:30px;height:22px;flex:none}
 .hint{flex:1;min-width:110px}
 .note-b,.goron-b{flex:none;width:64px;flex-direction:column;gap:2px;font-size:13px}
-@media (max-width:400px){.note-b,.goron-b{width:56px;padding-inline:4px}}  /* ごろんが出ても「ドラに聞く」が1行に入るように（375px） */
+@media (max-width:400px){.note-b,.goron-b{width:56px;padding-inline:4px}}  
 .goron-b[aria-pressed="true"]{background:var(--pink);color:#3A1E22;border-color:var(--pink)}
 .cover{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding-inline:16px;padding-block:24px;background:var(--bg);z-index:10;overflow:auto}
 .cover[hidden]{display:none!important}
@@ -123,7 +123,7 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
 .intro p{font-family:var(--hand);font-size:clamp(19px,5.2vw,24px);line-height:1.8;margin:0;opacity:0;transition:opacity .6s}
 .intro p.on{opacity:1}
 .intro .dora{color:var(--orange)}
-.clear h2{font-size:clamp(26px,7vw,34px);font-weight:900;margin:0;text-wrap:balance;word-break:keep-all;overflow-wrap:anywhere}   /* ことばの途中で 行がかわらないように */
+.clear h2{font-size:clamp(26px,7vw,34px);font-weight:900;margin:0;text-wrap:balance;word-break:keep-all;overflow-wrap:anywhere}   
 .stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .stats span{border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
 .medal{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--pink);font-weight:900}
@@ -138,7 +138,7 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
 .share a{color:var(--pink)}
 .toast{position:fixed;left:50%;top:14px;transform:translate(-50%,-160%);background:var(--panel);border:1.5px solid var(--pink);border-radius:999px;padding:8px 16px;font-weight:900;font-size:14px;z-index:20;transition:transform .3s;white-space:nowrap}
 .toast.on{transform:translate(-50%,0)}
-/* 手帳 */
+
 .notebook{position:fixed;inset:0;z-index:12;background:rgba(10,8,14,.7);display:flex;align-items:center;justify-content:center;padding-inline:16px;padding-block:24px}
 .notebook[hidden]{display:none!important}
 .page{width:100%;max-width:420px;max-height:100%;overflow:auto;background:var(--paper);color:var(--paper-ink);border-radius:10px;padding:18px 20px;box-shadow:0 10px 40px #000;background-image:repeating-linear-gradient(transparent 0 33px,#E6D3B3 33px 34px)}
@@ -146,11 +146,11 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
 .page ol{margin:0;padding-left:1.3em;font-family:var(--hand);font-size:18px;line-height:34px}
 .page .empty{font-family:var(--hand);font-size:17px;line-height:34px;margin:0}
 .page button{margin-top:12px;color:var(--paper-ink);background:transparent;border:1.5px solid #CDB894;border-radius:999px;padding:8px 18px;font-weight:700}
-/* 拡大して見るもの（メモ・ノート） */
+
 .zoom{position:fixed;inset:0;z-index:12;background:rgba(10,8,14,.75);display:flex;align-items:center;justify-content:center;padding-inline:16px;padding-block:24px}
 .zoom[hidden]{display:none!important}
 .zoom .page{font-family:var(--hand);font-size:19px;line-height:34px;white-space:pre-wrap}
-/* ひまなときのタマ（20秒さわらないと） */
+
 .tama{position:relative}
 .tama.yawn svg{animation:yawn 2.4s ease-in-out}
 @keyframes yawn{0%,100%{transform:none}30%{transform:scale(1.04,.9) translateY(3px)}55%{transform:scale(.96,1.12) translateY(-4px) rotate(-4deg)}75%{transform:scale(1.02,.95)}}
@@ -160,7 +160,7 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
 @keyframes groom{0%,100%{transform:none}15%,45%,75%{transform:rotate(-12deg) translateX(-3px)}30%,60%,90%{transform:rotate(-6deg) translateY(2px)}}
 .tama.groom::after{content:"";position:absolute;left:12px;bottom:6px;width:20px;height:16px;border-radius:50% 50% 45% 45%;background:#FBE6C8;border:2px solid #5A3A1E;animation:pawlick 2.6s ease-in-out}
 @keyframes pawlick{0%,100%{transform:translateY(14px);opacity:0}12%,88%{opacity:1}15%,45%,75%{transform:translate(4px,-14px) rotate(-20deg)}30%,60%,90%{transform:translate(2px,-6px)}}
-/* 称号 */
+
 .titles{width:100%}
 .titles .kicker{margin-bottom:8px}
 .titles ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
@@ -687,8 +687,7 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
 <div class="toast" id="toast"></div>
 
 <script>
-/* ===== 土台（2026/10/16）=====
-   謎は puzzles/pN.js に1つずつ。G.puzzle({...}) で登録する。くわしくは 作る/作り方.md */
+
 const G = (() => {
 'use strict';
 const $ = id => document.getElementById(id);
@@ -700,20 +699,20 @@ const fresh = () => ({started:false, done:{}, hintStep:{}, hintsUsed:{}, mistake
 let S = fresh();
 try { const t = JSON.parse(localStorage.getItem(KEY) || 'null'); if (t) S = Object.assign(fresh(), t); } catch (e) {}
 const save = () => { S.last = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
-/* クリアした回数は、別のキーに残す（「はじめから」でも消えない）→ 2周目のドラのセリフ */
+
 const KEY_CLEAR = 'kagishippo-escape-clears';
 let CLEARS = 0;
 try { CLEARS = +(JSON.parse(localStorage.getItem(KEY_CLEAR) || '{}').n || 0); } catch (e) {}
-/* 遊び方を数える（称号用）。count('pet') → 新しい数 */
+
 const count = (k, n = 1) => { S.c[k] = (S.c[k] || 0) + n; save(); return S.c[k]; };
-/* 同じところを何回も押したときのセリフ：押した数で、順にかわる */
+
 const rep = (k, list) => list[(count('r_' + k) - 1) % list.length];
 const again = () => S.round >= 2;   // 2周目より後
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const buzz = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
 
-/* ---------- 音（その場で作る。ファイルなし） ---------- */
+
 let AC = null, master = null, NB = null;
 function audio() {
   if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); master = AC.createGain(); master.gain.value = .8; master.connect(AC.destination); } catch (e) { AC = null; } }
@@ -769,9 +768,7 @@ const SFX = {
   },
 };
 
-/* ---------- 倉庫のまわりの音（10/16 トオルさん：曲をやめて、まわりの音に。ファイルなし）----------
-   暗いうちは 倉庫の空気（ひくい ゴーッ）と、まどの外の風だけ。謎2で暗幕が開くと すずめが鳴きはじめ、
-   明るくなるほど 鳥がふえる。ときどき 床が きしむ。ボールの音は入れない（謎7のドリブルと まぎれないように） */
+
 let bgmBus = null, bgmOn = false, amb = null, ambNext = {bird:0, creak:0};
 function ambStart() {
   if (amb || !AC) return;
@@ -820,7 +817,7 @@ function bgm(on) {
   bgmOn = on; bgmBus.gain.setTargetAtTime(on && S.sound && S.music !== false ? 1 : 0, AC.currentTime, .3);
 }
 
-/* ---------- 動き ---------- */
+
 const ease = {io: k => k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2, out: k => 1 - (1 - k) * (1 - k), in: k => k * k, lin: k => k};
 function tween(d, fn, e = ease.io) {
   if (RM) d = Math.max(60, d * .5);
@@ -836,7 +833,7 @@ function tween(d, fn, e = ease.io) {
 }
 const lerp = (a, b, k) => a + (b - a) * k;
 
-/* 高さ（画面）：floor＝床、box＝跳び箱の上、shelf＝棚の上。謎のファイルで足せる */
+
 const VIEWS = {floor:{box:[0, 0, 1000, 1400], h:'floor'}, shelf:{box:[40, 540, 560, 784], h:'shelf'}, box:{box:[420, 60, 580, 812], h:'box'}};
 let cam = VIEWS.floor.box.slice(), view = 'floor';
 const setCam = v => { cam = v; svg.setAttribute('viewBox', v.map(n => n.toFixed(1)).join(' ')); };
@@ -853,7 +850,7 @@ async function go(name, d = 420) {
   for (const p of P) if (p.onView) p.onView(name);
 }
 
-/* ボールとタマの前足（謎1と最後の謎で使う） */
+
 const ball = {x:300, y:778, r:0, g:$('ball'), s:$('ballspin')};
 ball.draw = () => { ball.g.setAttribute('transform', `translate(${ball.x.toFixed(1)},${ball.y.toFixed(1)})`); ball.s.setAttribute('transform', `rotate(${ball.r.toFixed(1)})`); };
 ball.move = (x, y, d, ey = ease.lin, ex = ease.lin) => { const x0 = ball.x, y0 = ball.y, r0 = ball.r; return tween(d, k => { ball.x = lerp(x0, x, ex(k)); ball.y = lerp(y0, y, ey(k)); ball.r = r0 + (ball.x - x0) * 1.4; ball.draw(); }, ease.lin); };
@@ -862,7 +859,7 @@ paw.draw = () => paw.g.setAttribute('transform', `translate(${paw.x.toFixed(1)},
 paw.move = (x, y, d, e = ease.io) => { const x0 = paw.x, y0 = paw.y; return tween(d, k => { paw.x = lerp(x0, x, k); paw.y = lerp(y0, y, k); paw.draw(); }, e); };
 paw.hide = (d = 200) => paw.move(150, 1700, d);
 
-/* ---------- ことば ---------- */
+
 let sayTimer, thinkTimer, toastTimer;
 function say(t, ms, who = 'ドラ') {
   $('saywho').textContent = who; $('say').classList.toggle('mike', who !== 'ドラ');
@@ -875,7 +872,7 @@ function think(t, ms) {
 }
 function toast(t) { $('toast').textContent = t; $('toast').classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('on'), 2600); }
 function shun() { const b = $('tama'); b.classList.add('shun'); setTimeout(() => b.classList.remove('shun'), 900); }
-/* まちがい：ドラがだまって数える。解きおわった部屋を見てまわるときは数えない */
+
 function miss(line) {
   if (!cur()) { SFX.pof(); if (line) setTimeout(() => say(line), 350); return; }
   S.mistakes++; save(); SFX.miss(); shun(); buzz([12, 40, 12]);
@@ -883,9 +880,9 @@ function miss(line) {
   const r2 = again() && {1:'…1。今回も、数えるぞ', 20:'…20。前の回も、このへんで言ったな'}[n];
   setTimeout(() => say(line || r2 || (n === 20 ? '…20。いい数だ' : n === 50 ? '…50。記録だな' : '…' + n)), 350);
 }
-/* ツッコミだけ（数えない）：扉をなめるなど、さぐって遊んだだけのときは、まちがいにしない */
+
 function nudge(line) { SFX.miss(); shun(); buzz(10); if (line) setTimeout(() => say(line), 350); }
-/* メモやノートを大きく見せる。手帳に写す */
+
 function zoom(text, noteText) {
   $('zoomt').textContent = text; $('zoom').hidden = false; SFX.paper();
   if (noteText) note(noteText);
@@ -906,7 +903,7 @@ $('noteb').addEventListener('click', () => { audio(); SFX.paper(); drawNotes(); 
 $('noteclose').addEventListener('click', () => { $('notebook').hidden = true; });
 $('notebook').addEventListener('click', e => { if (e.target === $('notebook')) $('notebook').hidden = true; });   // 外を押しても とじる
 
-/* かくし要素（漫画ネタ・5つ） */
+
 function placeLine() { $('place').textContent = S.ended ? `用具倉庫　かくし要素 ${Object.keys(S.found).length}/5` : '体育館の用具倉庫'; }
 function hide(key, line) {
   SFX.find();
@@ -914,7 +911,7 @@ function hide(key, line) {
   think(line, 3200);
 }
 
-/* ---------- 謎の登録と進み方 ---------- */
+
 const P = [];
 function puzzle(def) { P.push(def); P.sort((a, b) => a.id - b.id); }
 const cur = () => P.find(p => !S.done[p.id] && p.id <= 9) || null;
@@ -929,7 +926,7 @@ function light(anim) {
   return tween(700, k => dark.setAttribute('opacity', lerp(o0, o, k)));
 }
 function showStamps() { for (const p of P) if (S.done[p.id] && !S.hintsUsed[p.id] && p.id <= 9) { const st = $('stamp' + p.id); if (st) st.setAttribute('opacity', 1); } }
-/* 謎が解けたとき：明るくする → 肉球スタンプ（ヒントなしのとき）→ 次の謎へ */
+
 async function solve(id, opt = {}) {
   S.done[id] = true; save();
   SFX.chime(); buzz([20, 60, 20]);
@@ -947,7 +944,7 @@ async function solve(id, opt = {}) {
   else if (nx.start) nx.start();
 }
 
-/* ---------- タップ ---------- */
+
 function toWorld(e) { const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
 function pawPrint(e, faint) {
   const r = stage.getBoundingClientRect(), d = document.createElement('div');
@@ -979,7 +976,7 @@ stage.addEventListener('pointerdown', async e => {
 });
 $('down').addEventListener('click', () => { if (busy) return; audio(); paw.hide(); go('floor'); });
 
-/* ---------- ごろん（さかさまの目線）---------- */
+
 let goronOn = false, sleepTimer = null;
 function setGoron(on) {
   goronOn = on; svg.classList.toggle('goron', on); $('goron').setAttribute('aria-pressed', on);
@@ -997,7 +994,7 @@ async function fallAsleep() {
 $('goron').addEventListener('click', () => { audio(); if (busy) return; setGoron(!goronOn); });
 function learnGoron() { S.goron = true; save(); $('goron').hidden = false; }
 
-/* ---------- ヒント（扉の外のドラ）---------- */
+
 function updHint() { const c = cur(); $('hintc').textContent = c && c.hints ? `ヒント ${S.hintStep[c.id] || 0}/3` : 'ヒント'; }
 $('hint').addEventListener('click', () => {
   audio(); SFX.pof();
@@ -1020,7 +1017,7 @@ $('tama').addEventListener('click', () => {
   else if (n === 20) { think('ゴロゴロ…', 1600); setTimeout(() => say(again() ? '…今回も、なでられてるな' : '…そこで、くつろぐな'), 900); }
   else think(PET[n] || 'ゴロゴロ…', 1600);
 });
-/* 音ボタンは3段：音 → まわりの音なし（効果音だけ）→ 音なし */
+
 function sndLabel() { $('snd').setAttribute('aria-pressed', S.sound); $('snd').textContent = !S.sound ? '音なし' : S.music === false ? '効果音だけ' : '音'; }
 $('snd').addEventListener('click', () => {
   if (S.sound && S.music !== false) S.music = false; else if (S.sound) { S.sound = false; S.music = true; } else { S.sound = true; S.music = true; }
@@ -1035,7 +1032,7 @@ function restart() { const snd = S.sound; S = fresh(); S.sound = snd; S.round = 
 $('again').addEventListener('click', restart);
 $('look').addEventListener('click', () => { $('clear').hidden = true; placeLine(); });
 
-/* つまったら、ドラから声をかける：同じ謎で3分なにも進まない（解けない・ヒントも押さない）と「…聞くか？」。押さなければ ヒントに数えない */
+
 let lastMove = performance.now(), callN = 0;
 function moved() { lastMove = performance.now(); callN = 0; }
 setInterval(() => {
@@ -1047,7 +1044,7 @@ setInterval(() => {
   say(callN > 1 ? '…まだ、聞かないのか。…えらいな' : '…聞くか？', 3600);
 }, 5000);
 
-/* パソコンの左：解いた謎の数だけ、電球がつく */
+
 function lamps() {
   const box = $('lamps'); if (!box) return;
   const n = Object.keys(S.done).filter(k => +k <= 9).length;
@@ -1060,7 +1057,7 @@ function lamps() {
   const p = document.createElement('p'); p.textContent = `明かり ${n}/9`; box.appendChild(p);
 }
 
-/* ---------- 時間 ---------- */
+
 let playStart = 0;
 function tick() {
   if (!S.started || S.ended || document.hidden || !playStart) return;
@@ -1069,7 +1066,7 @@ function tick() {
 setInterval(tick, 2000);
 document.addEventListener('visibilitychange', () => { tick(); playStart = performance.now(); });
 
-/* ---------- ドラのドリブル（謎7の手がかり。ゲームのはじめから、ときどき鳴る）---------- */
+
 const DRIBBLE = [3, 1, 4, 2];
 let dribbling = false;
 async function dribble() {
@@ -1084,7 +1081,7 @@ async function dribble() {
 }
 function dribbleLoop() { setTimeout(() => { dribble(); dribbleLoop(); }, 38000 + Math.random() * 14000); }
 
-/* ---------- おわり ---------- */
+
 function ending() {
   tick(); S.ended = true; save();
   const t = Math.round(S.elapsed), hints = Object.values(S.hintsUsed).reduce((a, b) => a + b, 0);
@@ -1109,8 +1106,7 @@ function ending() {
   $('clear').hidden = false;
 }
 
-/* ---------- 称号（クリア画面に出す。遊び方で決まる）----------
-   ending() の中はさわらない。クリア画面が出たのを見て、称号を足し、クリアしたことを別のキーに残す */
+
 const TITLES = [
   ['ひとりで 出られた猫', 'ドラに一度も助けてもらわなかった', (h) => h === 0],
   ['まっすぐな猫', 'まちがい0回', () => S.mistakes === 0],
@@ -1150,8 +1146,8 @@ function titles() {
 }
 new MutationObserver(() => { if (!$('clear').hidden) titles(); }).observe($('clear'), {attributes:true, attributeFilter:['hidden']});
 
-/* ---------- はじまり ---------- */
-/* ドラの目のまぶた：ヒントのたびに、少しずつ半目になる（ヒント8回で いちばん下まで） */
+
+
 function lid(anim) {
   const e = $('eyeball'); if (!e) return;
   let l = $('eyelid');
@@ -1194,7 +1190,7 @@ async function intro() {
   enter();
   setTimeout(() => think(again() ? 'まっくら…（なんだか、見おぼえがある）' : 'まっくら…'), 400);
 }
-/* 何日かあとに戻ってきた人へ：タマの日記（それまでの手帳） */
+
 function welcomeBack() {
   const days = (Date.now() - (S.last || Date.now())) / 864e5;
   if (days < .5 || !S.notes.length) { enter(); const c = cur(); think(c && c.name ? `${c.name}…` : 'つづきから', 1800); return; }
@@ -1220,9 +1216,9 @@ return {get S() { return S; }, save, count, rep, again, get round() { return S.r
 })();
 </script>
 <script>
-/* p0：どの謎にも入らない、倉庫のいつものもの（扉・ドラの目・ふみきり板など）と、共通の動き */
 
-/* とどかない高いところにとびついて、ずるっとすべる（まちがい） */
+
+
 G.wallJump = async (msg, line) => {
   G.busy = true; G.SFX.jump();
   const s = G.svg;
@@ -1233,18 +1229,17 @@ G.wallJump = async (msg, line) => {
   G.SFX.land(); G.think(msg || 'かべは、つるつる。ずるっ'); G.miss(line);
   G.busy = false;
 };
-/* 画面を少しゆらす（押した・ひっぱった） */
+
 G.shake = async (dx = 1.2) => { G.svg.style.transform = `translateX(${dx}%)`; await G.sleep(120); G.svg.style.transform = ''; };
 
-/* 同じところを何回も押すと、セリフがかわる（G.rep：押した数で順に）。2周目は、ドラが少しちがう */
+
 G.flavor({view:'floor', test:p => G.inR(p, 762, 990, 800, 1130), run() {
   G.SFX.pof();
   G.say(G.rep('eye', G.again()
     ? ['…また来たのか', '…じろじろ見るな。前も言った', '…ヒントなら、下のボタンだ。知ってるだろ', '…2回目でも、目は目だ', '…………まばたき、してもいいか']
     : ['…なんだ', '…じろじろ見るな', '…ヒントなら、下のボタンだ', '…にらめっこなら、負けないぞ', '…………まばたき、してもいいか']));
 }});
-/* 扉：押す → 引く → なめる。そのあとは、なめたり、ぶつかったり。
-   さぐって遊んでいるだけなので、まちがいには数えない（ドラはツッコむだけ。称号「まちがい0回」が とれなくならないように） */
+
 const LICK = {1:'…なめても、開かない', 2:'…また なめた', 3:'…味は、どうだ', 5:'…5回目だ。数えてるぞ', 7:'…そんなに うまいのか、その扉', 10:'…10回。もう、扉の味は おぼえたな'};
 const lick = () => {
   const n = G.count('lick'); G.SFX.lick();
@@ -1286,12 +1281,12 @@ G.flavor({view:'floor', test:p => G.inR(p, 580, 880, 760, 1150), run() {
   G.think(G.S.done[1] ? 'とび箱。あとで、のぼれそう'
     : G.rep('box0', ['とび箱。くらくて、上がよく見えない', 'とび箱…くらくて、こわい', '（とび箱に、ほおずりした）']));
 }});
-/* かくし要素1：トウモロコシ（明かりがついてから見える） */
+
 G.flavor({view:'floor', test:p => G.S.done[1] && G.inR(p, 790, 1250, 940, 1350), run() { G.hide('corn', 'トウモロコシ！ …ドラせんぱいには、ないしょにしよう'); }});
 G.flavor({view:'shelf', test:p => G.inR(p, 80, 720, 240, 825), run() { G.SFX.pof(); G.think('からっぽの箱'); }});
 G.flavor({view:'shelf', test:p => G.inR(p, 360, 1150, 600, 1260), run() { G.SFX.pof(); G.think('下に、ふみきり板が見える'); }});
 
-/* ひまなときのタマ：20秒さわらないと、あくび・毛づくろい＋ひとこと（つぎは、また20秒あと） */
+
 (() => {
   let last = Date.now(), k = 0;
   const poke = () => { last = Date.now(); };
@@ -1310,9 +1305,7 @@ G.flavor({view:'shelf', test:p => G.inR(p, 360, 1150, 600, 1260), run() { G.SFX.
   }, 1000);
 })();
 
-/* 謎1 まっくら（10/16 トオルさん OK）
-   棚にとび乗り、ボールを「ちょい、ちょい、ポトッ」→ ふみきり板ではねて、高いスイッチにコツン → 明かり。
-   はねたボールは (648,1288) に止まる（最後の謎の形の1つ。ここから動かさない） */
+
 G.puzzle({
   id: 1, name: 'まっくら',
   hints: ['…スイッチが高いな。タマじゃ、とどかない', '…上から何かおとしたら、どうなる？', '棚に乗れ。ボールを、板の上におとせ'],
@@ -1342,7 +1335,7 @@ G.puzzle({
     if (view === 'shelf' && isCur && G.near(p, B.x, B.y, 80)) { await this.push(); return true; }
     return false;
   },
-  /* ちょい、ちょい、ポトッ → 連鎖 */
+  
   async push() {
     const B = G.ball, W = G.paw, E = G.ease, S = G.SFX;
     G.busy = true;
@@ -1364,7 +1357,7 @@ G.puzzle({
     await B.move(600, 1288, 480, E.in); S.bounce(.8);
     await B.move(618, 1236, 150, E.out); await B.move(634, 1288, 150, E.in); S.bounce(.4);
     await B.move(642, 1270, 80, E.out); await B.move(648, 1288, 80, E.in);
-    /* 蛍光灯がチカチカしてつく */
+    
     const dark = G.$('dark');
     for (const [o, ms] of [[.55, 70], [.9, 110], [.4, 60], [.88, 160], [.5, 60], [.8, 90]]) { dark.setAttribute('opacity', o); if (o < .6) S.hum(0, ms / 1000); await G.sleep(ms); }
     S.hum(0, .5);
@@ -1378,16 +1371,7 @@ G.puzzle({
   },
 });
 
-/* 謎2 ひなたの席（10/16 トオルさん OK）
-   跳び箱にとび乗り、暗幕にとびついて よじのぼる → 日の光が床にさしこむ。
-   色のあせた日なたの中に、日焼けしていない 監督の まるまった形。太いしっぽが指す床板を押すと、持ち上がる。
-   床板の下から タダシの礼儀ノート → 棚のお茶セットの となりに 立てる（謎3の道具）。
-   そのあと、タマが自分から日なたで ごろん → G.learnGoron()。
 
-   床に残るもの（ここから動かさない）：
-   - 日なた（色のあせた床）：(340,1272)(622,1272)(652,1398)(308,1398) の四角
-   - 監督の形：頭 (398,1318)・体 (482,1336)・しっぽの先 (650,1388)。いつも見える（暗幕を開けたあと）
-   - 床板：x668〜770・y1342〜1398。ノートを出したら 元の位置にもどる（肉球の印 mark2 だけ残る） */
 (() => {
   const open = () => G.S.done[2] || G.S.f.p2open;
   const setCurtain = k => {
@@ -1451,7 +1435,7 @@ G.puzzle({
       }
       return false;
     },
-    /* 跳び箱から 暗幕にとびついて、よじのぼる */
+    
     async climb() {
       const S = G.SFX, s = G.svg;
       G.busy = true;
@@ -1475,8 +1459,8 @@ G.puzzle({
       G.think('まぶしい！ 日なたが できた。…床の色が、ちがう？', 3200);
       G.busy = false;
     },
-    /* しっぽが指す床板 → 持ち上がる → 礼儀ノート */
-    /* 押せない時間は 短く（10/16 夜 トオルさん「9秒はちょっと長い」→ 約6秒。流れは同じ） */
+    
+    
     async lift() {
       const S = G.SFX;
       G.busy = true;
@@ -1494,7 +1478,7 @@ G.puzzle({
       const m = G.$('mark2');
       G.tween(260, k => { m.setAttribute('opacity', k); m.setAttribute('transform', `translate(719,1370) scale(${G.lerp(1.8, 1, k)})`); }, G.ease.out);
       await G.solve(2);
-      /* ひなたで、タマが自分から ごろん（ごろんを覚える） */
+      
       await G.sleep(600);
       G.think('ひなた…ぽかぽか…', 1600);
       await G.sleep(1100);
@@ -1506,17 +1490,7 @@ G.puzzle({
   });
 })();
 
-/* 謎3 お茶の作法（10/16 トオルさん OK）
-   棚のすみのお茶セット（お盆・茶わん）と、謎2で床の下から出てきた礼儀ノート。
-   茶わんは押すたびに 手前に1回分まわる（6つの向き：0＝魚が正面 → 1 → 2 → 3 → 4 → 5 → 0）。
-   ノートどおり「魚をこちら（0）→ 手前に2回」で 2＝お盆の線とつながって コーンの絵。
-   わな：4＝ボールの絵、5＝跳び箱の絵（行っても なにもない・ドラが数える）。はじめは 3（線が ばらばら）。
-   床のコーンを前足でたおすと、下から 猫の顔のマグネット（謎4）。
 
-   床に残るもの（ここから動かさない・最後の謎のサンマの「しっぽ」）：
-   - たおれたコーン：transform="translate(160,1300) rotate(90,40,40)"
-     ＝ 床の x200〜296・y1260〜1340。とがった先 (296,1300) が右むき、底（しっぽのひれ）が左 x≒200
-   - コーンのかげ（coneshadow）は消える */
 (() => {
   const N = 6, ANS = 2, START = 3;
   const rot = () => (G.S.done[3] ? ANS : (G.S.f.p3rot ?? START));
@@ -1567,7 +1541,7 @@ G.puzzle({
       }
       return false;
     },
-    /* 茶わんを 手前に 1回分 まわす */
+    
     async turn() {
       const r0 = rot(), r1 = (r0 + 1) % N;
       const a = G.$('cup' + r0), b = G.$('cup' + r1);
@@ -1587,7 +1561,7 @@ G.puzzle({
     async trap(r, msg) {
       G.busy = true; trapped = r; G.SFX.pof(); await G.shake(1); G.think(msg, 2400); G.miss(); G.busy = false;
     },
-    /* 前足で コーンを たおす → 下から マグネット */
+    
     async knock() {
       const W = G.paw, S = G.SFX;
       G.busy = true;
@@ -1607,16 +1581,7 @@ G.puzzle({
   });
 })();
 
-/* 謎4 長すぎる作戦名（10/16 トオルさん OK）
-   コーンの下の 猫の顔のマグネット5つを ひろって、かべの高いところの サクジ監督の作戦ボードに ならべる（跳び箱から）。
-   作戦名のとおりに置くと、5匹の目線が ボードの外の1か所（かべ・扉の上の左 (760,515)）に集まる → そこを調べる。
 
-   ボードのしるし（せかいの座標・parts.py の SLOTS と同じ）：
-     左の角 L(492,410)・右の角 R(718,410)・ゴール下 G(605,428)・フリースローの線 F(605,480)
-     まんなかの線の左 CL(540,615)・まんなかの線の右 CR(670,615)
-   答え：ドラ＝ゴール下・タマ＝右の角・ミケ＝フリースローの線・タダシ＝まんなかの線の左・ギンゾー監督＝まんなかの線の右（左の角は あける）
-   それぞれの目は「答えの場所から T を見る向き」に かいてある。ちがう場所だと 目線は T を 40 以上 はずれる（parts.py で 確かめた）。
-   床に残るもの：なし（マグネットは ボードの上） */
 (() => {
   const SL = {L:[492, 410], R:[718, 410], G:[605, 428], F:[605, 480], CL:[540, 615], CR:[670, 615]};
   const T = [760, 515];
@@ -1640,7 +1605,7 @@ G.puzzle({
     const [x, y] = where(sel); r.setAttribute('cx', x); r.setAttribute('cy', y); r.setAttribute('opacity', .95);
   };
   const lineEnd = (w, len) => { const [x, y] = where(w), [ux, uy] = DIR[w]; return [x + ux * 26, y + uy * 26, x + ux * len, y + uy * len]; };
-  /* 目線をのばす。ok なら 1点に集まる */
+  
   async function gaze(ok, anim = true) {
     const g = G.$('gaze'), t = G.$('gzT');
     g.setAttribute('opacity', 1); t.setAttribute('opacity', 0);
@@ -1695,7 +1660,7 @@ G.puzzle({
       if (D[4]) { if (G.near(p, T[0], T[1], 40)) { G.SFX.pof(); G.think('みんなが 見ていた ところ'); return true; } return false; }
       if (!s.got) { if (G.inR(p, 465, 375, 745, 690)) { G.SFX.pof(); G.think('コートの絵。丸いしるしが 6つ'); return true; } return false; }
       if (isCur && s.lit && correct() && G.near(p, T[0], T[1], 44)) { await this.found(); return true; }
-      /* マグネットを えらぶ */
+      
       const hit = WHO.find(w => G.near(p, ...where(w), 28));
       if (hit && sel && hit !== sel && s.pos[hit]) { await this.put(sel, s.pos[hit]); return true; }   // 置いてある顔の上 → 入れかえ
       if (hit && hit !== sel) { sel = hit; G.SFX.choi(); G.buzz(6); ring(); return true; }
@@ -1707,7 +1672,7 @@ G.puzzle({
       if (p.x >= 762 && p.y >= 536) { G.SFX.pof(); G.think('扉に つけても、しかたない'); sel = null; ring(); return true; }
       await this.toWall(sel, p); return true;
     },
-    /* 床の マグネットを ひろう */
+    
     async pick() {
       G.busy = true; G.SFX.find();
       const pile = G.$('magpile');
@@ -1717,7 +1682,7 @@ G.puzzle({
       G.think('猫の顔の マグネット。ドラ先輩・タマ・ミケさん・タダシさん・監督。…かべの作戦ボードに、はれそう', 3600);
       G.busy = false;
     },
-    /* えらんだ顔を しるしに置く（ほかの顔がいたら 入れかえ） */
+    
     async put(w, slot) {
       const s = st(), other = WHO.find(o => o !== w && s.pos[o] === slot);
       const from = s.pos[w] || null;
@@ -1738,7 +1703,7 @@ G.puzzle({
       }
       G.busy = false;
     },
-    /* かべに つけようとする → ぽとっ */
+    
     async toWall(w, p) {
       const s = st(); G.busy = true;
       const a = where(w);
@@ -1751,7 +1716,7 @@ G.puzzle({
       G.miss('…それは、鉄じゃない');
       G.busy = false;
     },
-    /* 目線が集まった かべを 調べる */
+    
     async found() {
       G.busy = true; G.SFX.pof();
       G.think('みんなが 見てる ところ…ここ？', 2200);
@@ -1764,11 +1729,7 @@ G.puzzle({
   });
 })();
 
-/* 謎5 数えてから来い（10/16 トオルさん OK）
-   ボールは高さで見えるものがちがう：
-     棚の上から → かごの中（オレンジ3・白2・黄1）／床から → 棚の下（オレンジ1・白1）
-     跳び箱の上から → まどのわくのテニスボール（黄1。謎2で暗幕が開いてから）／謎1でおとしたボール（オレンジ1）
-   答え：オレンジ5・白3・黄2 → かごのふたが開いて巻き尺（謎6） */
+
 (() => {
 const ANS = [5, 3, 2];
 const showByView = name => {
@@ -1853,10 +1814,7 @@ G.puzzle({
 });
 })();
 
-/* 謎6 すきまは3つ（10/16 トオルさん OK）
-   巻き尺ではかる：A 9cm (440〜471)・B 12cm (520〜562)・C 15cm (270〜322 棚の下のおく)
-   タマは ひげ11cm・頭13cm（サクジ監督のタマ研究ノート）。頭より広い C だけ通れる → 奥の部屋へ
-   通ったあと、巻き尺のテープは かご(140,1300) → すきまC(296,1150) に のびたまま残る（最後の謎の形の1つ） */
+
 (() => {
 G.VIEWS.oku = {box:[1100, 540, 560, 784], h:'floor'};
 const GAPS = {A:{x0:440, x1:471, cm:9}, B:{x0:520, x1:562, cm:12}, C:{x0:270, x1:322, cm:15}};
@@ -1934,14 +1892,11 @@ G.puzzle({
   },
 });
 
-/* 奥の部屋から もどる（左下のすきま） */
+
 G.flavor({view:'oku', test:p => G.inR(p, 1090, 1070, 1165, 1160), async run() { G.busy = true; await G.go('floor', 520); G.busy = false; }});
 })();
 
-/* 謎7 外のドリブル（10/16 トオルさん OK）
-   ドラのドリブルは、ゲームのはじめから ときどき鳴っている（core.html の DRIBBLE＝3・1・4・2）。
-   音を消していても、扉のすきまの光にボールのかげが通る。
-   奥の部屋のドラのロッカー（4けた）を 3142 で開ける → 中に ねこじゃらし（謎8） */
+
 (() => {
 const ANS = [3, 1, 4, 2];
 const NOTE_T = 'ギンゾー監督のメモ「ドラくんは、考えごとをすると、ロッカーの番号をドリブルするクセがあるゾウ」';
@@ -1994,12 +1949,7 @@ G.puzzle({
 });
 })();
 
-/* 謎8 ミケの「右の箱よ」（10/16 トオルさん OK）
-   ねこじゃらしで大はしゃぎ → 音でミケが奥の部屋の高いまどから顔を出す（顔だけ）
-   ミケ「右の箱の、手前のほう」。ミケは向こうから見ているので、タマから見て 左の箱(p8box1)の 奥 が正解
-   わな：タマから見て 右の箱(p8box3)の 手前 → からっぽ
-   箱は手前（下半分 y1240〜1300）と奥（上半分 y1180〜1240）に分かれている
-   ※ 中身と、最後の謎の形への つなぎ方は、最後の謎（p9）を作るときに決める（10/16 メモ） */
+
 (() => {
 const MIKE = '…なにしてるの？ さがしもの？ それなら、さっき見えたわよ。右の箱の、手前のほう';
 const BX = [1300, 1420, 1540];
@@ -2052,10 +2002,7 @@ G.puzzle({
 });
 })();
 
-/* 最後の謎 上から見ると（10/16 トオルさん OK）
-   1. 棚のいちばん上（shelf の画面で上の板）→ 上から見た倉庫（top）：コーン＝しっぽ・監督の形＝体・ふみきり板＝背びれ・ボール＝目
-   2. 口の先の ゆるい床板 p9board (784〜880, 1342〜1398) → サンマ！
-   3. 跳び箱の上から、まどのわくのテニスボール (842,98) を ちょい、ちょい、ポトッ → 扉のレバー (816,812) → ガチャン → おわり */
+
 (() => {
 G.VIEWS.top = {box:[2000, 540, 560, 784], h:'shelf'};
 const T = {x:842, y:98};
@@ -2117,7 +2064,7 @@ G.puzzle({
     G.think('サンマといっしょなら、もう出られる。…でも、レバーが高い', 3200);
     G.busy = false;
   },
-  /* ちょい、ちょい、ポトッ → レバー → ガチャン */
+  
   async drop() {
     const $ = G.$, S = G.SFX, E = G.ease;
     G.busy = true;
@@ -2147,12 +2094,7 @@ G.puzzle({
 });
 })();
 
-/* 裏の謎 タマの寝言は、なぜか当たる（10/16 トオルさん OK）
-   ごろんのまま7秒で寝る（core）。寝た場所（最後に押したところ）で寝言がかわる：
-     ひなた（謎2のあと）→「…ドラジーの…はこ…」／やわらかいところ（棚のマット）→「…てんすうの…いた…」
-     せまいところ（ボールかご・謎5のあと）→「…さかさまに…ねると…ちがう…」
-   得点板「68 − 19」をごろんで見ると「61 − 89」→ 跳び箱の上の「ドラ さわるな」の箱（6189）→ 真のエンディング
-   ヒントは出さない（core：いまの謎がないとき「…それは、おれも知らない。…タマ、寝てたか？」） */
+
 (() => {
 G.VIEWS.dbox = {box:[601, 790, 140, 196], h:'box'};
 const ANS = [6, 1, 8, 9];
@@ -2224,7 +2166,7 @@ G.puzzle({
   },
 });
 
-/* 真のエンディング：ゆめの中のつづき（ここでしか見られない）。とばせる */
+
 async function movie() {
   const box = document.createElement('div');
   box.className = 'cover';
