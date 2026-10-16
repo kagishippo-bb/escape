@@ -2187,7 +2187,10 @@ $('heights').addEventListener('click', async e => {
   if (!S.done[1] && b.dataset.h === 'box') { audio(); SFX.pof(); think('まっくらで、跳び箱が見えない…', 1800); return; }   // 明かりの前：押しても ひとこと返す（10/17 再審査）
   // 押したらすぐ ボタンの色をかえて、短く すっと動く（10/17 作者「切りかえに 少し時間がかかる」）
   document.querySelectorAll('#heights button').forEach(x => x.classList.toggle('on', x === b));
-  audio(); paw.hide(); busy = true; await go(b.dataset.h, 160, ease.out); busy = false;
+  // 動かさずに、一瞬で切りかえる（筆の絵を 何回も描きなおすと、iPad などで もたつく・10/17 作者）
+  audio(); paw.hide(); setGoron(false); SFX.jump(); fx++;
+  setCam(VIEWS[b.dataset.h].box); setView(b.dataset.h); SFX.land();
+  for (const p of P) if (p.onView) p.onView(b.dataset.h);
   if (b.dataset.h !== 'floor') think(b.dataset.h === 'shelf' ? '棚の上' : '跳び箱の上', 1400);
 });
 
