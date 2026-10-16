@@ -802,6 +802,7 @@ const EN = {
 "（ドラせんぱいの、ふるいノート）": "(Dora's old notebook)",
 "今回、": "This time,",
 "← もどる": "← Back",
+"すきまが、5つ…": "five gaps…",
 "さっきのことば": "What was just said",
 "4けたの錠。ドラのロッカー": "a 4-digit lock. Dora's locker",
 "ボールかご。色のダイヤルが3つ": "the ball cart. three colored dials",
@@ -2364,7 +2365,7 @@ G.puzzle({
         if (G.inR(p, 248, 740, 320, 806)) {           // 茶わん
           if (!isCur) { G.SFX.pof(); G.think(D[3] ? 'コーンの絵。…もう、まわさなくていい' : 'タダシさんの 茶わん。魚の絵が かいてある'); return true; }
           const fx = FISH[rot()];
-          if (fx && G.inR(p, fx - 14, 766, fx + 16, 790)) { await this.lick(); return true; }
+          if (fx && !licked() && G.inR(p, fx - 14, 766, fx + 16, 790)) { await this.lick(); return true; }
           await this.turn(); return true;
         }
         if (G.inR(p, 222, 796, 346, 826)) { G.SFX.pof(); G.think('お盆。川みたいな 青い線が かいてある'); return true; }
@@ -2678,6 +2679,7 @@ G.puzzle({
 
 (() => {
 G.VIEWS.oku = {box:[1100, 540, 560, 784], h:'floor', back:'floor', backLabel:'← もどる'};
+G.VIEWS.wall = {box:[230, 870, 380, 532], h:'floor', back:'floor', backLabel:'← もどる'};   // かべの下のすきまを近くで
 const GAPS = {C:{x0:270, x1:322, cm:15, where:'棚の下のおく'}, W1:{x0:356, x1:404, cm:11, where:'かべの下 左から1つめ'},
   W2:{x0:416, x1:467, cm:9, where:'かべの下 左から2つめ'}, W3:{x0:479, x1:526, cm:12, where:'かべの下 左から3つめ'}, W4:{x0:538, x1:588, cm:10, where:'かべの下 左から4つめ'}};
 const NOTE_T = 'サクジ監督のタマ研究ノート「ひげのはば 11cm。ただし、ひげより頭が大きい（13cm）」';
@@ -2725,7 +2727,8 @@ G.puzzle({
       G.busy = false; return true;
     }
     // すきま
-    const hit = view === 'floor' && gapAt(p);
+    if (view === 'floor' && isCur && G.S.f.p6have && gapAt(p)) { G.busy = true; await G.go('wall', 380); G.think('すきまが、5つ…', 1800); G.busy = false; return true; }
+    const hit = (view === 'floor' || view === 'wall') && gapAt(p);
     if (!hit) return false;
     const [key, g] = hit;
     if (G.S.done[6]) {
