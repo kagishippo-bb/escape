@@ -59,7 +59,13 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
   .side .page{max-height:calc(100% - 74px);box-shadow:0 6px 24px #000}
   .side .hint-line{margin:10px 4px 0;font-size:12px;color:var(--muted);line-height:1.6}
   .note-b{display:none!important}
+  .lamps{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;flex:0 0 64px;padding-top:42px}
 }
+.lamps{display:none}
+.lamp{width:30px;height:38px;position:relative}
+.lamp svg{width:100%;height:100%;display:block}
+.lamp.on svg .g{fill:#FFE38A;filter:drop-shadow(0 0 8px #FFD24A)}
+.lamps p{margin:6px 0 0;font-size:11px;font-weight:900;color:var(--muted);letter-spacing:.06em;writing-mode:vertical-rl}
 .top{width:100%;max-width:min(560px,max(330px,calc((100dvh - 150px) * .7143)));display:flex;align-items:center;gap:8px}
 .top .place{font-weight:700;font-size:14px;color:var(--muted);letter-spacing:.06em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip{background:transparent;border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--muted)}
@@ -81,6 +87,9 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 /* おりるボタンは右下：どの高さの画面でも、右下には押す物がない（左下は 棚のかご・跳び箱のボード・サクジ監督のメモに かさなっていた） */
 .down{position:absolute;right:10px;bottom:52px;background:rgba(21,18,28,.85);border:1.5px solid var(--line);border-radius:999px;padding:10px 16px;font-weight:900;font-size:15px;z-index:2}
 .pp{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;pointer-events:none;animation:pp .6s ease-out forwards;z-index:4}
+.hint.call{animation:callme 1s ease-in-out 4;border-color:var(--orange)}
+@keyframes callme{50%{transform:scale(1.04);box-shadow:0 0 0 4px rgba(232,118,43,.35)}}
+.pp.faint{animation-duration:.35s;filter:grayscale(1);opacity:.35}
 @keyframes pp{from{transform:scale(.5);opacity:.95}to{transform:scale(1.15);opacity:0}}
 .hud{width:100%;max-width:min(560px,max(330px,calc((100dvh - 150px) * .7143)));height:64px;flex:none;display:flex;gap:8px;align-items:stretch}
 .tama{flex:none;width:64px;height:64px;border-radius:50%;border:1.5px solid var(--line);background:var(--panel);padding:2px;display:grid;place-items:center}
@@ -160,6 +169,7 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
 </style>
 
 <div class="app" id="app">
+ <aside class="lamps" id="lamps" aria-label="ついた明かり"></aside>
  <div class="main">
   <div class="top">
     <span class="place" id="place">体育館の用具倉庫</span>
@@ -784,14 +794,14 @@ function bgmPlay(i, t) {
   if (n >= 9 && bar % 2 && st === 5) chime(96, t, .014);
 }
 setInterval(() => {
-  if (!bgmOn || !AC || !S.sound || document.hidden) { bgmNext = 0; return; }
+  if (!bgmOn || !AC || !S.sound || S.music === false || document.hidden) { bgmNext = 0; return; }
   if (!bgmNext || bgmNext < AC.currentTime) bgmNext = AC.currentTime + .15;
   while (bgmNext < AC.currentTime + .35) { bgmPlay(bgmStep, bgmNext); if (++bgmStep >= bgmLen) { bgmStep = 0; bgmLen = 64 + 8 * (4 + Math.floor(Math.random() * 5)); } bgmNext += EIGHTH; }
 }, 100);
 function bgm(on) {
   audio(); if (!AC) return;
   if (!bgmBus) { bgmBus = AC.createGain(); bgmBus.connect(master); }
-  bgmOn = on; bgmBus.gain.setTargetAtTime(on && S.sound ? 1 : 0, AC.currentTime, .05);
+  bgmOn = on; bgmBus.gain.setTargetAtTime(on && S.sound && S.music !== false ? 1 : 0, AC.currentTime, .05);
 }
 
 /* ---------- 動き ---------- */
@@ -881,9 +891,10 @@ $('noteclose').addEventListener('click', () => { $('notebook').hidden = true; })
 $('notebook').addEventListener('click', e => { if (e.target === $('notebook')) $('notebook').hidden = true; });   // 外を押しても とじる
 
 /* かくし要素（漫画ネタ・5つ） */
+function placeLine() { $('place').textContent = S.ended ? `用具倉庫　かくし要素 ${Object.keys(S.found).length}/5` : '体育館の用具倉庫'; }
 function hide(key, line) {
   SFX.find();
-  if (!S.found[key]) { S.found[key] = true; save(); toast(`かくし要素 ${Object.keys(S.found).length}/5 みつけた`); }
+  if (!S.found[key]) { S.found[key] = true; save(); toast(`かくし要素 ${Object.keys(S.found).length}/5 みつけた`); placeLine(); }
   think(line, 3200);
 }
 
@@ -913,7 +924,7 @@ async function solve(id, opt = {}) {
       await tween(240, k => { st.setAttribute('opacity', k); st.setAttribute('transform', `${tr} scale(${lerp(1.7, 1, k)})`); }, ease.out);
       st.setAttribute('transform', tr); }
   }
-  activeSince = performance.now();
+  activeSince = performance.now(); moved(); placeLine(); lamps();
   updHint();
   const nx = cur();
   if (!nx) { await sleep(1800); ending(); }
@@ -922,9 +933,9 @@ async function solve(id, opt = {}) {
 
 /* ---------- タップ ---------- */
 function toWorld(e) { const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
-function pawPrint(e) {
+function pawPrint(e, faint) {
   const r = stage.getBoundingClientRect(), d = document.createElement('div');
-  d.className = 'pp'; d.style.left = (e.clientX - r.left) + 'px'; d.style.top = (e.clientY - r.top) + 'px';
+  d.className = faint ? 'pp faint' : 'pp'; d.style.left = (e.clientX - r.left) + 'px'; d.style.top = (e.clientY - r.top) + 'px';
   d.innerHTML = '<svg viewBox="-20 -20 40 40"><ellipse cx="0" cy="5" rx="9" ry="7" fill="#F29CA3"/><circle cx="-9" cy="-5" r="3.8" fill="#F29CA3"/><circle cx="-3" cy="-11" r="3.8" fill="#F29CA3"/><circle cx="3" cy="-11" r="3.8" fill="#F29CA3"/><circle cx="9" cy="-5" r="3.8" fill="#F29CA3"/></svg>';
   stage.appendChild(d); setTimeout(() => d.remove(), 650);
 }
@@ -940,7 +951,7 @@ function emptyTap(p) {
 }
 stage.addEventListener('pointerdown', async e => {
   if (e.target.closest('button')) return;
-  audio(); pawPrint(e); buzz(8);
+  audio(); pawPrint(e, busy && !goronOn); if (!busy) buzz(8);
   if (busy || goronOn) { if (goronOn) goronTap(); return; }
   const p = toWorld(e); lastTap = {view, p};
   // いまの謎 → 解いた謎（見てまわる用）→ 共通 → 何もない
@@ -980,7 +991,7 @@ $('hint').addEventListener('click', () => {
   if (c.hintGate && c.hintGate()) return;
   const now = S.hintStep[c.id] || 0, step = Math.min(now + 1, 3);
   if (step > now) { S.hintStep[c.id] = step; S.hintsUsed[c.id] = (S.hintsUsed[c.id] || 0) + 1; save(); }
-  count('hint'); lid(true); updHint();
+  count('hint'); lid(true); updHint(); moved();
   const h = typeof c.hints === 'function' ? c.hints()[step - 1] : c.hints[step - 1];
   say(h, 4500, c.hintWho ? c.hintWho() : 'ドラ');
 });
@@ -993,7 +1004,12 @@ $('tama').addEventListener('click', () => {
   else if (n === 20) { think('ゴロゴロ…', 1600); setTimeout(() => say(again() ? '…今回も、なでられてるな' : '…そこで、くつろぐな'), 900); }
   else think(PET[n] || 'ゴロゴロ…', 1600);
 });
-$('snd').addEventListener('click', () => { S.sound = !S.sound; save(); if (bgmBus) bgm(bgmOn); $('snd').setAttribute('aria-pressed', S.sound); $('snd').textContent = S.sound ? '音' : '音なし'; });
+/* 音ボタンは3段：音 → 曲なし（効果音だけ）→ 音なし */
+function sndLabel() { $('snd').setAttribute('aria-pressed', S.sound); $('snd').textContent = !S.sound ? '音なし' : S.music === false ? '曲なし' : '音'; }
+$('snd').addEventListener('click', () => {
+  if (S.sound && S.music !== false) S.music = false; else if (S.sound) { S.sound = false; S.music = true; } else { S.sound = true; S.music = true; }
+  save(); audio(); if (bgmBus) bgm(bgmOn); sndLabel();
+});
 let resetArm = 0;
 $('reset').addEventListener('click', () => {
   if (Date.now() - resetArm > 3000) { resetArm = Date.now(); $('reset').textContent = 'もう一度押す'; setTimeout(() => $('reset').textContent = 'はじめから', 3000); return; }
@@ -1001,7 +1017,32 @@ $('reset').addEventListener('click', () => {
 });
 function restart() { const snd = S.sound; S = fresh(); S.sound = snd; S.round = CLEARS + 1; save(); location.reload(); }
 $('again').addEventListener('click', restart);
-$('look').addEventListener('click', () => { $('clear').hidden = true; });
+$('look').addEventListener('click', () => { $('clear').hidden = true; placeLine(); });
+
+/* つまったら、ドラから声をかける：同じ謎で3分なにも進まない（解けない・ヒントも押さない）と「…聞くか？」。押さなければ ヒントに数えない */
+let lastMove = performance.now(), callN = 0;
+function moved() { lastMove = performance.now(); callN = 0; }
+setInterval(() => {
+  const c = cur();
+  if (!c || !S.started || busy || goronOn || document.hidden || document.querySelector('.cover:not([hidden]), .notebook:not([hidden]), .zoom:not([hidden])')) return;
+  if (performance.now() - Math.max(lastMove, activeSince) < (callN ? 300000 : 180000)) return;
+  lastMove = performance.now(); callN++;
+  const b = $('hint'); b.classList.remove('call'); void b.offsetWidth; b.classList.add('call');
+  say(callN > 1 ? '…まだ、聞かないのか。…えらいな' : '…聞くか？', 3600);
+}, 5000);
+
+/* パソコンの左：解いた謎の数だけ、電球がつく */
+function lamps() {
+  const box = $('lamps'); if (!box) return;
+  const n = Object.keys(S.done).filter(k => +k <= 9).length;
+  box.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const d = document.createElement('div'); d.className = 'lamp' + (i < n ? ' on' : '');
+    d.innerHTML = '<svg viewBox="0 0 30 38"><path class="g" d="M15 2 C6 2 2 9 2 15 C2 21 7 24 9 28 H21 C23 24 28 21 28 15 C28 9 24 2 15 2 Z" fill="#3A3248" stroke="#5A3A1E" stroke-width="2"/><rect x="9" y="28" width="12" height="7" rx="2" fill="#8E9AA0" stroke="#5A3A1E" stroke-width="2"/></svg>';
+    box.appendChild(d);
+  }
+  const p = document.createElement('p'); p.textContent = `明かり ${n}/9`; box.appendChild(p);
+}
 
 /* ---------- 時間 ---------- */
 let playStart = 0;
@@ -1068,6 +1109,7 @@ const TITLES = [
   ['風のように', '20分以内に 脱出', () => S.elapsed < 20 * 60],
   ['また来た猫', 'もう一度 遊んで 脱出', () => S.round >= 2],
 ];
+const TITLE_HINT = {'ひとりで 出られた猫':'ドラに たよらない', 'まっすぐな猫':'まちがえない', 'カギしっぽ通':'かくし要素は 5つ', 'なでられ名人':'タマの顔を…', '扉の味を知る猫':'扉を…なめる？', 'すきまの見つめあい':'すきまの目', 'ドラせんぱいの話し相手':'ドラに たくさん聞く', 'なにもない所の専門家':'なにもない所', 'あくびの達人':'じっと待つ', 'ぼよん好き':'ふみきり板', '風のように':'いそぐ', 'また来た猫':'もう一度'};
 function titles() {
   const hints = Object.values(S.hintsUsed).reduce((a, b) => a + b, 0);
   const got = TITLES.filter(t => t[2](hints));
@@ -1086,6 +1128,9 @@ function titles() {
     S.clearCounted = true; save(); CLEARS++;
     try { localStorage.setItem(KEY_CLEAR, JSON.stringify({n:CLEARS, at:Date.now()})); } catch (e) {}
   }
+  // とれていない称号は、クリアした回数だけ ヒントを1つずつ明かす（2周目を遊ぶ理由に）
+  let open = CLEARS;
+  ul.querySelectorAll('li:not(.on)').forEach((li, i) => { const t = TITLES.filter(x => !got.includes(x))[i]; if (open > 0 && t) { open--; li.lastChild.textContent = 'ヒント：' + TITLE_HINT[t[0]]; } });
 }
 new MutationObserver(() => { if (!$('clear').hidden) titles(); }).observe($('clear'), {attributes:true, attributeFilter:['hidden']});
 
@@ -1115,7 +1160,7 @@ function enter() {
   $('title').hidden = true; $('intro').hidden = true; $('back').hidden = true;
   setCam(VIEWS.floor.box); setView('floor'); ball.draw(); paw.draw();
   for (const p of P) if (p.restore) p.restore(!!S.done[p.id]);
-  light(false); showStamps(); updHint(); lid(false); drawNotes($('sidenotes')); bgm(true);
+  light(false); showStamps(); updHint(); lid(false); lamps(); placeLine(); moved(); drawNotes($('sidenotes')); bgm(true);
   if (S.goron) $('goron').hidden = false;
   activeSince = performance.now(); playStart = performance.now();
   setTimeout(blink, 3000); dribbleLoop(); setTimeout(dribble, 12000);
@@ -1151,7 +1196,7 @@ return {get S() { return S; }, save, count, rep, again, get round() { return S.r
   get busy() { return busy; }, get lastTap() { return lastTap; }, set busy(v) { busy = v; }, learnGoron, setGoron, get goronOn() { return goronOn; },
   boot() {
     if (S.started) $('cont').hidden = false;
-    $('snd').setAttribute('aria-pressed', S.sound); $('snd').textContent = S.sound ? '音' : '音なし';
+    sndLabel();
     setCam(VIEWS.floor.box); ball.draw(); paw.draw();
     for (const p of P) if (p.restore) p.restore(!!S.done[p.id]);
     $('hero').innerHTML = $('tama').innerHTML;
@@ -1189,6 +1234,8 @@ const lick = () => {
   const n = G.count('lick'); G.SFX.lick();
   G.think(n === 1 ? '（なめてみた）' : n >= 10 ? '（ぺろぺろ。…あじが、しない）' : '（また、なめてみた）');
   G.nudge(n === 1 && G.again() ? '…前の回も、なめてたな' : LICK[n] || '…なめても、開かない');
+  // 10回なめたら、ドラも外からなめる（称号「扉の味を知る猫」の瞬間）
+  if (n === 10) setTimeout(() => G.say('…（外からも、なめてみた）…しょっぱいな', 3200), 2600);
 };
 G.flavor({view:'floor', test:p => G.inR(p, 762, 540, 1000, 1160), async run() {
   G.busy = true;
@@ -1413,6 +1460,7 @@ G.puzzle({
       G.busy = false;
     },
     /* しっぽが指す床板 → 持ち上がる → 礼儀ノート */
+    /* 押せない時間は 短く（10/16 夜 トオルさん「9秒はちょっと長い」→ 約6秒。流れは同じ） */
     async lift() {
       const S = G.SFX;
       G.busy = true;
@@ -1422,7 +1470,7 @@ G.puzzle({
       const hn = G.$('holenote');
       await G.tween(300, k => hn.setAttribute('opacity', k));
       S.find(); G.think('床板の下に…ノート？ 「礼儀ノート　100冊目」', 2600);
-      await G.sleep(2400);
+      await G.sleep(1600);
       G.think('タダシさんのだ。…棚のお茶セットの となりに、立てておこう', 2800);
       S.paper(); await G.tween(300, k => hn.setAttribute('opacity', 1 - k));
       G.$('teanote').setAttribute('opacity', 1);
@@ -1431,13 +1479,13 @@ G.puzzle({
       G.tween(260, k => { m.setAttribute('opacity', k); m.setAttribute('transform', `translate(719,1370) scale(${G.lerp(1.8, 1, k)})`); }, G.ease.out);
       await G.solve(2);
       /* ひなたで、タマが自分から ごろん（ごろんを覚える） */
-      await G.sleep(1400);
-      G.think('ひなた…ぽかぽか…', 1800);
-      await G.sleep(1500);
+      await G.sleep(600);
+      G.think('ひなた…ぽかぽか…', 1600);
+      await G.sleep(1100);
       G.learnGoron(); G.setGoron(true); G.toast('「ごろん」を おぼえた');
-      await G.sleep(900);
-      G.think('さかさま！ …下の「ごろん」で、おきられる', 3200);
-      G.busy = false;
+      G.busy = false;   // ここからは押せる（押すと おきる）
+      await G.sleep(700);
+      if (G.goronOn) G.think('さかさま！ …下の「ごろん」で、おきられる', 3200);
     },
   });
 })();
