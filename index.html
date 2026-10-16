@@ -132,6 +132,15 @@ button,a.big,a.sbtn{transition:transform .2s cubic-bezier(.3,1.7,.5,1),filter .1
 .don.mini{left:auto!important;right:6px;transform:translateY(-50%);padding:4px 6px;gap:0}
 .don.mini span{font-size:clamp(15px,4vw,18px)}
 @keyframes don{from{transform:scale(1.6)}to{transform:none}}
+.page li.memo{cursor:pointer}
+.page .see{display:inline-block;font-size:12px;font-weight:900;line-height:1.4;padding:1px 8px;border-radius:999px;background:#E9D6B4;color:#5A3A1E;vertical-align:1px}
+.page li.memo:active .see{background:var(--pink)}
+.memo-h{margin:6px 0 0;font-size:12px;color:#8A6E52;line-height:1.6}
+.page .now{margin:0 0 6px;font-weight:900;font-size:15px;color:#3A2410;display:flex;align-items:center;gap:8px}
+.page .now-k{font-size:11px;padding:2px 8px;border-radius:999px;background:#5A3A1E;color:var(--paper)}
+.page .listen{display:block;margin:0 0 10px;min-height:44px;width:100%;border-radius:12px;border:1.5px solid #E8762B;background:#FFF1E2;color:#8A3E10;font-weight:900;font-size:15px}
+.page .listen:disabled{opacity:.6}
+.hintlog li{color:#3A2410;font-weight:700}
 .lastlines-h{margin:14px 0 4px;font-weight:900;font-size:14px;color:#8A6E52}
 .lastlines{margin:0;padding-left:1.1em;font-family:var(--ui);font-weight:500;font-size:14px;line-height:26px;color:#5A4430}
 
@@ -882,6 +891,13 @@ const EN = {
 "決勝⑩「ドラジダンク」": "Final #10: \"Dorajee Dunk\"",
 "「作戦名」": "\"The Play Name\"",
 "…まだ、見つけていない": "…not found yet",
+"メモを見る": "view",
+"いま": "Now",
+"外の音を聞く": "Listen to the sounds outside",
+"…いま、聞こえている": "…listening now",
+"（耳をすました）": "(ears perked up)",
+"もらったヒント": "Hints so far",
+"「メモを見る」を押すと、元のメモが もう一度見られます": "Tap \"view\" to see the original note again.",
 "まっくらで、とび乗れない…": "Too dark to jump up there…",
 "オレンジ": "Orange",
 "白": "White",
@@ -1798,7 +1814,7 @@ placeSay();
 
 function zoom(text, noteText) {
   $('zoomt').textContent = text; $('zoom').hidden = false; SFX.paper();
-  if (noteText) note(noteText);
+  if (noteText) { S.memo = S.memo || {}; S.memo[noteText] = text; save(); note(noteText); }   // 元のメモを覚えておく → 手帳から もう一度見られる（10/17）
 }
 $('zoom').addEventListener('pointerdown', () => { $('zoom').hidden = true; });
 function note(t) {
@@ -1807,11 +1823,47 @@ function note(t) {
 }
 function drawNotes(box = $('notes')) {
   box.innerHTML = '';
-  if (!S.notes.length) { const p = document.createElement('p'); p.className = 'empty'; p.textContent = 'まだ、なにも書いてない。'; box.appendChild(p); lastLines(box); return; }
+  nowLine(box);
+  if (!S.notes.length) { const p = document.createElement('p'); p.className = 'empty'; p.textContent = 'まだ、なにも書いてない。'; box.appendChild(p); hintLog(box); lastLines(box); return; }
   const ol = document.createElement('ol');
-  for (const t of S.notes) { const li = document.createElement('li'); li.textContent = t; ol.appendChild(li); }
+  for (const t of S.notes) {
+    const li = document.createElement('li'); li.textContent = t;
+    const full = S.memo && S.memo[t];
+    if (full) {   // 手がかりのメモは、押すと 元の形で もう一度見られる（10/17 遊びやすさ）
+      li.className = 'memo'; const b = document.createElement('span'); b.className = 'see'; b.textContent = 'メモを見る'; li.append(' ', b);
+      li.addEventListener('click', () => { audio(); zoom(full); });
+    }
+    ol.appendChild(li);
+  }
   box.appendChild(ol);
+  if (S.memo && Object.keys(S.memo).length) { const h = document.createElement('p'); h.className = 'memo-h'; h.textContent = '「メモを見る」を押すと、元のメモが もう一度見られます'; box.appendChild(h); }
+  hintLog(box);
   lastLines(box);
+}
+
+function nowLine(box) {
+  const c = cur();
+  if (!S.started || !c || !c.name) return;
+  const p = document.createElement('p'); p.className = 'now';
+  const a = document.createElement('span'); a.className = 'now-k'; a.textContent = 'いま';
+  const b = document.createElement('span'); b.textContent = c.name;
+  p.append(a, b); box.appendChild(p);
+  if (c.id === 7 && S.f.p7read) {   // 監督のメモを読んだあと：待たずに、すぐ数えなおせる
+    const btn = document.createElement('button'); btn.className = 'listen'; btn.type = 'button'; btn.textContent = dribbling ? '…いま、聞こえている' : '外の音を聞く';
+    btn.disabled = dribbling;
+    btn.addEventListener('click', () => { audio(); $('notebook').hidden = true; think('（耳をすました）', 1600); setTimeout(dribble, 700); });
+    box.appendChild(btn);
+  }
+}
+
+function hintLog(box) {
+  const c = cur(), n = c ? (S.hintStep[c.id] || 0) : 0;
+  if (!c || !n) return;
+  const list = typeof c.hints === 'function' ? c.hints() : c.hints;
+  const h = document.createElement('p'); h.className = 'lastlines-h'; h.textContent = 'もらったヒント'; box.appendChild(h);
+  const ul = document.createElement('ul'); ul.className = 'lastlines hintlog';
+  for (let i = 0; i < n && i < list.length; i++) { const li = document.createElement('li'); li.textContent = list[i]; ul.appendChild(li); }
+  box.appendChild(ul);
 }
 function lastLines(box) {
   if (!LINES.length) return;
@@ -1866,8 +1918,7 @@ async function solve(id, opt = {}) {
       st.setAttribute('transform', tr); }
   }
   activeSince = performance.now(); moved(); placeLine(); lamps(); heights();
-
-  updHint();
+  updHint(); drawNotes($('sidenotes'));
   const nx = cur();
   if (!nx) { await sleep(1800); ending(); }
   else if (nx.start) nx.start();
@@ -1961,6 +2012,7 @@ $('hint').addEventListener('click', () => {
   count('hint'); lid(true); updHint(); moved();
   const h = typeof c.hints === 'function' ? c.hints()[step - 1] : c.hints[step - 1];
   say(h, 4500, c.hintWho ? c.hintWho() : 'ドラ');
+  drawNotes($('sidenotes'));
 });
 
 let tamaAct = null;
@@ -2084,6 +2136,7 @@ async function dribble() {
   // メモや手帳を見ている間は、とじるまで待つ（見のがさないように）
   for (let i = 0; i < 60 && document.querySelector('.zoom:not([hidden]), .notebook:not([hidden])'); i++) await sleep(300);
   const sh = $('dribshadow'), box = $('don');
+  drawNotes($('sidenotes'));   // 「外の音を聞く」を「いま、聞こえている」に
   for (const n of DRIBBLE) {
     donPlace(); box.classList.remove('out'); box.innerHTML = '';
     for (let i = 0; i < n; i++) {
@@ -2096,6 +2149,7 @@ async function dribble() {
   box.innerHTML = ''; box.classList.remove('out');
   dribbling = false; lastDrib = performance.now();
   if (S.done[1]) note('外で、ドラがドリブルしている');   // 数は写さない（雄山 10/16）
+  drawNotes($('sidenotes'));
 }
 
 let dribTimer = 0;
