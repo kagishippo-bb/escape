@@ -4,7 +4,7 @@
 <meta property="og:title" content="カギしっぽの用具倉庫｜今回、あなたは猫です。">
 <meta property="og:description" content="カギしっぽバスケ部の脱出ゲーム。猫のタマになって、体育館の用具倉庫から脱出しよう。無料・登録なし・スマホOK。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://cp350ta-kagishippo.github.io/kagishippo-escape/">
+<meta property="og:url" content="https://kagishippo-bb.github.io/escape/">
 <meta name="twitter:card" content="summary">
 <meta name="theme-color" content="#15121C">
 </head>
@@ -89,6 +89,10 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
 .e4{margin:0;display:flex;flex-direction:column;gap:4px}
 .e4 figcaption{font-family:var(--hand);font-size:17px;color:var(--light);text-align:left}
 .e4svg{width:100%;height:auto;border:3px solid #5A3A1E;border-radius:10px;background:#fff;display:block}
+.share{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.sharerow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:100%}
+.sbtn{display:inline-block;width:auto;max-width:none;flex:1;min-width:130px;text-decoration:none;color:var(--ink);text-align:center}
+.share a{color:var(--pink)}
 .toast{position:fixed;left:50%;top:14px;transform:translate(-50%,-160%);background:var(--panel);border:1.5px solid var(--pink);border-radius:999px;padding:8px 16px;font-weight:900;font-size:14px;z-index:20;transition:transform .3s;white-space:nowrap}
 .toast.on{transform:translate(-50%,0)}
 /* 手帳 */
@@ -599,6 +603,13 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
     <div class="medal" id="medal" hidden><svg viewBox="-60 -60 120 120"><circle r="54" fill="none" stroke="#E4677A" stroke-width="5"/><ellipse cx="0" cy="12" rx="22" ry="17" fill="#F29CA3"/><ellipse cx="-24" cy="-12" rx="8" ry="10" fill="#F29CA3"/><ellipse cx="-8" cy="-24" rx="8" ry="10" fill="#F29CA3"/><ellipse cx="8" cy="-24" rx="8" ry="10" fill="#F29CA3"/><ellipse cx="24" cy="-12" rx="8" ry="10" fill="#F29CA3"/></svg><span id="medalt">ドラに一度も助けてもらわなかった</span></div>
     <div class="stats"><span id="st-time"></span><span id="st-hint"></span><span id="st-miss"></span><span id="st-hide"></span></div>
     <p class="small" id="clp"></p>
+    <div class="share" id="share">
+      <p class="small">クリアしたことを、シェアしてね（答えは書かないでね）</p>
+      <div class="sharerow"><a class="ghost sbtn" id="shx" target="_blank" rel="noopener">X でシェア</a><a class="ghost sbtn" id="shth" target="_blank" rel="noopener">Threads でシェア</a></div>
+      <p class="small">漫画「カギしっぽバスケ部」毎日20時に連載中<br>
+        <a href="https://www.threads.com/@kagishippo_basket" target="_blank" rel="noopener">Threads</a>・<a href="https://www.instagram.com/kagishippo_basket/" target="_blank" rel="noopener">Instagram</a>・<a href="https://x.com/kagishippo_bb" target="_blank" rel="noopener">X</a>・グッズは <a href="https://suzuri.jp/DORAG" target="_blank" rel="noopener">SUZURI</a></p>
+      <p class="small">第2の部屋、準備中。公開はカギしっぽのアカウントでお知らせします。</p>
+    </div>
     <button class="big" id="look">倉庫を見てまわる</button>
     <button class="ghost" id="again">はじめからあそぶ</button>
   </div>
@@ -916,6 +927,12 @@ function ending() {
   $('st-hide').textContent = `かくし要素 ${Object.keys(S.found).length}/5`;
   $('medal').hidden = hints !== 0;
   $('clp').textContent = last ? 'つづきの謎は、いま作っています。' : 'かくし要素の答えは、漫画の中に。';
+  // シェア（答えは書かない）
+  const shareText = last ? '' : `「カギしっぽの用具倉庫」から脱出しました🐾 ${Math.floor(t / 60)}分${String(t % 60).padStart(2, '0')}秒・ヒント${hints}回${S.endTrue ? '・裏のエンディングも！' : ''}\n今回、あなたは猫です。\n#カギしっぽ脱出 #脱出ゲーム`;
+  const shareUrl = 'https://kagishippo-bb.github.io/escape/';
+  $('shx').href = 'https://x.com/intent/post?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(shareUrl);
+  $('shth').href = 'https://www.threads.com/intent/post?text=' + encodeURIComponent(shareText + '\n' + shareUrl);
+  $('share').hidden = last;
   // クリア後の4コマ（作る/ending4.py）。2コマ目の吹き出しに、本当の数を入れる
   const e4 = $('e4-say');
   if (e4 && !last) { const ts = e4.querySelectorAll('tspan'); ts[0].textContent = `…まちがい、${S.mistakes}回。`; ts[1].textContent = `ヒント、${hints}回`; $('e4').hidden = false; }
