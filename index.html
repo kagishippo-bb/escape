@@ -12,6 +12,25 @@
 <title>カギしっぽの用具倉庫</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="カギしっぽバスケ部の脱出ゲーム。今回、あなたは猫です。">
+<!-- スマホのホーム画面に置ける（アイコンはタマの顔。オフラインは GitHub Pages に出すときに足す） -->
+<meta name="theme-color" content="#15121C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="用具倉庫">
+<link rel="icon" id="icon" href="data:image/png;base64,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">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<script>
+(() => {
+  const here = location.href.split('#')[0].split('?')[0];
+  const m = {name:'カギしっぽの用具倉庫', short_name:'用具倉庫', lang:'ja', start_url:here, scope:here.replace(/[^/]*$/, ''),
+    display:'standalone', orientation:'any', background_color:'#15121C', theme_color:'#15121C',
+    icons:[{src:document.getElementById('icon').href, sizes:'192x192', type:'image/png', purpose:'any'}]};
+  const l = document.createElement('link'); l.rel = 'manifest';
+  l.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(m));
+  document.head.appendChild(l);
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Yomogi&display=swap">
@@ -30,8 +49,18 @@ html,body{height:100%}
 body{background:var(--bg);color:var(--ink);font-family:var(--ui);margin:0;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 button{font-family:var(--ui);color:var(--ink);cursor:pointer}
 button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
-.app{height:100%;display:flex;flex-direction:column;align-items:center;gap:8px;padding-inline:16px;padding-block:8px 10px}
-.top{width:100%;max-width:560px;display:flex;align-items:center;gap:8px}
+.app{height:100%;display:flex;justify-content:center;gap:24px;padding-inline:16px;padding-block:8px 10px}
+.main{height:100%;width:100%;min-width:0;display:flex;flex-direction:column;align-items:center;gap:8px}
+.side{display:none}
+/* パソコンの横長の画面：あいている右に、手帳を出しっぱなしにする */
+@media (min-width:900px){
+  .main{flex:0 1 560px}
+  .side{display:flex;flex-direction:column;flex:0 0 clamp(260px,26vw,360px);padding-top:42px;min-height:0}
+  .side .page{max-height:calc(100% - 74px);box-shadow:0 6px 24px #000}
+  .side .hint-line{margin:10px 4px 0;font-size:12px;color:var(--muted);line-height:1.6}
+  .note-b{display:none!important}
+}
+.top{width:100%;max-width:min(560px,max(330px,calc((100dvh - 150px) * .7143)));display:flex;align-items:center;gap:8px}
 .top .place{font-weight:700;font-size:14px;color:var(--muted);letter-spacing:.06em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chip{background:transparent;border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;color:var(--muted)}
 .chip[aria-pressed="false"]{opacity:.55}
@@ -49,10 +78,11 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .height span{font-size:11px;font-weight:900;padding:3px 7px;border-radius:999px;background:rgba(21,18,28,.75);color:var(--muted);text-align:center;letter-spacing:.06em}
 .height span.on{background:var(--pink);color:#3A1E22}
 .height span.off{opacity:.35}
-.down{position:absolute;left:10px;bottom:52px;background:rgba(21,18,28,.85);border:1.5px solid var(--line);border-radius:999px;padding:10px 16px;font-weight:900;font-size:15px;z-index:2}
+/* おりるボタンは右下：どの高さの画面でも、右下には押す物がない（左下は 棚のかご・跳び箱のボード・サクジ監督のメモに かさなっていた） */
+.down{position:absolute;right:10px;bottom:52px;background:rgba(21,18,28,.85);border:1.5px solid var(--line);border-radius:999px;padding:10px 16px;font-weight:900;font-size:15px;z-index:2}
 .pp{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;pointer-events:none;animation:pp .6s ease-out forwards;z-index:4}
 @keyframes pp{from{transform:scale(.5);opacity:.95}to{transform:scale(1.15);opacity:0}}
-.hud{width:100%;max-width:560px;height:64px;flex:none;display:flex;gap:8px;align-items:stretch}
+.hud{width:100%;max-width:min(560px,max(330px,calc((100dvh - 150px) * .7143)));height:64px;flex:none;display:flex;gap:8px;align-items:stretch}
 .tama{flex:none;width:64px;height:64px;border-radius:50%;border:1.5px solid var(--line);background:var(--panel);padding:2px;display:grid;place-items:center}
 .tama svg{width:58px;height:58px;transition:transform .3s}
 .tama.shun svg{transform:translateY(5px) rotate(-8deg) scale(.92);filter:saturate(.6)}
@@ -80,7 +110,7 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
 .intro p{font-family:var(--hand);font-size:clamp(19px,5.2vw,24px);line-height:1.8;margin:0;opacity:0;transition:opacity .6s}
 .intro p.on{opacity:1}
 .intro .dora{color:var(--orange)}
-.clear h2{font-size:clamp(26px,7vw,34px);font-weight:900;margin:0;text-wrap:balance}
+.clear h2{font-size:clamp(26px,7vw,34px);font-weight:900;margin:0;text-wrap:balance;word-break:keep-all;overflow-wrap:anywhere}   /* ことばの途中で 行がかわらないように */
 .stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .stats span{border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
 .medal{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--pink);font-weight:900}
@@ -107,10 +137,30 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
 .zoom{position:fixed;inset:0;z-index:12;background:rgba(10,8,14,.75);display:flex;align-items:center;justify-content:center;padding-inline:16px;padding-block:24px}
 .zoom[hidden]{display:none!important}
 .zoom .page{font-family:var(--hand);font-size:19px;line-height:34px;white-space:pre-wrap}
+/* ひまなときのタマ（20秒さわらないと） */
+.tama{position:relative}
+.tama.yawn svg{animation:yawn 2.4s ease-in-out}
+@keyframes yawn{0%,100%{transform:none}30%{transform:scale(1.04,.9) translateY(3px)}55%{transform:scale(.96,1.12) translateY(-4px) rotate(-4deg)}75%{transform:scale(1.02,.95)}}
+.tama.yawn::after{content:"";position:absolute;left:50%;top:56%;width:12px;height:0;margin-left:-6px;border-radius:50%;background:#5A2A2E;animation:mouth 2.4s ease-in-out}
+@keyframes mouth{30%,75%{height:0}50%{height:11px;margin-top:-3px}}
+.tama.groom svg{animation:groom 2.6s ease-in-out;transform-origin:50% 80%}
+@keyframes groom{0%,100%{transform:none}15%,45%,75%{transform:rotate(-12deg) translateX(-3px)}30%,60%,90%{transform:rotate(-6deg) translateY(2px)}}
+.tama.groom::after{content:"";position:absolute;left:12px;bottom:6px;width:20px;height:16px;border-radius:50% 50% 45% 45%;background:#FBE6C8;border:2px solid #5A3A1E;animation:pawlick 2.6s ease-in-out}
+@keyframes pawlick{0%,100%{transform:translateY(14px);opacity:0}12%,88%{opacity:1}15%,45%,75%{transform:translate(4px,-14px) rotate(-20deg)}30%,60%,90%{transform:translate(2px,-6px)}}
+/* 称号 */
+.titles{width:100%}
+.titles .kicker{margin-bottom:8px}
+.titles ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.titles li{border:1.5px dashed var(--line);border-radius:12px;padding:6px 8px;display:flex;flex-direction:column;gap:1px;color:var(--muted);min-height:44px;justify-content:center}
+.titles li b{font-size:14px;font-weight:900}
+.titles li small{font-size:11px;line-height:1.4}
+.titles li.on{border-style:solid;border-color:var(--pink);color:var(--ink)}
+.titles li.on b{color:var(--pink)}
 @media (prefers-reduced-motion: reduce){#scene{transition:none}.pp{animation-duration:.2s}.hero svg{animation:none}}
 </style>
 
 <div class="app" id="app">
+ <div class="main">
   <div class="top">
     <span class="place" id="place">体育館の用具倉庫</span>
     <button class="chip" id="snd" aria-pressed="true">音</button>
@@ -285,6 +335,8 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
     <button class="hb goron-b" id="goron" aria-pressed="false" hidden><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M4 14 Q4 4 15 4 Q26 4 26 14 Z" fill="#fff" stroke="#5A3A1E" stroke-width="2"/><path d="M8 14 L6 19 M13 14 L12 19 M18 14 L19 19 M23 14 L25 19" stroke="#5A3A1E" stroke-width="2" stroke-linecap="round"/></svg>ごろん</button>
     <button class="hb note-b" id="noteb"><svg viewBox="0 0 30 22" aria-hidden="true"><rect x="6" y="2" width="18" height="18" rx="2" fill="#FBF3E4" stroke="#5A3A1E" stroke-width="2"/><path d="M10 8 H20 M10 12 H20 M10 16 H16" stroke="#5A3A1E" stroke-width="1.6"/></svg>手帳</button>
   </div>
+ </div>
+ <aside class="side" aria-label="タマの手帳"><div class="page"><h3>タマの手帳</h3><div id="sidenotes"></div></div><p class="hint-line">大事な字や絵を押すと、ここに写ります。</p></aside>
 </div>
 
 <div class="cover" id="title">
@@ -602,6 +654,7 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
 </g></g></svg></figure></div>
     <div class="medal" id="medal" hidden><svg viewBox="-60 -60 120 120"><circle r="54" fill="none" stroke="#E4677A" stroke-width="5"/><ellipse cx="0" cy="12" rx="22" ry="17" fill="#F29CA3"/><ellipse cx="-24" cy="-12" rx="8" ry="10" fill="#F29CA3"/><ellipse cx="-8" cy="-24" rx="8" ry="10" fill="#F29CA3"/><ellipse cx="8" cy="-24" rx="8" ry="10" fill="#F29CA3"/><ellipse cx="24" cy="-12" rx="8" ry="10" fill="#F29CA3"/></svg><span id="medalt">ドラに一度も助けてもらわなかった</span></div>
     <div class="stats"><span id="st-time"></span><span id="st-hint"></span><span id="st-miss"></span><span id="st-hide"></span></div>
+    <div class="titles" id="titles"></div>
     <p class="small" id="clp"></p>
     <div class="share" id="share">
       <p class="small">クリアしたことを、シェアしてね（答えは書かないでね）</p>
@@ -628,10 +681,20 @@ const $ = id => document.getElementById(id);
 const svg = $('scene'), stage = $('stage');
 const KEY = 'kagishippo-escape-v1';
 const fresh = () => ({started:false, done:{}, hintStep:{}, hintsUsed:{}, mistakes:0, elapsed:0, sound:true,
-  found:{}, notes:[], f:{}, goron:false, seen:{}, last:0, sleeps:{}, endTrue:false, ended:false});
+  found:{}, notes:[], f:{}, goron:false, seen:{}, last:0, sleeps:{}, endTrue:false, ended:false,
+  c:{}, round:1, clearCounted:false});   // c：遊び方の数（称号用）。round：何周目か
 let S = fresh();
 try { const t = JSON.parse(localStorage.getItem(KEY) || 'null'); if (t) S = Object.assign(fresh(), t); } catch (e) {}
 const save = () => { S.last = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+/* クリアした回数は、別のキーに残す（「はじめから」でも消えない）→ 2周目のドラのセリフ */
+const KEY_CLEAR = 'kagishippo-escape-clears';
+let CLEARS = 0;
+try { CLEARS = +(JSON.parse(localStorage.getItem(KEY_CLEAR) || '{}').n || 0); } catch (e) {}
+/* 遊び方を数える（称号用）。count('pet') → 新しい数 */
+const count = (k, n = 1) => { S.c[k] = (S.c[k] || 0) + n; save(); return S.c[k]; };
+/* 同じところを何回も押したときのセリフ：押した数で、順にかわる */
+const rep = (k, list) => list[(count('r_' + k) - 1) % list.length];
+const again = () => S.round >= 2;   // 2周目より後
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const buzz = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
@@ -692,14 +755,57 @@ const SFX = {
   },
 };
 
+/* ---------- 静かな BGM（オルゴールふう。ファイルなし）----------
+   明るくなるたびに、音がふえる：まっくら＝小節の頭だけ → 1つ解く＝メロディ → 2＝低い音 → 3＝低い音2つ
+   → 5＝和音の分散 → 7＝下のハモり → 9＝高いきらきら。8小節（約27秒）のあと、4〜8小節やすんでから くりかえす（ずっと鳴っていると 耳につくので） */
+const MEL = [76,0,79,0,81,79,76,0, 74,0,76,0,79,0,0,0, 72,0,74,76,79,0,76,0, 74,0,0,0,0,0,0,0,
+             81,0,79,0,76,79,81,0, 84,0,81,0,79,0,0,0, 76,0,74,0,72,74,76,0, 72,0,0,0,0,0,0,0];
+const ROOT = [48,43,45,43,45,41,48,48], MINOR = [0,0,1,0,1,0,0,0];
+const EIGHTH = 60 / 72 / 2;
+let bgmBus = null, bgmOn = false, bgmStep = 0, bgmNext = 0, bgmLen = 72;
+const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+function chime(m, t, v) {   // オルゴールの1音：もとの音＋金属っぽい上の音（すぐ消える）
+  for (const [mul, vv, d] of [[1, v, 1.7], [2, v * .22, .6], [5.4, v * .05, .18]]) {
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.frequency.value = hz(m) * mul;
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vv, t + .006); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g).connect(bgmBus); o.start(t); o.stop(t + d + .05);
+  }
+}
+const below = m => { for (let k = 3; k < 6; k++) if ([0, 2, 4, 7, 9].includes((m - k) % 12)) return m - k; return m - 5; };
+function bgmPlay(i, t) {
+  if (i >= 64) return;   // やすみ
+  const n = Object.keys(S.done).filter(k => +k <= 9).length, bar = i >> 3, st = i & 7, m = MEL[i], r = ROOT[bar];
+  if (m && (n >= 1 || st === 0)) chime(m, t, n >= 1 ? .05 : .035);
+  if (n >= 2 && st === 0) chime(r, t, .045);
+  if (n >= 3 && st === 4) chime(r + 7, t, .03);
+  if (n >= 5 && (st === 2 || st === 6)) chime(r + 12 + (st === 2 ? (MINOR[bar] ? 3 : 4) : 7), t, .022);
+  if (n >= 7 && m && (st === 0 || st === 4)) chime(below(m), t, .022);
+  if (n >= 9 && bar % 2 && st === 5) chime(96, t, .014);
+}
+setInterval(() => {
+  if (!bgmOn || !AC || !S.sound || document.hidden) { bgmNext = 0; return; }
+  if (!bgmNext || bgmNext < AC.currentTime) bgmNext = AC.currentTime + .15;
+  while (bgmNext < AC.currentTime + .35) { bgmPlay(bgmStep, bgmNext); if (++bgmStep >= bgmLen) { bgmStep = 0; bgmLen = 64 + 8 * (4 + Math.floor(Math.random() * 5)); } bgmNext += EIGHTH; }
+}, 100);
+function bgm(on) {
+  audio(); if (!AC) return;
+  if (!bgmBus) { bgmBus = AC.createGain(); bgmBus.connect(master); }
+  bgmOn = on; bgmBus.gain.setTargetAtTime(on && S.sound ? 1 : 0, AC.currentTime, .05);
+}
+
 /* ---------- 動き ---------- */
 const ease = {io: k => k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2, out: k => 1 - (1 - k) * (1 - k), in: k => k * k, lin: k => k};
 function tween(d, fn, e = ease.io) {
   if (RM) d = Math.max(60, d * .5);
   return new Promise(r => {
     const t0 = performance.now();
-    const step = now => { const k = Math.min(1, (now - t0) / d); fn(e(k)); if (k < 1) requestAnimationFrame(step); else r(); };
+    let end = false;
+    const finish = () => { if (end) return; end = true; fn(e(1)); r(); };
+    const step = now => { if (end) return; const k = Math.min(1, (now - t0) / d); if (k < 1) { fn(e(k)); requestAnimationFrame(step); } else finish(); };
     requestAnimationFrame(step);
+    // 画面がかくれて動きが止まっても、とちゅうで固まらないように（終わりの形にして先へ進む）
+    setTimeout(finish, d + 400);
   });
 }
 const lerp = (a, b, k) => a + (b - a) * k;
@@ -748,8 +854,11 @@ function miss(line) {
   if (!cur()) { SFX.pof(); if (line) setTimeout(() => say(line), 350); return; }
   S.mistakes++; save(); SFX.miss(); shun(); buzz([12, 40, 12]);
   const n = S.mistakes;
-  setTimeout(() => say(line || (n === 20 ? '…20。いい数だ' : n === 50 ? '…50。記録だな' : '…' + n)), 350);
+  const r2 = again() && {1:'…1。今回も、数えるぞ', 20:'…20。前の回も、このへんで言ったな'}[n];
+  setTimeout(() => say(line || r2 || (n === 20 ? '…20。いい数だ' : n === 50 ? '…50。記録だな' : '…' + n)), 350);
 }
+/* ツッコミだけ（数えない）：扉をなめるなど、さぐって遊んだだけのときは、まちがいにしない */
+function nudge(line) { SFX.miss(); shun(); buzz(10); if (line) setTimeout(() => say(line), 350); }
 /* メモやノートを大きく見せる。手帳に写す */
 function zoom(text, noteText) {
   $('zoomt').textContent = text; $('zoom').hidden = false; SFX.paper();
@@ -758,10 +867,9 @@ function zoom(text, noteText) {
 $('zoom').addEventListener('pointerdown', () => { $('zoom').hidden = true; });
 function note(t) {
   if (S.notes.includes(t)) return;
-  S.notes.push(t); save(); toast('手帳に写した');
+  S.notes.push(t); save(); toast('手帳に写した'); drawNotes($('sidenotes'));
 }
-function drawNotes() {
-  const box = $('notes');
+function drawNotes(box = $('notes')) {
   box.innerHTML = '';
   if (!S.notes.length) { const p = document.createElement('p'); p.className = 'empty'; p.textContent = 'まだ、なにも書いてない。'; box.appendChild(p); return; }
   const ol = document.createElement('ol');
@@ -770,6 +878,7 @@ function drawNotes() {
 }
 $('noteb').addEventListener('click', () => { audio(); SFX.paper(); drawNotes(); $('notebook').hidden = false; });
 $('noteclose').addEventListener('click', () => { $('notebook').hidden = true; });
+$('notebook').addEventListener('click', e => { if (e.target === $('notebook')) $('notebook').hidden = true; });   // 外を押しても とじる
 
 /* かくし要素（漫画ネタ・5つ） */
 function hide(key, line) {
@@ -825,7 +934,7 @@ const FLAVOR = [];   // どの謎にも入らないタップ：{view, test(p), r
 function flavor(f) { FLAVOR.push(f); }
 let empties = [], lastTap = null;
 function emptyTap(p) {
-  SFX.pof();
+  SFX.pof(); count('empty');
   empties = empties.filter(q => near(q, p.x, p.y, 90)); empties.push(p);
   if (empties.length >= 3) { empties = []; think('…ここに、何かある気がする', 2400); setTimeout(() => say('…なにもない'), 1600); }
 }
@@ -848,7 +957,7 @@ let goronOn = false, sleepTimer = null;
 function setGoron(on) {
   goronOn = on; svg.classList.toggle('goron', on); $('goron').setAttribute('aria-pressed', on);
   clearTimeout(sleepTimer);
-  if (on) { SFX.pof(); sleepTimer = setTimeout(fallAsleep, 7000); }
+  if (on) { SFX.pof(); count('goron'); sleepTimer = setTimeout(fallAsleep, 7000); }
 }
 function goronTap() { setGoron(false); think('（おきた）', 1200); }
 async function fallAsleep() {
@@ -867,26 +976,30 @@ $('hint').addEventListener('click', () => {
   audio(); SFX.pof();
   const c = cur();
   if (!c) return say(S.endTrue ? '…もう、出られるだろ' : '…それは、おれも知らない。…タマ、寝てたか？');
-  if ((performance.now() - activeSince) / 1000 < 10) return say('…まだ10秒だ');
+  if ((performance.now() - activeSince) / 1000 < 10) return say(again() ? '…まだ10秒だ。2回目でも、10秒は10秒だ' : '…まだ10秒だ');
   if (c.hintGate && c.hintGate()) return;
   const now = S.hintStep[c.id] || 0, step = Math.min(now + 1, 3);
   if (step > now) { S.hintStep[c.id] = step; S.hintsUsed[c.id] = (S.hintsUsed[c.id] || 0) + 1; save(); }
-  updHint();
+  count('hint'); lid(true); updHint();
   const h = typeof c.hints === 'function' ? c.hints()[step - 1] : c.hints[step - 1];
   say(h, 4500, c.hintWho ? c.hintWho() : 'ドラ');
 });
 $('tama').addEventListener('click', () => {
   audio(); SFX.purr(); buzz([8, 30, 8, 30, 8, 30, 8]);
   const b = $('tama'); b.classList.remove('purr'); void b.offsetWidth; b.classList.add('purr');
-  think('ゴロゴロ…', 1600);
+  const n = count('pet');
+  const PET = {10:'ゴロゴロ…（とけそう）', 30:'ゴロゴロゴロゴロ…', 50:'…ゴロゴロ（50回目）', 77:'ゴロゴロ…（ラッキーセブン）'};
+  if (n === 100) { think('ゴロゴロ…ゴロゴロ…', 1600); setTimeout(() => say('…なでられすぎだ。100回だぞ'), 900); }
+  else if (n === 20) { think('ゴロゴロ…', 1600); setTimeout(() => say(again() ? '…今回も、なでられてるな' : '…そこで、くつろぐな'), 900); }
+  else think(PET[n] || 'ゴロゴロ…', 1600);
 });
-$('snd').addEventListener('click', () => { S.sound = !S.sound; save(); $('snd').setAttribute('aria-pressed', S.sound); $('snd').textContent = S.sound ? '音' : '音なし'; });
+$('snd').addEventListener('click', () => { S.sound = !S.sound; save(); if (bgmBus) bgm(bgmOn); $('snd').setAttribute('aria-pressed', S.sound); $('snd').textContent = S.sound ? '音' : '音なし'; });
 let resetArm = 0;
 $('reset').addEventListener('click', () => {
   if (Date.now() - resetArm > 3000) { resetArm = Date.now(); $('reset').textContent = 'もう一度押す'; setTimeout(() => $('reset').textContent = 'はじめから', 3000); return; }
   restart();
 });
-function restart() { const snd = S.sound; S = fresh(); S.sound = snd; save(); location.reload(); }
+function restart() { const snd = S.sound; S = fresh(); S.sound = snd; S.round = CLEARS + 1; save(); location.reload(); }
 $('again').addEventListener('click', restart);
 $('look').addEventListener('click', () => { $('clear').hidden = true; });
 
@@ -939,7 +1052,59 @@ function ending() {
   $('clear').hidden = false;
 }
 
+/* ---------- 称号（クリア画面に出す。遊び方で決まる）----------
+   ending() の中はさわらない。クリア画面が出たのを見て、称号を足し、クリアしたことを別のキーに残す */
+const TITLES = [
+  ['ひとりで 出られた猫', 'ドラに一度も助けてもらわなかった', (h) => h === 0],
+  ['まっすぐな猫', 'まちがい0回', () => S.mistakes === 0],
+  ['カギしっぽ通', 'ぜんぶの かくし要素を見つけた', () => Object.keys(S.found).length >= 5],
+  ['なでられ名人', 'なでた回数 100回', () => (S.c.pet || 0) >= 100],
+  ['扉の味を知る猫', '扉を10回なめた', () => (S.c.lick || 0) >= 10],
+  ['すきまの見つめあい', 'ドラの目を10回つついた', () => (S.c.r_eye || 0) >= 10],
+  ['ドラせんぱいの話し相手', 'ドラに15回 聞いた', () => (S.c.hint || 0) >= 15],
+  ['なにもない所の専門家', 'なにもない所を30回 押した', () => (S.c.empty || 0) >= 30],
+  ['あくびの達人', 'ひまで3回 あくびした', () => (S.c.idle || 0) >= 3],
+  ['ぼよん好き', 'ふみきり板で10回 ぼよんとした', () => (S.c.r_board || 0) >= 10],
+  ['風のように', '20分以内に 脱出', () => S.elapsed < 20 * 60],
+  ['また来た猫', 'もう一度 遊んで 脱出', () => S.round >= 2],
+];
+function titles() {
+  const hints = Object.values(S.hintsUsed).reduce((a, b) => a + b, 0);
+  const got = TITLES.filter(t => t[2](hints));
+  const box = $('titles'); box.innerHTML = '';
+  const h = document.createElement('p'); h.className = 'kicker'; h.textContent = `称号 ${got.length}/${TITLES.length}`; box.appendChild(h);
+  const ul = document.createElement('ul');
+  for (const t of TITLES) {
+    const li = document.createElement('li'), on = got.includes(t);
+    li.className = on ? 'on' : '';
+    li.innerHTML = '<b></b><small></small>';
+    li.firstChild.textContent = on ? t[0] : '？？？'; li.lastChild.textContent = on ? t[1] : '';
+    ul.appendChild(li);
+  }
+  box.appendChild(ul);
+  if (!S.clearCounted) {
+    S.clearCounted = true; save(); CLEARS++;
+    try { localStorage.setItem(KEY_CLEAR, JSON.stringify({n:CLEARS, at:Date.now()})); } catch (e) {}
+  }
+}
+new MutationObserver(() => { if (!$('clear').hidden) titles(); }).observe($('clear'), {attributes:true, attributeFilter:['hidden']});
+
 /* ---------- はじまり ---------- */
+/* ドラの目のまぶた：ヒントのたびに、少しずつ半目になる（ヒント8回で いちばん下まで） */
+function lid(anim) {
+  const e = $('eyeball'); if (!e) return;
+  let l = $('eyelid');
+  if (!l) {
+    l = document.createElementNS('http://www.w3.org/2000/svg', 'g'); l.id = 'eyelid';
+    l.innerHTML = '<rect x="764" y="1036" width="34" height="1" fill="#F2A65A"/><path d="" fill="none" stroke="#5A3A1E" stroke-width="2.5" stroke-linecap="round"/>';
+    e.appendChild(l);
+  }
+  const k = Math.min(S.c.hint || 0, 8) / 8;
+  const y0 = +(l.dataset.y || 1050), y1 = 1050 + 11 * k;
+  const draw = y => { l.dataset.y = y; l.firstChild.setAttribute('height', Math.max(0, y - 1036)); l.lastChild.setAttribute('d', `M767 ${y.toFixed(1)} Q781 ${(y + 3).toFixed(1)} 795 ${y.toFixed(1)}`); l.setAttribute('opacity', k ? 1 : 0); };
+  if (!anim || y0 === y1) return draw(y1);
+  return tween(500, q => draw(lerp(y0, y1, q)));
+}
 function blink() {
   const e = $('eyeball');
   e.setAttribute('transform', 'translate(781,1062) scale(1,0.12) translate(-781,-1062)');
@@ -950,7 +1115,7 @@ function enter() {
   $('title').hidden = true; $('intro').hidden = true; $('back').hidden = true;
   setCam(VIEWS.floor.box); setView('floor'); ball.draw(); paw.draw();
   for (const p of P) if (p.restore) p.restore(!!S.done[p.id]);
-  light(false); showStamps(); updHint();
+  light(false); showStamps(); updHint(); lid(false); drawNotes($('sidenotes')); bgm(true);
   if (S.goron) $('goron').hidden = false;
   activeSince = performance.now(); playStart = performance.now();
   setTimeout(blink, 3000); dribbleLoop(); setTimeout(dribble, 12000);
@@ -959,13 +1124,14 @@ function enter() {
 async function intro() {
   const box = $('intro'); box.hidden = false;
   const ps = box.querySelectorAll('p');
+  if (again()) ps[2].textContent = S.round === 2 ? '「…タマ？ …またか。2回目だぞ」' : `「…またか。${S.round}回目だぞ」`;
   let skip = false;
   box.addEventListener('pointerdown', () => { skip = true; }, {once:true});
   ps[0].classList.add('on'); for (let i = 0; i < 25 && !skip; i++) await sleep(100);
   ps[1].classList.add('on'); SFX.gachan(); buzz([30, 40, 60]); for (let i = 0; i < 18 && !skip; i++) await sleep(100);
   ps[2].classList.add('on'); for (let i = 0; i < 22 && !skip; i++) await sleep(100);
   enter();
-  setTimeout(() => think('まっくら…'), 400);
+  setTimeout(() => think(again() ? 'まっくら…（なんだか、見おぼえがある）' : 'まっくら…'), 400);
 }
 /* 何日かあとに戻ってきた人へ：タマの日記（それまでの手帳） */
 function welcomeBack() {
@@ -977,11 +1143,11 @@ function welcomeBack() {
   $('back').hidden = false;
 }
 $('backgo').addEventListener('click', () => { audio(); enter(); });
-$('start').addEventListener('click', () => { audio(); const snd = S.sound; S = fresh(); S.sound = snd; S.started = true; save(); intro(); });
+$('start').addEventListener('click', () => { audio(); const snd = S.sound; S = fresh(); S.sound = snd; S.started = true; S.round = CLEARS + 1; save(); intro(); });
 $('cont').addEventListener('click', () => { audio(); welcomeBack(); });
 
-return {get S() { return S; }, save, SFX, tween, ease, lerp, sleep, buzz, $, svg, VIEWS, camTo, setCam, setView, go, get view() { return view; },
-  ball, paw, say, think, toast, miss, dribble, zoom, note, hide, puzzle, cur, solve, light, flavor, inR, near, emptyTap,
+return {get S() { return S; }, save, count, rep, again, get round() { return S.round; }, bgm, SFX, tween, ease, lerp, sleep, buzz, $, svg, VIEWS, camTo, setCam, setView, go, get view() { return view; },
+  ball, paw, say, think, toast, miss, nudge, dribble, zoom, note, hide, puzzle, cur, solve, light, flavor, inR, near, emptyTap,
   get busy() { return busy; }, get lastTap() { return lastTap; }, set busy(v) { busy = v; }, learnGoron, setGoron, get goronOn() { return goronOn; },
   boot() {
     if (S.started) $('cont').hidden = false;
@@ -1009,31 +1175,77 @@ G.wallJump = async (msg, line) => {
 /* 画面を少しゆらす（押した・ひっぱった） */
 G.shake = async (dx = 1.2) => { G.svg.style.transform = `translateX(${dx}%)`; await G.sleep(120); G.svg.style.transform = ''; };
 
-let eyeTaps = 0, doorTaps = 0;
+/* 同じところを何回も押すと、セリフがかわる（G.rep：押した数で順に）。2周目は、ドラが少しちがう */
 G.flavor({view:'floor', test:p => G.inR(p, 762, 990, 800, 1130), run() {
-  G.SFX.pof(); eyeTaps++;
-  G.say(['…なんだ', '…じろじろ見るな', '…ヒントなら、下のボタンだ'][(eyeTaps - 1) % 3]);
+  G.SFX.pof();
+  G.say(G.rep('eye', G.again()
+    ? ['…また来たのか', '…じろじろ見るな。前も言った', '…ヒントなら、下のボタンだ。知ってるだろ', '…2回目でも、目は目だ', '…………まばたき、してもいいか']
+    : ['…なんだ', '…じろじろ見るな', '…ヒントなら、下のボタンだ', '…にらめっこなら、負けないぞ', '…………まばたき、してもいいか']));
 }});
+/* 扉：押す → 引く → なめる。そのあとは、なめたり、ぶつかったり。
+   さぐって遊んでいるだけなので、まちがいには数えない（ドラはツッコむだけ。称号「まちがい0回」が とれなくならないように） */
+const LICK = {1:'…なめても、開かない', 2:'…また なめた', 3:'…味は、どうだ', 5:'…5回目だ。数えてるぞ', 7:'…そんなに うまいのか、その扉', 10:'…10回。もう、扉の味は おぼえたな'};
+const lick = () => {
+  const n = G.count('lick'); G.SFX.lick();
+  G.think(n === 1 ? '（なめてみた）' : n >= 10 ? '（ぺろぺろ。…あじが、しない）' : '（また、なめてみた）');
+  G.nudge(n === 1 && G.again() ? '…前の回も、なめてたな' : LICK[n] || '…なめても、開かない');
+};
 G.flavor({view:'floor', test:p => G.inR(p, 762, 540, 1000, 1160), async run() {
   G.busy = true;
-  const k = doorTaps++;
-  if (k === 0) { G.SFX.thud(); await G.shake(1.2); G.think('（おしてみた）'); G.miss(); }
-  else if (k === 1) { G.SFX.thud(); await G.shake(-1.2); G.think('（ひっぱってみた）'); G.miss(); }
-  else if (k === 2) { G.SFX.lick(); G.think('（なめてみた）'); G.miss('…なめても、開かない'); }
-  else { G.SFX.thud(); G.think('扉は、びくともしない'); G.miss(); }
+  const k = G.count('door') - 1;
+  if (k === 0) { G.SFX.thud(); await G.shake(1.2); G.think('（おしてみた）'); G.nudge('…外から、カギがかかってる'); }
+  else if (k === 1) { G.SFX.thud(); await G.shake(-1.2); G.think('（ひっぱってみた）'); G.nudge('…引いても、同じだ'); }
+  else if (k === 2 || k % 2 === 1) lick();
+  else { G.SFX.thud(); await G.shake(k % 4 ? -1.6 : 1.6);
+    const j = (k / 2) % 3;
+    G.think(['扉は、びくともしない', '（体当たりしてみた）', '（ノックしてみた。コン、コン）'][j]);
+    G.nudge(['…びくともしないだろ', '…体当たりでも、開かないぞ', '…ノックしても、おれしかいないぞ'][j]); }
   G.busy = false;
 }});
 G.flavor({view:'floor', test:p => G.inR(p, 370, 1170, 580, 1255), async run() {
   G.busy = true; G.SFX.jump(); G.svg.style.transform = 'translateY(-4%)'; await G.sleep(160); G.SFX.boing(); G.svg.style.transform = ''; G.busy = false;
-  G.think('ふみきり板。ぼよん、とする');
+  const n = G.S.c.r_board || 0;
+  G.think(G.rep('board', ['ふみきり板。ぼよん、とする', 'ぼよん！', 'ぼよよん！ …たのしい', 'ぼよん、ぼよん、ぼよん']));
+  if (n + 1 === 10) setTimeout(() => G.say('…あそんでるだろ。音で わかるぞ'), 700);
 }});
-G.flavor({view:'floor', test:p => G.inR(p, 100, 1200, 220, 1320), run() { G.SFX.pof(); G.think('コーンだ。…食べられないほうの'); }});
-G.flavor({view:'floor', test:p => G.inR(p, 550, 60, 870, 270), run() { G.SFX.pof(); G.think('高いまど。暗幕が、しまってる'); }});
-G.flavor({view:'floor', test:p => G.inR(p, 580, 880, 760, 1150), run() { G.SFX.pof(); G.think(G.S.done[1] ? 'とび箱。あとで、のぼれそう' : 'とび箱。くらくて、上がよく見えない'); }});
+G.flavor({view:'floor', test:p => G.inR(p, 100, 1200, 220, 1320), run() {
+  G.SFX.pof();
+  G.think(G.rep('cone', G.S.done[3]
+    ? ['たおれたコーン。…ねてるみたい', 'コーンは、もう おきない', '（コーンの中を のぞいた）…からっぽ']
+    : ['コーンだ。…食べられないほうの', '（コーンを かぶってみたい）', 'とんがってる', '（においを かいだ）…ゴムのにおい']));
+}});
+G.flavor({view:'floor', test:p => G.inR(p, 550, 60, 870, 270), run() {
+  G.SFX.pof();
+  G.think(G.rep('window0', ['高いまど。暗幕が、しまってる', 'まど…いまは、まっくら', '（じっと見た）…なにも見えない']));
+}});
+G.flavor({view:'floor', test:p => G.inR(p, 580, 880, 760, 1150), run() {
+  G.SFX.pof();
+  G.think(G.S.done[1] ? 'とび箱。あとで、のぼれそう'
+    : G.rep('box0', ['とび箱。くらくて、上がよく見えない', 'とび箱…くらくて、こわい', '（とび箱に、ほおずりした）']));
+}});
 /* かくし要素1：トウモロコシ（明かりがついてから見える） */
 G.flavor({view:'floor', test:p => G.S.done[1] && G.inR(p, 790, 1250, 940, 1350), run() { G.hide('corn', 'トウモロコシ！ …ドラせんぱいには、ないしょにしよう'); }});
 G.flavor({view:'shelf', test:p => G.inR(p, 80, 720, 240, 825), run() { G.SFX.pof(); G.think('からっぽの箱'); }});
 G.flavor({view:'shelf', test:p => G.inR(p, 360, 1150, 600, 1260), run() { G.SFX.pof(); G.think('下に、ふみきり板が見える'); }});
+
+/* ひまなときのタマ：20秒さわらないと、あくび・毛づくろい＋ひとこと（つぎは、また20秒あと） */
+(() => {
+  let last = Date.now(), k = 0;
+  const poke = () => { last = Date.now(); };
+  ['pointerdown', 'keydown'].forEach(t => addEventListener(t, poke, true));
+  const LINES = [['yawn', 'ふぁ〜あ…'], ['groom', '（ぺろぺろ。毛づくろい）'], ['yawn', '…ねむい'], ['groom', '（顔を、あらった）'], ['yawn', 'ふぁ…。サンマ、どこ？']];
+  setInterval(() => {
+    if (Date.now() - last < 20000) return;
+    last = Date.now();
+    if (!G.S.started || G.busy || G.goronOn || document.hidden || document.querySelector('.cover:not([hidden]), .notebook:not([hidden]), .zoom:not([hidden])')) return;
+    const [cls, line] = LINES[k++ % LINES.length], b = G.$('tama');
+    b.classList.remove('yawn', 'groom'); void b.offsetWidth; b.classList.add(cls);
+    setTimeout(() => b.classList.remove(cls), 2700);
+    G.count('idle'); G.think(line, 2400);
+    if (cls === 'yawn') G.SFX.zzz();
+    if (k === 4) setTimeout(() => G.say(G.again() ? '…今回も、ひまそうだな' : '…ねるなよ'), 1500);
+  }, 1000);
+})();
 
 /* 謎1 まっくら（10/16 トオルさん OK）
    棚にとび乗り、ボールを「ちょい、ちょい、ポトッ」→ ふみきり板ではねて、高いスイッチにコツン → 明かり。
@@ -1149,12 +1361,12 @@ G.puzzle({
         if (G.inR(p, 580, 880, 760, 1150)) {         // 跳び箱にとび乗る（2つ目の高さ）
           G.busy = true; await G.go('box');
           if (!G.S.seen.box) { G.S.seen.box = true; G.save(); G.think('跳び箱の上。高いまどが、近い'); }
-          else G.think(open() ? '跳び箱の上' : '跳び箱の上。暗幕が、すぐそこ');
+          else G.think(open() ? G.rep('box', ['跳び箱の上', '跳び箱の上。…ちょっと、高い', '跳び箱の上。見はらしが いい', '（跳び箱で、のびをした）']) : '跳び箱の上。暗幕が、すぐそこ');
           G.busy = false; return true;
         }
         if (G.inR(p, 550, 60, 870, 270)) {           // 床から 暗幕へは、とどかない
           if (!open()) { await G.wallJump('暗幕…とどかない'); return true; }
-          G.SFX.pof(); G.think('ひなた。ぽかぽか'); return true;
+          G.SFX.pof(); G.think(G.rep('window', ['ひなた。ぽかぽか', 'まどの光が、まぶしい', '（目を細めた）', '…あそこで ねたら、気持ちよさそう'])); return true;
         }
         if (open() && G.inR(p, 666, 1336, 774, 1400)) {   // しっぽが指す床板
           if (G.S.done[2]) { G.SFX.pof(); G.think('床板。もう、なにも入ってない'); return true; }
@@ -1171,7 +1383,7 @@ G.puzzle({
       if (view === 'box') {
         if (G.inR(p, 560, 70, 860, 260)) {
           if (!open()) { await this.climb(); return true; }
-          G.SFX.pof(); G.think('まどの外は、いい天気'); return true;
+          G.SFX.pof(); G.think(G.rep('sky', ['まどの外は、いい天気', '（鳥が とんでいった）', '…外に、出たい', '雲が、サンマの形…じゃなかった'])); return true;
         }
       }
       return false;
