@@ -85,7 +85,8 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .think{position:absolute;left:10px;right:10px;bottom:10px;text-align:center;font-weight:700;font-size:clamp(15px,4vw,18px);line-height:1.6;color:var(--ink);text-shadow:0 1px 0 #000,0 0 10px #000,0 0 18px #000;opacity:0;transition:opacity .2s;pointer-events:none;text-wrap:balance;z-index:3}
 .think.on{opacity:1}
 .height{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;pointer-events:none;z-index:2}
-.height span{font-size:11px;font-weight:900;padding:3px 7px;border-radius:999px;background:rgba(21,18,28,.75);color:var(--muted);text-align:center;letter-spacing:.06em}
+.height{opacity:.6}
+.height span{font-size:10px;font-weight:900;padding:2px 6px;border-radius:999px;background:rgba(21,18,28,.75);color:var(--muted);text-align:center;letter-spacing:.06em}
 .height span.on{background:var(--pink);color:#3A1E22}
 .height span.off{opacity:.35}
 
@@ -93,6 +94,8 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .pp{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;pointer-events:none;animation:pp .6s ease-out forwards;z-index:4}
 .hint.call{animation:callme 1s ease-in-out 4;border-color:var(--orange)}
 @keyframes callme{50%{transform:scale(1.04);box-shadow:0 0 0 4px rgba(232,118,43,.35)}}
+.don{position:absolute;right:12px;top:42%;font-family:var(--hand);font-weight:900;font-size:22px;color:var(--orange);text-shadow:0 0 6px #000,0 0 12px #000;pointer-events:none;z-index:3;animation:don .7s ease-out forwards}
+@keyframes don{from{transform:scale(1.4);opacity:1}to{transform:scale(1) translateX(6px);opacity:0}}
 .pp.faint{animation-duration:.35s;filter:grayscale(1);opacity:.35}
 @keyframes pp{from{transform:scale(.5);opacity:.95}to{transform:scale(1.15);opacity:0}}
 .hud{width:100%;max-width:min(560px,max(330px,calc((100dvh - 150px) * .7143)));height:64px;flex:none;display:flex;gap:8px;align-items:stretch}
@@ -271,7 +274,7 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
 <g id="cone" transform="translate(160,1262)">
 <path d="M-40 40 L40 40 L36 28 L-36 28 Z" fill="#E8762B" stroke="none" stroke-width="4" stroke-linejoin="round" style="stroke: none;"></path><path d="M-40.00 43.00 L-38.50 43.00 L-36.99 43.00 L-35.49 43.00 L-33.99 43.00 L-32.49 43.00 L-30.98 43.00 L-29.48 43.00 L-27.98 43.00 L-26.48 43.00 L-24.97 43.00 L-23.47 43.00 L-21.97 43.00 L-20.47 43.00 L-18.96 43.00 L-17.46 43.00 L-15.96 43.00 L-14.46 43.00 L-12.95 43.00 L-11.45 43.00 L-9.95 43.00 L-8.45 43.00 L-6.94 43.00 L-5.44 43.00 L-3.94 43.00 L-2.44 43.00 L-0.93 43.00 L0.57 43.00 L2.07 43.00 L3.57 43.00 L5.08 43.00 L6.58 43.00 L8.08 43.00 L9.58 43.00 L11.09 43.00 L12.59 43.00 L14.09 43.00 L15.59 43.00 L17.10 43.00 L18.60 43.00 L20.10 43.00 L21.60 43.00 L23.11 43.00 L24.61 43.00 L26.11 43.00 L27.61 43.00 L29.12 43.00 L30.62 43.00 L32.12 43.00 L33.62 43.00 L35.13 43.00 L36.63 43.00 L38.13 43.00 L41.38 42.44 L42.59 38.37 L42.01 36.55 L41.54 35.12 L41.06 33.70 L40.59 32.27 L40.11 30.85 L39.64 29.42 L38.95 27.50 L36.62 25.22 L33.99 25.00 L32.49 25.00 L30.98 25.00 L29.48 25.00 L27.98 25.00 L26.48 25.00 L24.97 25.00 L23.47 25.00 L21.97 25.00 L20.47 25.00 L18.96 25.00 L17.46 25.00 L15.96 25.00 L14.46 25.00 L12.95 25.00 L11.45 25.00 L9.95 25.00 L8.45 25.00 L6.94 25.00 L5.44 25.00 L3.94 25.00 L2.44 25.00 L0.93 25.00 L-0.57 25.00 L-2.07 25.00 L-3.57 25.00 L-5.08 25.00 L-6.58 25.00 L-8.08 25.00 L-9.58 25.00 L-11.09 25.00 L-12.59 25.00 L-14.09 25.00 L-15.59 25.00 L-17.10 25.00 L-18.60 25.00 L-20.10 25.00 L-21.60 25.00 L-23.11 25.00 L-24.61 25.00 L-26.11 25.00 L-27.61 25.00 L-29.12 25.00 L-30.62 25.00 L-32.12 25.00 L-33.62 25.00 L-35.80 25.08 L-38.58 26.77 L-39.52 29.07 L-40.00 30.50 L-40.47 31.92 L-40.95 33.35 L-41.42 34.78 L-41.90 36.20 L-42.37 37.63 L-42.85 39.05 Z M-40.00 38.32 L-38.50 38.32 L-36.99 38.32 L-35.49 38.32 L-33.99 38.32 L-32.49 38.32 L-30.98 38.32 L-29.48 38.32 L-27.98 38.32 L-26.48 38.32 L-24.97 38.32 L-23.47 38.32 L-21.97 38.32 L-20.47 38.32 L-18.96 38.32 L-17.46 38.32 L-15.96 38.32 L-14.46 38.32 L-12.95 38.32 L-11.45 38.32 L-9.95 38.32 L-8.45 38.32 L-6.94 38.32 L-5.44 38.32 L-3.94 38.32 L-2.44 38.32 L-0.93 38.32 L0.57 38.32 L2.07 38.32 L3.57 38.32 L5.08 38.32 L6.58 38.32 L8.08 38.32 L9.58 38.32 L11.09 38.32 L12.59 38.32 L14.09 38.32 L15.59 38.32 L17.10 38.32 L18.60 38.32 L20.10 38.32 L21.60 38.32 L23.11 38.32 L24.61 38.32 L26.11 38.32 L27.61 38.32 L29.12 38.32 L30.62 38.32 L32.12 38.32 L33.62 38.32 L35.13 38.32 L36.63 38.32 L38.13 38.32 L38.66 38.63 L37.99 39.23 L37.57 38.03 L37.10 36.60 L36.62 35.18 L36.15 33.75 L35.67 32.33 L35.20 30.90 L34.84 29.75 L34.86 29.56 L33.99 29.68 L32.49 29.68 L30.98 29.68 L29.48 29.68 L27.98 29.68 L26.48 29.68 L24.97 29.68 L23.47 29.68 L21.97 29.68 L20.47 29.68 L18.96 29.68 L17.46 29.68 L15.96 29.68 L14.46 29.68 L12.95 29.68 L11.45 29.68 L9.95 29.68 L8.45 29.68 L6.94 29.68 L5.44 29.68 L3.94 29.68 L2.44 29.68 L0.93 29.68 L-0.57 29.68 L-2.07 29.68 L-3.57 29.68 L-5.08 29.68 L-6.58 29.68 L-8.08 29.68 L-9.58 29.68 L-11.09 29.68 L-12.59 29.68 L-14.09 29.68 L-15.59 29.68 L-17.10 29.68 L-18.60 29.68 L-20.10 29.68 L-21.60 29.68 L-23.11 29.68 L-24.61 29.68 L-26.11 29.68 L-27.61 29.68 L-29.12 29.68 L-30.62 29.68 L-32.12 29.68 L-33.62 29.68 L-34.75 29.64 L-34.86 29.62 L-35.08 30.55 L-35.56 31.98 L-36.03 33.40 L-36.51 34.83 L-36.98 36.25 L-37.46 37.68 L-37.93 39.11 L-38.41 40.53 Z" fill="rgb(90, 58, 30)" fill-rule="evenodd"></path>
 <path d="M-26 28 L-6 -50 Q0 -56 6 -50 L26 28 Z" fill="#F08A3E" stroke="none" stroke-width="4" stroke-linejoin="round" style="stroke: none;"></path><path d="M-28.91 27.25 L-28.53 25.80 L-28.16 24.34 L-27.79 22.89 L-27.41 21.43 L-27.04 19.98 L-26.67 18.52 L-26.29 17.07 L-25.92 15.61 L-25.55 14.16 L-25.18 12.70 L-24.80 11.25 L-24.43 9.79 L-24.06 8.34 L-23.68 6.88 L-23.31 5.43 L-22.94 3.97 L-22.56 2.52 L-22.19 1.06 L-21.82 -0.39 L-21.44 -1.85 L-21.07 -3.30 L-20.70 -4.76 L-20.32 -6.21 L-19.95 -7.67 L-19.58 -9.12 L-19.21 -10.58 L-18.83 -12.03 L-18.46 -13.49 L-18.09 -14.94 L-17.71 -16.40 L-17.34 -17.85 L-16.97 -19.31 L-16.59 -20.76 L-16.22 -22.22 L-15.85 -23.67 L-15.47 -25.13 L-15.10 -26.58 L-14.73 -28.04 L-14.36 -29.49 L-13.98 -30.95 L-13.61 -32.40 L-13.24 -33.86 L-12.86 -35.31 L-12.49 -36.77 L-12.12 -38.22 L-11.74 -39.68 L-11.37 -41.13 L-11.00 -42.59 L-10.62 -44.04 L-10.25 -45.50 L-9.88 -46.95 L-9.51 -48.41 L-9.04 -50.17 L-7.92 -52.29 L-6.19 -53.80 L-4.53 -54.84 L-2.59 -55.62 L-0.43 -55.99 L1.78 -55.82 L3.82 -55.18 L5.58 -54.22 L7.21 -52.97 L8.76 -51.03 L9.36 -48.96 L9.74 -47.51 L10.11 -46.05 L10.48 -44.60 L10.86 -43.14 L11.23 -41.69 L11.60 -40.23 L11.97 -38.78 L12.35 -37.32 L12.72 -35.87 L13.09 -34.41 L13.47 -32.96 L13.84 -31.50 L14.21 -30.05 L14.59 -28.59 L14.96 -27.14 L15.33 -25.68 L15.71 -24.23 L16.08 -22.77 L16.45 -21.32 L16.82 -19.86 L17.20 -18.41 L17.57 -16.95 L17.94 -15.50 L18.32 -14.04 L18.69 -12.59 L19.06 -11.13 L19.44 -9.68 L19.81 -8.22 L20.18 -6.77 L20.56 -5.31 L20.93 -3.86 L21.30 -2.40 L21.67 -0.95 L22.05 0.51 L22.42 1.96 L22.79 3.42 L23.17 4.87 L23.54 6.33 L23.91 7.78 L24.29 9.24 L24.66 10.69 L25.03 12.15 L25.41 13.60 L25.78 15.06 L26.15 16.51 L26.52 17.97 L26.90 19.42 L27.27 20.88 L27.64 22.33 L28.02 23.79 L28.39 25.24 L28.80 28.05 L25.78 30.92 L23.57 31.00 L22.07 31.00 L20.57 31.00 L19.06 31.00 L17.56 31.00 L16.06 31.00 L14.56 31.00 L13.06 31.00 L11.55 31.00 L10.05 31.00 L8.55 31.00 L7.05 31.00 L5.54 31.00 L4.04 31.00 L2.54 31.00 L1.04 31.00 L-0.46 31.00 L-1.97 31.00 L-3.47 31.00 L-4.97 31.00 L-6.47 31.00 L-7.97 31.00 L-9.48 31.00 L-10.98 31.00 L-12.48 31.00 L-13.98 31.00 L-15.49 31.00 L-16.99 31.00 L-18.49 31.00 L-19.99 31.00 L-21.49 31.00 L-23.00 31.00 L-24.50 31.00 L-26.00 31.00 Z M-24.37 28.42 L-24.00 26.96 L-23.63 25.51 L-23.25 24.05 L-22.88 22.60 L-22.51 21.14 L-22.13 19.69 L-21.76 18.23 L-21.39 16.78 L-21.01 15.32 L-20.64 13.87 L-20.27 12.41 L-19.90 10.96 L-19.52 9.50 L-19.15 8.05 L-18.78 6.59 L-18.40 5.14 L-18.03 3.68 L-17.66 2.23 L-17.28 0.77 L-16.91 -0.68 L-16.54 -2.14 L-16.16 -3.59 L-15.79 -5.05 L-15.42 -6.50 L-15.05 -7.96 L-14.67 -9.41 L-14.30 -10.87 L-13.93 -12.32 L-13.55 -13.78 L-13.18 -15.23 L-12.81 -16.69 L-12.43 -18.14 L-12.06 -19.60 L-11.69 -21.05 L-11.31 -22.51 L-10.94 -23.96 L-10.57 -25.42 L-10.20 -26.87 L-9.82 -28.33 L-9.45 -29.78 L-9.08 -31.24 L-8.70 -32.69 L-8.33 -34.15 L-7.96 -35.60 L-7.58 -37.06 L-7.21 -38.52 L-6.84 -39.97 L-6.46 -41.43 L-6.09 -42.88 L-5.72 -44.34 L-5.35 -45.79 L-4.97 -47.25 L-4.65 -48.53 L-4.26 -49.36 L-3.43 -50.01 L-2.38 -50.68 L-1.30 -51.13 L-0.21 -51.31 L0.88 -51.23 L1.97 -50.88 L3.04 -50.29 L3.99 -49.57 L4.59 -48.91 L4.83 -47.80 L5.20 -46.35 L5.58 -44.89 L5.95 -43.44 L6.32 -41.98 L6.69 -40.53 L7.07 -39.07 L7.44 -37.62 L7.81 -36.16 L8.19 -34.71 L8.56 -33.25 L8.93 -31.80 L9.31 -30.34 L9.68 -28.89 L10.05 -27.43 L10.43 -25.98 L10.80 -24.52 L11.17 -23.07 L11.54 -21.61 L11.92 -20.16 L12.29 -18.70 L12.66 -17.25 L13.04 -15.79 L13.41 -14.34 L13.78 -12.88 L14.16 -11.43 L14.53 -9.97 L14.90 -8.52 L15.28 -7.06 L15.65 -5.61 L16.02 -4.15 L16.40 -2.69 L16.77 -1.24 L17.14 0.22 L17.51 1.67 L17.89 3.13 L18.26 4.58 L18.63 6.04 L19.01 7.49 L19.38 8.95 L19.75 10.40 L20.13 11.86 L20.50 13.31 L20.87 14.77 L21.25 16.22 L21.62 17.68 L21.99 19.13 L22.36 20.59 L22.74 22.04 L23.11 23.50 L23.48 24.95 L23.86 26.41 L24.21 27.11 L24.68 26.37 L23.57 26.32 L22.07 26.32 L20.57 26.32 L19.06 26.32 L17.56 26.32 L16.06 26.32 L14.56 26.32 L13.06 26.32 L11.55 26.32 L10.05 26.32 L8.55 26.32 L7.05 26.32 L5.54 26.32 L4.04 26.32 L2.54 26.32 L1.04 26.32 L-0.46 26.32 L-1.97 26.32 L-3.47 26.32 L-4.97 26.32 L-6.47 26.32 L-7.97 26.32 L-9.48 26.32 L-10.98 26.32 L-12.48 26.32 L-13.98 26.32 L-15.49 26.32 L-16.99 26.32 L-18.49 26.32 L-19.99 26.32 L-21.49 26.32 L-23.00 26.32 L-24.50 26.32 L-26.00 26.32 Z" fill="rgb(90, 58, 30)" fill-rule="evenodd"></path>
-<path d="M-17 -5 L17 -5 L13 -20 L-13 -20 Z" fill="#FFFFFF"></path></g><g transform="translate(866,1300) rotate(-14)">
+<path d="M-17 -5 L17 -5 L13 -20 L-13 -20 Z" fill="#FFFFFF"></path></g><g transform="translate(176,1384) rotate(-8) scale(0.85)">
 <path d="M-34 0 Q-30 -14 0 -14 Q34 -12 40 0 Q34 12 0 14 Q-30 14 -34 0 Z" fill="#F6C445" stroke="none" stroke-width="4" style="stroke: none;"></path><path d="M-36.84 -0.97 L-36.30 -2.54 L-35.52 -4.19 L-34.57 -5.75 L-33.47 -7.19 L-32.24 -8.50 L-30.91 -9.66 L-29.51 -10.70 L-28.06 -11.61 L-26.56 -12.40 L-25.05 -13.10 L-23.52 -13.71 L-21.98 -14.25 L-20.43 -14.71 L-18.88 -15.12 L-17.32 -15.47 L-15.77 -15.77 L-14.21 -16.03 L-12.66 -16.25 L-11.11 -16.44 L-9.56 -16.60 L-8.01 -16.72 L-6.47 -16.83 L-4.92 -16.90 L-3.38 -16.95 L-1.84 -16.99 L-0.24 -17.00 L1.38 -16.92 L2.92 -16.81 L4.44 -16.70 L5.96 -16.57 L7.48 -16.42 L9.00 -16.26 L10.52 -16.08 L12.05 -15.89 L13.57 -15.67 L15.09 -15.44 L16.62 -15.18 L18.14 -14.91 L19.66 -14.60 L21.18 -14.27 L22.70 -13.90 L24.21 -13.50 L25.73 -13.07 L27.24 -12.59 L28.74 -12.06 L30.24 -11.48 L31.73 -10.84 L33.20 -10.13 L34.66 -9.33 L36.08 -8.45 L37.48 -7.46 L38.81 -6.34 L40.07 -5.09 L41.23 -3.70 L42.50 -1.58 L42.50 1.58 L41.23 3.70 L40.07 5.09 L38.81 6.34 L37.48 7.46 L36.08 8.45 L34.66 9.33 L33.20 10.13 L31.73 10.84 L30.24 11.48 L28.74 12.06 L27.24 12.59 L25.73 13.07 L24.21 13.50 L22.70 13.90 L21.18 14.27 L19.66 14.60 L18.14 14.91 L16.62 15.18 L15.09 15.44 L13.57 15.67 L12.05 15.89 L10.52 16.08 L9.00 16.26 L7.48 16.42 L5.96 16.57 L4.44 16.70 L2.92 16.81 L1.38 16.92 L-0.24 17.00 L-1.84 16.99 L-3.38 16.95 L-4.92 16.90 L-6.47 16.83 L-8.01 16.72 L-9.56 16.60 L-11.11 16.44 L-12.66 16.25 L-14.21 16.03 L-15.77 15.77 L-17.32 15.47 L-18.88 15.12 L-20.43 14.71 L-21.98 14.25 L-23.52 13.71 L-25.05 13.10 L-26.56 12.40 L-28.05 11.61 L-29.51 10.70 L-30.91 9.66 L-32.24 8.50 L-33.47 7.19 L-34.57 5.75 L-35.52 4.19 L-36.30 2.54 L-36.84 0.97 Z M-32.41 0.54 L-31.96 -0.79 L-31.40 -1.98 L-30.71 -3.11 L-29.91 -4.16 L-28.99 -5.13 L-27.98 -6.02 L-26.88 -6.83 L-25.71 -7.56 L-24.48 -8.21 L-23.20 -8.80 L-21.89 -9.33 L-20.54 -9.79 L-19.17 -10.20 L-17.77 -10.57 L-16.36 -10.89 L-14.93 -11.17 L-13.50 -11.41 L-12.05 -11.61 L-10.59 -11.79 L-9.13 -11.94 L-7.67 -12.06 L-6.20 -12.15 L-4.73 -12.23 L-3.25 -12.28 L-1.77 -12.31 L-0.33 -12.32 L1.10 -12.25 L2.57 -12.15 L4.05 -12.03 L5.53 -11.90 L7.01 -11.76 L8.49 -11.61 L9.96 -11.44 L11.43 -11.25 L12.89 -11.04 L14.35 -10.82 L15.81 -10.58 L17.26 -10.31 L18.70 -10.02 L20.13 -9.71 L21.56 -9.36 L22.97 -8.99 L24.37 -8.59 L25.76 -8.15 L27.12 -7.67 L28.47 -7.15 L29.78 -6.58 L31.06 -5.96 L32.30 -5.29 L33.49 -4.55 L34.62 -3.75 L35.67 -2.88 L36.62 -1.93 L37.47 -0.91 L38.04 -0.15 L38.04 0.15 L37.47 0.91 L36.62 1.93 L35.67 2.88 L34.62 3.75 L33.49 4.55 L32.30 5.29 L31.06 5.96 L29.78 6.58 L28.47 7.15 L27.12 7.67 L25.76 8.15 L24.37 8.59 L22.97 8.99 L21.56 9.36 L20.13 9.71 L18.70 10.02 L17.26 10.31 L15.81 10.58 L14.35 10.82 L12.89 11.04 L11.43 11.25 L9.96 11.44 L8.49 11.61 L7.01 11.76 L5.53 11.90 L4.05 12.03 L2.57 12.15 L1.10 12.25 L-0.33 12.32 L-1.77 12.31 L-3.25 12.28 L-4.73 12.23 L-6.20 12.15 L-7.67 12.06 L-9.13 11.94 L-10.59 11.79 L-12.05 11.61 L-13.50 11.41 L-14.93 11.17 L-16.36 10.89 L-17.77 10.57 L-19.17 10.20 L-20.54 9.79 L-21.89 9.33 L-23.20 8.80 L-24.48 8.21 L-25.71 7.56 L-26.88 6.83 L-27.98 6.02 L-28.99 5.13 L-29.91 4.16 L-30.71 3.11 L-31.40 1.98 L-31.96 0.79 L-32.41 -0.54 Z" fill="rgb(90, 58, 30)" fill-rule="evenodd"></path>
 <path d="M-18 -10 V10 " stroke="#D9A21E" stroke-width="2.5" fill="none"></path><path d="M-4 -13 V13 " stroke="#D9A21E" stroke-width="2.5" fill="none"></path><path d="M10 -12 V12 " stroke="#D9A21E" stroke-width="2.5" fill="none"></path><path d="M24 -9 V9" stroke="#D9A21E" stroke-width="2.5" fill="none"></path>
 <path d="M-30 -4 Q-56 -26 -70 -10 Q-52 -8 -34 6 Z" fill="#8DBA5A" stroke="none" stroke-width="4" stroke-linejoin="round" style="stroke: none;"></path><path d="M-28.08 -6.30 L-29.25 -7.28 L-30.45 -8.26 L-31.68 -9.21 L-32.92 -10.15 L-34.18 -11.07 L-35.46 -11.97 L-36.77 -12.84 L-38.10 -13.68 L-39.46 -14.50 L-40.85 -15.28 L-42.26 -16.02 L-43.71 -16.71 L-45.20 -17.36 L-46.72 -17.95 L-48.28 -18.48 L-49.88 -18.93 L-51.52 -19.29 L-53.20 -19.56 L-54.91 -19.71 L-56.65 -19.73 L-58.40 -19.61 L-60.14 -19.34 L-61.86 -18.92 L-63.54 -18.34 L-65.15 -17.62 L-66.69 -16.76 L-68.14 -15.79 L-69.49 -14.72 L-70.75 -13.57 L-72.65 -10.91 L-69.83 -7.00 L-67.94 -6.70 L-66.53 -6.45 L-65.13 -6.18 L-63.74 -5.86 L-62.36 -5.51 L-60.98 -5.13 L-59.62 -4.71 L-58.26 -4.25 L-56.91 -3.77 L-55.57 -3.25 L-54.24 -2.70 L-52.92 -2.13 L-51.61 -1.52 L-50.32 -0.89 L-49.03 -0.23 L-47.76 0.46 L-46.49 1.17 L-45.24 1.90 L-44.00 2.66 L-42.78 3.43 L-41.56 4.23 L-40.36 5.05 L-39.16 5.89 L-37.98 6.75 L-36.59 7.77 L-32.53 8.43 L-30.57 5.49 L-30.01 4.09 L-29.45 2.70 L-28.89 1.30 L-28.33 -0.09 L-27.77 -1.49 L-27.21 -2.89 Z M-31.08 -2.71 L-32.22 -3.67 L-33.37 -4.60 L-34.53 -5.51 L-35.71 -6.39 L-36.90 -7.26 L-38.10 -8.10 L-39.32 -8.92 L-40.56 -9.70 L-41.81 -10.45 L-43.08 -11.16 L-44.36 -11.83 L-45.66 -12.46 L-46.98 -13.03 L-48.32 -13.55 L-49.66 -14.01 L-51.03 -14.39 L-52.40 -14.69 L-53.77 -14.91 L-55.15 -15.03 L-56.52 -15.05 L-57.89 -14.96 L-59.23 -14.75 L-60.54 -14.43 L-61.82 -13.99 L-63.05 -13.44 L-64.24 -12.77 L-65.38 -12.01 L-66.46 -11.15 L-67.48 -10.22 L-68.05 -10.02 L-68.47 -11.48 L-67.21 -11.32 L-65.68 -11.06 L-64.16 -10.75 L-62.65 -10.41 L-61.15 -10.03 L-59.67 -9.62 L-58.19 -9.16 L-56.72 -8.67 L-55.27 -8.15 L-53.84 -7.60 L-52.41 -7.01 L-51.00 -6.39 L-49.60 -5.75 L-48.22 -5.07 L-46.85 -4.37 L-45.50 -3.64 L-44.16 -2.89 L-42.84 -2.12 L-41.53 -1.32 L-40.24 -0.50 L-38.96 0.34 L-37.69 1.20 L-36.44 2.08 L-35.21 2.98 L-34.10 3.81 L-34.68 4.28 L-34.91 3.75 L-34.35 2.36 L-33.79 0.96 L-33.24 -0.44 L-32.68 -1.83 L-32.12 -3.23 L-31.56 -4.62 Z" fill="rgb(90, 58, 30)" fill-rule="evenodd"></path>
@@ -363,7 +366,7 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
     <p class="dare">脱出ゲーム好きのあなたへ。<br>裏のエンディングに、たどり着けますか？</p>
     <button class="big" id="start">はじめる</button>
     <button class="ghost" id="cont" hidden>つづきから</button>
-    <p class="small">無料・登録なし・スマホOK・途中から続けられる<br>音が出ます</p>
+    <p class="small">無料・登録なし・スマホOK・途中から続けられる<br>音を出して遊ぶと、もっと楽しい（音にも手がかりがあります）</p>
   </div>
 </div>
 
@@ -679,6 +682,7 @@ h1{font-family:var(--ui);font-weight:900;font-size:clamp(28px,8.4vw,40px);line-h
         <a href="https://www.threads.com/@kagishippo_basket" target="_blank" rel="noopener">Threads</a>・<a href="https://www.instagram.com/kagishippo_basket/" target="_blank" rel="noopener">Instagram</a>・<a href="https://x.com/kagishippo_bb" target="_blank" rel="noopener">X</a>・グッズは <a href="https://suzuri.jp/DORAG" target="_blank" rel="noopener">SUZURI</a></p>
       <p class="small">第2の部屋、準備中。公開はカギしっぽのアカウントでお知らせします。</p>
     </div>
+    <p class="dare" id="ura" hidden>ドラ「…まだ、だれも見つけてないものがある」</p>
     <div class="roll" id="roll"><p class="small">カギしっぽバスケ部の脱出ゲーム<br>「カギしっぽの用具倉庫」<br>つくった人　カギしっぽバスケ部</p><p class="rollmsg">このゲームは、うちのドラとタマから生まれました。<br>あなたのそばの猫にも、<br>きょう、いいひなたがありますように。</p></div>
     <button class="big" id="look">倉庫を見てまわる</button>
     <button class="ghost" id="again">はじめからあそぶ</button>
@@ -907,7 +911,7 @@ $('noteclose').addEventListener('click', () => { $('notebook').hidden = true; })
 $('notebook').addEventListener('click', e => { if (e.target === $('notebook')) $('notebook').hidden = true; });   // 外を押しても とじる
 
 
-function placeLine() { $('place').textContent = S.ended ? `用具倉庫　かくし要素 ${Object.keys(S.found).length}/5` : '体育館の用具倉庫'; }
+function placeLine() { const n = Object.keys(S.done).filter(k => +k <= 9).length; $('place').textContent = S.ended ? `用具倉庫　かくし要素 ${Object.keys(S.found).length}/5` : `用具倉庫　明かり ${n}/9`; }
 function hide(key, line) {
   SFX.find();
   if (!S.found[key]) { S.found[key] = true; save(); toast(`かくし要素 ${Object.keys(S.found).length}/5 みつけた`); placeLine(); }
@@ -1072,12 +1076,17 @@ document.addEventListener('visibilitychange', () => { tick(); playStart = perfor
 
 const DRIBBLE = [3, 1, 4, 2];
 let dribbling = false;
+
+function don() {
+  const d = document.createElement('div'); d.className = 'don'; d.textContent = 'ドン'; d.setAttribute('aria-hidden', 'true');
+  stage.appendChild(d); setTimeout(() => d.remove(), 700);
+}
 async function dribble() {
   if (dribbling || !S.started || document.hidden) return;
   dribbling = true;
   const sh = $('dribshadow');
   for (const n of DRIBBLE) {
-    for (let i = 0; i < n; i++) { SFX.dribble(.55); sh.setAttribute('opacity', .75); await sleep(170); sh.setAttribute('opacity', 0); await sleep(230); }
+    for (let i = 0; i < n; i++) { SFX.dribble(.55); sh.setAttribute('opacity', .75); don(); await sleep(170); sh.setAttribute('opacity', 0); await sleep(230); }
     await sleep(900);
   }
   dribbling = false;
@@ -1103,6 +1112,7 @@ function ending() {
   $('shx').href = 'https://x.com/intent/post?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(shareUrl);
   $('shth').href = 'https://www.threads.com/intent/post?text=' + encodeURIComponent(shareText + '\n' + shareUrl);
   $('share').hidden = last;
+  $('ura').hidden = last || S.endTrue;
   // クリア後の4コマ（作る/ending4.py）。2コマ目の吹き出しに、本当の数を入れる
   const e4 = $('e4-say');
   if (e4 && !last) { const ts = e4.querySelectorAll('tspan'); ts[0].textContent = `…まちがい、${S.mistakes}回。`; ts[1].textContent = `ヒント、${hints}回`; $('e4').hidden = false; }
@@ -1285,7 +1295,7 @@ G.flavor({view:'floor', test:p => G.inR(p, 580, 880, 760, 1150), run() {
     : G.rep('box0', ['とび箱。くらくて、上がよく見えない', 'とび箱…くらくて、こわい', '（とび箱に、ほおずりした）']));
 }});
 
-G.flavor({view:'floor', test:p => G.S.done[1] && G.inR(p, 790, 1250, 940, 1350), run() { G.hide('corn', 'トウモロコシ！ …ドラせんぱいには、ないしょにしよう'); }});
+G.flavor({view:'floor', test:p => G.S.done[1] && G.inR(p, 110, 1358, 240, 1400), run() { G.hide('corn', 'トウモロコシ！ …ドラせんぱいには、ないしょにしよう'); }});
 G.flavor({view:'shelf', test:p => G.inR(p, 80, 720, 240, 825), run() { G.SFX.pof(); G.think('からっぽの箱'); }});
 G.flavor({view:'shelf', test:p => G.inR(p, 360, 1150, 600, 1260), run() { G.SFX.pof(); G.think('下に、ふみきり板が見える'); }});
 
@@ -1662,7 +1672,7 @@ G.puzzle({
       }
       if (D[4]) { if (G.near(p, T[0], T[1], 40)) { G.SFX.pof(); G.think('みんなが 見ていた ところ'); return true; } return false; }
       if (!s.got) { if (G.inR(p, 465, 375, 745, 690)) { G.SFX.pof(); G.think('コートの絵。丸いしるしが 6つ'); return true; } return false; }
-      if (isCur && s.lit && correct() && G.near(p, T[0], T[1], 44)) { await this.found(); return true; }
+      if (isCur && s.lit && correct() && G.near(p, T[0], T[1], 72)) { await this.found(); return true; }
       
       const hit = WHO.find(w => G.near(p, ...where(w), 28));
       if (hit && sel && hit !== sel && s.pos[hit]) { await this.put(sel, s.pos[hit]); return true; }   // 置いてある顔の上 → 入れかえ
@@ -1743,18 +1753,18 @@ const showByView = name => {
 };
 const dials = () => (G.S.f.p5d || [0, 0, 0]);
 const drawDials = () => dials().forEach((n, i) => { G.$('p5n' + (i + 1)).textContent = n; });
-const NOTE = 'ドラの紙「数えてから来い。オレンジ□ 白□ 黄色□」';
+const NOTE = 'ドラの紙「倉庫じゅうのボールを数えてから来い。オレンジ□ 白□ 黄色□」';
 
 G.puzzle({
   id: 5, name: '数えてから来い',
-  hints: ['…ちゃんと数えたか。おれは、ぜんぶ数えたぞ', '…目線をかえろ。床から見ると、ちがうものが見える', '棚の下、まどのわく。それと、おまえが最初におとしたやつもだ'],
+  hints: ['…かごの中だけじゃないぞ。倉庫じゅうだ。おれは、ぜんぶ数えた', '…目線をかえろ。床から見ると、ちがうものが見える', '棚の下、まどのわく。それと、おまえが最初におとしたやつもだ'],
   async start() {
     // 扉のすきまから、ドラの紙がすべりこむ
     const pp = G.$('p5paper');
     await G.sleep(900);
     G.SFX.paper();
     await G.tween(700, k => { pp.setAttribute('opacity', Math.min(1, k * 2)); pp.setAttribute('transform', `translate(${G.lerp(790, 735, k)},1196) rotate(-6)`); }, G.ease.out);
-    G.say('…ひまだろ。数えてから来い');
+    G.say('…ひまだろ。倉庫じゅうのボールを、数えてから来い');
   },
   restore(done) {
     const $ = G.$;
@@ -1770,7 +1780,7 @@ G.puzzle({
     const $ = G.$;
     // ドラの紙
     if (view === 'floor' && (G.S.done[4] || G.S.done[5]) && G.inR(p, 690, 1165, 780, 1230)) {
-      G.zoom('…ひまだろ。数えてから来い。\n\n　オレンジ □\n　白　　　 □\n　黄色　　 □\n\n（ドラの字）', NOTE); return true;
+      G.zoom('…ひまだろ。\n倉庫じゅうのボールを、\n数えてから来い。\n\n　オレンジ □\n　白　　　 □\n　黄色　　 □\n\n（ドラの字）', NOTE); return true;
     }
     // まどのわくのテニスボール（跳び箱の上から）
     if (view === 'box' && G.S.done[2] && G.near(p, 842, 98, 40)) { G.SFX.pof(); G.think('まどのわくに、テニスボールがはさまってる'); return true; }
@@ -1780,11 +1790,12 @@ G.puzzle({
     // ダイヤル（オレンジ・白・黄）
     const xs = [31, 63, 95];
     for (let i = 0; i < 3; i++) {
-      if ((view === 'floor' || view === 'shelf') && G.near(p, xs[i], 1282, 17)) {
+      if ((view === 'floor' || view === 'shelf') && G.inR(p, [8, 47, 79][i], 1258, [47, 79, 118][i], 1306)) {
         if (G.S.done[5]) { G.SFX.pof(); return true; }
         const d = dials().slice(); d[i] = (d[i] + 1) % 10; G.S.f.p5d = d; G.save(); drawDials(); G.SFX.dial(); G.buzz(5);
         const g = $('p5d' + (i + 1)), tr = `translate(${xs[i]},1282)`;
         G.tween(120, k => g.setAttribute('transform', `${tr} rotate(${36 * (1 - k)})`));
+        if (isCur && d.every((n, j) => n === ANS[j])) { await G.sleep(300); await this.open(); }   // 合わせたら、そのまま開く
         return true;
       }
     }
@@ -1932,7 +1943,7 @@ G.puzzle({
     // とってのあたり（開けてみる）
     if (G.inR(p, 1138, 1020, 1250, 1100)) {
       if (digits().every((n, i) => n === ANS[i])) { await this.open(); return true; }
-      G.SFX.thud(); await G.shake(.5); G.miss(); return true;
+      G.SFX.thud(); await G.shake(.5); G.miss(['…ちがうな', '…それじゃない', '…おれのクセ、聞いてたか？', '…ドン、を数えろ'][(G.S.f.p7wrong = (G.S.f.p7wrong || 0) + 1) % 4]); return true;
     }
     // ロッカーをガリガリ
     if (G.inR(p, 1130, 820, 1250, 1150)) { G.SFX.lick(); G.think('（ガリガリ）'); G.miss('…それ、おれのロッカーだ'); return true; }
@@ -2023,6 +2034,12 @@ G.puzzle({
     if (G.S.f.p9fish) { G.$('p9board').setAttribute('transform', 'translate(0,-40) rotate(-14 784 1344)'); }
   },
   onView(name) {
+    // 棚の上の画面で「↑ いちばん上へ」（テスト係：のぼれると分からなかった）
+    let up = document.getElementById('upbtn');
+    if (!up) { up = document.createElement('button'); up.id = 'upbtn'; up.className = 'down'; up.textContent = '↑ いちばん上へ'; up.style.left = '10px'; up.style.right = 'auto'; up.style.bottom = 'auto'; up.style.top = '64px';
+      up.addEventListener('click', async () => { if (G.busy) return; G.busy = true; await G.go('top', 560); G.think('棚のいちばん上。倉庫が、ぜんぶ見下ろせる', 2600); G.busy = false; });
+      G.$('stage').appendChild(up); }
+    up.hidden = !(name === 'shelf' && G.cur() && G.cur().id === 9 && !G.S.f.p9fish);
     // まどのわくのテニスボールは、最後に もう一度つかう
     if (G.S.done[5] && !G.S.done[9]) G.$('p5tennis').setAttribute('opacity', name === 'box' && G.S.done[2] ? 1 : 0);
   },
@@ -2065,6 +2082,10 @@ G.puzzle({
     G.say('…見つけたか。…よかったな', 2600);
     await G.sleep(2800);
     G.think('サンマといっしょなら、もう出られる。…でも、レバーが高い', 3200);
+    G.S.hintStep[9] = 0; G.save();   // ここからは「出かた」のヒントを はじめから
+    G.$('hintc').textContent = 'ヒント 0/3';
+    await G.sleep(3400);
+    G.say('…扉のレバーは、高いぞ。上から、なにか落とせないか', 4200);
     G.busy = false;
   },
   
@@ -2151,7 +2172,9 @@ G.puzzle({
       }
     }
     if (G.inR(p, 632, 836, 712, 870)) {
-      if (digits().every((n, i) => n === ANS[i])) { await this.open(); return true; }
+      if (digits().every((n, i) => n === ANS[i])) {
+        if (!G.S.ended) { G.SFX.pof(); G.think('（あいた…でも、あとにしよう。いまは、サンマといっしょに 出るのが先）', 3200); return true; }
+        await this.open(); return true; }
       G.SFX.thud(); await G.shake(.4); G.say('…さわるな'); return true;
     }
     return false;
