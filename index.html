@@ -156,6 +156,12 @@ button,a.big,a.sbtn{transition:transform .2s cubic-bezier(.3,1.7,.5,1),filter .1
 .page .listen{display:block;margin:0 0 10px;min-height:44px;width:100%;border-radius:12px;border:1.5px solid #E8762B;background:#FFF1E2;color:#8A3E10;font-weight:900;font-size:15px}
 .page .listen:disabled{opacity:.6}
 .hintlog li{color:#3A2410;font-weight:700}
+.body-h{margin:4px 0 4px;font-weight:900;font-size:13px;color:#8A6E52}
+.body{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:0 0 8px;padding:0;list-style:none}
+.body li{display:flex;align-items:center;gap:2px;min-height:26px;padding:0 4px;border-radius:8px;border:1.5px dashed #C9AE88;background:#FFFDF8;font-family:var(--ui);font-size:11.5px;font-weight:700;line-height:1.2;color:#8A6E52;white-space:nowrap;overflow:hidden}
+.body li svg{flex:none;width:11px;height:11px;opacity:0}
+.body li.on{border-style:solid;border-color:#F29CA3;background:#FDE3E5;color:#3A2410}
+.body li.on svg{opacity:1}
 .lastlines-h{margin:14px 0 4px;font-weight:900;font-size:14px;color:#8A6E52}
 .lastlines{margin:0;padding-left:1.1em;font-family:var(--ui);font-weight:500;font-size:14px;line-height:26px;color:#5A4430}
 
@@ -928,6 +934,17 @@ try {
 } catch (e) { lang = /^ja\b/i.test(navigator.language || '') ? 'ja' : 'en'; }
 
 const EN = {
+"タマのからだ": "Tama's body",
+"前足": "paws",
+"つめ": "claws",
+"した": "tongue",
+"目": "eyes",
+"うしろ足": "hind legs",
+"ひげと頭": "whiskers",
+"耳": "ears",
+"鼻": "nose",
+"しっぽ": "tail",
+"手帳の「タマのからだ」に、肉球の印がついた": "A paw stamp appeared on \"Tama's body\" in the notebook",
 
 "高さ": "Height",
 "棚の上": "on the shelf",
@@ -1968,6 +1985,7 @@ function note(t) {
 function drawNotes(box = $('notes')) {
   box.innerHTML = '';
   nowLine(box);
+  bodyLine(box);
   if (!S.notes.length) { const p = document.createElement('p'); p.className = 'empty'; p.textContent = 'まだ、なにも書いてない。'; box.appendChild(p); hintLog(box); lastLines(box); return; }
   const ol = document.createElement('ol');
   for (const t of S.notes) {
@@ -1983,6 +2001,21 @@ function drawNotes(box = $('notes')) {
   if (S.memo && Object.keys(S.memo).length) { const h = document.createElement('p'); h.className = 'memo-h'; h.textContent = '「メモを見る」を押すと、元のメモが もう一度見られます'; box.appendChild(h); }
   hintLog(box);
   lastLines(box);
+}
+
+const BODY = ['前足', 'つめ', 'した', '目', 'うしろ足', 'ひげと頭', '耳', '鼻', 'しっぽ'];
+const PAW = '<svg viewBox="-20 -20 40 40" aria-hidden="true"><g fill="#F29CA3" stroke="#5A3A1E" stroke-width="2"><ellipse cx="0" cy="5" rx="9" ry="7"/><circle cx="-9" cy="-5" r="3.8"/><circle cx="-3" cy="-11" r="3.8"/><circle cx="3" cy="-11" r="3.8"/><circle cx="9" cy="-5" r="3.8"/></g></svg>';
+function bodyLine(box) {
+  if (!S.started || !S.done[1]) return;   // 最初の謎が解けてから出す（はじめは すっきり）
+  const h = document.createElement('p'); h.className = 'body-h'; h.textContent = 'タマのからだ'; box.appendChild(h);
+  const ul = document.createElement('ul'); ul.className = 'body';
+  BODY.forEach((name, i) => {
+    const on = i < 8 ? !!S.done[i + 1] : !!(S.f.p9fish || S.done[9]);
+    const li = document.createElement('li'); if (on) li.className = 'on';
+    li.innerHTML = PAW; const s = document.createElement('span'); s.textContent = name; li.appendChild(s);
+    ul.appendChild(li);
+  });
+  box.appendChild(ul);
 }
 
 function nowLine(box) {
@@ -2063,6 +2096,7 @@ async function solve(id, opt = {}) {
   }
   activeSince = performance.now(); moved(); placeLine(); lamps(); heights();
   updHint(); drawNotes($('sidenotes'));
+  if (id === 1) setTimeout(() => toast('手帳の「タマのからだ」に、肉球の印がついた'), 2400);
   const nx = cur();
   if (!nx) { await sleep(1800); ending(); }
   else if (nx.start) nx.start();
