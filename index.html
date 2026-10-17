@@ -185,7 +185,7 @@ button,a.big,a.sbtn{transition:transform .2s cubic-bezier(.3,1.7,.5,1),filter .1
 .tama svg{width:58px;height:58px;transition:transform .3s}
 .tama .perol{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);display:flex;align-items:center;gap:2px;background:var(--pink);color:#3A1E22;border-radius:999px;padding:1px 8px 1px 4px;font-size:13px;font-weight:900;white-space:nowrap}
 .tama .perol svg{width:18px;height:16px}
-.tama.pero{border-color:var(--pink);box-shadow:0 0 0 3px rgba(242,156,163,.35);animation:callme 1.2s ease-in-out 3}
+.tama.pero{border-color:var(--pink);box-shadow:0 0 0 3px rgba(242,156,163,.35);animation:callme 1.2s ease-in-out infinite}
 .tama.shun svg{transform:translateY(5px) rotate(-8deg) scale(.92);filter:saturate(.6)}
 .tama.purr svg{animation:purr .12s linear 10}
 @keyframes purr{50%{transform:translateX(1px) rotate(1deg)}}
@@ -1241,7 +1241,7 @@ const EN = {
 '音': 'Sound', '効果音だけ': 'SFX only', '音なし': 'Muted',
 'はじめから': 'Restart', 'もう一度押す': "Sure? Tap again",
 '棚': 'Shelf', '跳び箱': 'Vault box', '床': 'Floor',
-'↓ おりる': "↓ Hop down",
+'↓ おりる': "↓ Down",
 'ドラ': 'Dora', 'ミケ': 'Miké',
 'タマをなでる': 'Pet Tama',
 'ドラに聞く': 'Ask Dora',
@@ -1623,6 +1623,10 @@ const EN = {
 "（ねこじゃらしは、もう いらない。…そっと 置いた）": "(don't need the cat toy anymore. …set it down gently)",
 '猫好きにも、脱出ゲーム好きにも。': "For cat lovers and escape-game fans alike.",
 '🔊 音を出すと、手がかりがふえます': "🔊 Sound on gives you more clues",
+"（左下の タマの顔で「ぺろ」が できる）": "(Tap Tama's face, bottom left, to lick)",
+"どこに おこう？ …ボードの 丸を押す（引っぱっても おける）": "Where should it go? …Tap a circle on the board (or drag it there)",
+"この床板は、しっかり はまってる": "This floorboard is firmly in place",
+"どこに おこう？": "Where should it go?",
 '…サンマは、かたづけない': "…The saury stays. Not tidying that.",
 'サンマ。…いいにおい': 'The saury. …smells good',
 '（サンマを、ぺろ）': '(lick the saury)',
@@ -2402,7 +2406,9 @@ let fx = 0, emptyNow = false;   // fx：押したあとに 何かが動いたか
 stage.addEventListener('pointerdown', async e => {
   if (e.target.closest('button')) return;
   audio(); const pp = pawPrint(e, busy && !goronOn);
-  if (busy || viewMoving) return;   // ↓ 新しく押したら、前に押した物の「あとから出る ことば」は 出さない（研究ノートの つづきが、次に押した箱の返事に見えた・10/17）
+  if (busy || viewMoving) { pendTap = {cx: e.clientX, cy: e.clientY, t: performance.now()}; return; }   // 動いている間に押した分は、動きが おわったら 届ける（1〜2秒 効かなかった・10/17 公開版4）
+  pendTap = null;
+  // ↓ 新しく押したら、前に押した物の「あとから出る ことば」は 出さない（研究ノートの つづきが、次に押した箱の返事に見えた・10/17）
   tapN++;
   // 画面が切りかわる とちゅうは 受けつけない（もどる のすぐあとに 前の画面のダイヤルが回った・10/17 公開版3の再採点）
   SFX.puni(); buzz(10);
@@ -2415,7 +2421,13 @@ stage.addEventListener('pointerdown', async e => {
   await dispatch(e.clientX, e.clientY);
 });
 
-let probing = false, viewMoving = false, goronT = 0, tapN = 0, cbEp = null;
+let probing = false, viewMoving = false, goronT = 0, tapN = 0, cbEp = null, pendTap = null;
+setInterval(() => {   // 動きが おわったら、その間に押した 最後の1回を 届ける（1.8秒より前のものは すてる）
+  if (!pendTap || busy || viewMoving) return;
+  const q = pendTap; pendTap = null;
+  if (performance.now() - q.t > 1800 || !$('zoom').hidden || !$('notebook').hidden) return;
+  stage.dispatchEvent(new PointerEvent('pointerdown', {clientX: q.cx, clientY: q.cy, bubbles: true, isPrimary: true}));
+}, 60);
 async function dispatch(cx, cy) {
   const p = toWorld({clientX: cx, clientY: cy});
   // いまの謎 → 解いた謎（見てまわる用）→ 共通 → 何もない
@@ -2661,6 +2673,7 @@ $('hint').addEventListener('click', () => {
 let tamaAct = null;
 const T = s => (typeof I18N !== 'undefined' ? I18N.t(s) : s);
 function tamaMode(fn) {
+  if (fn && !tamaAct && !S.seen.pero) { S.seen.pero = true; save(); setTimeout(() => think('（左下の タマの顔で「ぺろ」が できる）', 3200), 400); }   // 動きを使うボタンだと 分かるように（10/17 公開版4）
   tamaAct = fn || null; $('tama').classList.toggle('pero', !!fn); $('perol').hidden = !fn;
   $('perol').lastChild.textContent = T('ぺろ');
   $('tama').setAttribute('aria-label', T(fn ? 'ぺろ（なめる）' : 'タマをなでる'));
@@ -2701,7 +2714,7 @@ fitShort(); SHORT.addEventListener('change', fitShort);
 addEventListener('resize', () => { if (SHORT.matches !== document.documentElement.classList.contains('short')) fitShort(); });   // change が来ない ブラウザのため
 let resetArm = 0;
 $('reset').addEventListener('click', () => {
-  if (Date.now() - resetArm > 3000) { resetArm = Date.now(); $('reset').textContent = 'もう一度押す'; setTimeout(() => $('reset').textContent = 'はじめから', 3000); return; }
+  if (Date.now() - resetArm > 6000) { resetArm = Date.now(); $('reset').textContent = 'もう一度押す'; setTimeout(() => $('reset').textContent = 'はじめから', 6000); return; }   // 6秒（すぐ消えた・10/17）
   restart();
 });
 function restart() { const snd = S.sound; S = fresh(); S.sound = snd; S.round = CLEARS + 1; save(); location.reload(); }
@@ -2780,7 +2793,7 @@ function donPlace() {
   }
   if (!ok && VIEWS[view].donY) y = VIEWS[view].donY;   // 右はしに 押す物がある画面は、ずらす（上から見た倉庫の 床板など）
   // 近くで見る画面・奥の部屋などは、絵の外（下のボタンの列の 高さボタンの場所）に出す。絵の字や物に かからない（札や「ドラ さわるな」に かかった・10/17 公開版3）
-  if (!main) { if (d.parentNode !== $('nav')) $('nav').insertBefore(d, $('nav').firstChild); d.classList.add('row'); d.classList.remove('mini'); d.style.left = d.style.top = ''; return; }
+  if (!main || !ok) { if (d.parentNode !== $('nav')) $('nav').insertBefore(d, $('nav').firstChild); d.classList.add('row'); d.classList.remove('mini'); d.style.left = d.style.top = ''; return; }
   if (d.parentNode !== stage) stage.insertBefore(d, $('say'));
   d.classList.toggle('row', !ok); d.classList.toggle('mini', !ok);   // 近くで見る画面などは 横1列で 小さく（すきまを近くで見る画面で 右のすきまに かかった・10/17 公開版2の再採点）
   d.style.left = ok ? (x * 100) + '%' : ''; d.style.top = (y * 100) + '%';
@@ -2994,7 +3007,8 @@ $('start').addEventListener('click', () => {
 });
 $('cont').addEventListener('click', () => { audio(); welcomeBack(); });
 
-return {playSong, get moving() { return viewMoving; }, get tapN() { return tapN; }, _ep: e => { cbEp = e; }, _probe: probe, _map: hitMap, _audit: audit, _wb: worldBox, _c2w: c2w, inR0, inEl, elBox, get S() { return S; }, save, count, rep, again, get round() { return S.round; }, bgm, SFX, tween, ease, lerp, sleep, buzz, $, svg, VIEWS, camTo, setCam, setView, go, get view() { return view; },
+return {sleep: ms => { const e = tapN; return new Promise(r => setTimeout(() => { cbEp = e; r(); queueMicrotask(() => { cbEp = null; }); }, ms)); },   // 謎のファイル用（前の場面の ことばが、押した物の返事を 上書きしていた・10/17 公開版4）
+  playSong, get moving() { return viewMoving; }, get tapN() { return tapN; }, _ep: e => { cbEp = e; }, _probe: probe, _map: hitMap, _audit: audit, _wb: worldBox, _c2w: c2w, inR0, inEl, elBox, get S() { return S; }, save, count, rep, again, get round() { return S.round; }, bgm, SFX, tween, ease, lerp, sleep, buzz, $, svg, VIEWS, camTo, setCam, setView, go, get view() { return view; },
   ball, paw, say, think, toast, miss, nudge, dribble, zoom, note, hide, puzzle, cur, solve, light, flavor, inR, near, emptyTap, act, tamaMode, MANGA1,
   get dribbling() { return dribbling; }, get busy() { return busy; }, get lastTap() { return lastTap; }, set busy(v) { busy = v; if (v) fx++; }, learnGoron, setGoron, get goronOn() { return goronOn; },
   boot() {
@@ -3448,7 +3462,7 @@ G.puzzle({
         if (F && r === ANS && G.inEl(p, 'cone', 8)) { await this.knock(); return true; }
         const at = [
           (F || view === 'box') && G.inR(p, 550, 50, 870, 280),            // 0 高いまど
-          (F || view === 'shelf') && G.inR(p, 80, 895, 335, 990),          // 1 棚の まいたマット
+          (F || view === 'shelf') && G.inR(p, 80, 895, 345, 990),          // 1 棚の まいたマット
           false,
           F && G.inR(p, 0, 1150, 99, 1340),                                // 3 ボールかご
           F && G.near(p, G.ball.x, G.ball.y, 64, 'ball'),                          // 4 謎1のボール
@@ -3603,7 +3617,7 @@ G.puzzle({
       
       const hit = WHO.find(w => G.near(p, ...where(w), w === 'ginzo' ? 32 : 24, 'mg_' + w));   // 24：となりの顔と 重ならない（hit_check・10/17）
       if (hit && sel && hit !== sel && s.pos[hit]) { await this.put(sel, s.pos[hit]); return true; }   // 置いてある顔の上 → 入れかえ
-      if (hit && hit !== sel) { sel = hit; G.SFX.choi(); G.buzz(6); ring(); if (!G.S.f.p4selsaid) { G.S.f.p4selsaid = true; G.save(); G.think('どこに おこう？ …ボードの 丸を押す', 2600); } return true; }   // 1回目だけ、次にすることを（10/17 再採点）
+      if (hit && hit !== sel) { sel = hit; G.SFX.choi(); G.buzz(6); ring(); if (!G.S.f.p4selsaid) { G.S.f.p4selsaid = true; G.save(); G.think('どこに おこう？ …ボードの 丸を押す（引っぱっても おける）', 2800); } else G.think('どこに おこう？', 1200); return true; }   // 選んだ合図を いつも（10/17 公開版4）   // 1回目だけ、次にすることを（10/17 再採点）
       if (hit && hit === sel) { sel = null; ring(); G.SFX.pof(); return true; }
       const slot = Object.keys(SL).find(k => G.near(p, ...SL[k], 30));
       if (!sel && G.inR0(p, 420, 250, 520, 390)) return false;   // スイッチは「かべ」ではない（名前を言う・hit_check 10/17）
@@ -4340,6 +4354,10 @@ G.flavor({view:'floor', test:p => G.S.f.p9fish && G.$('p9board').getAttribute('o
   G.SFX.pof(); G.think('持ち上げた床板。…サンマは、もう 釣った');
 }});
 
+G.flavor({view:'floor', test:p => !G.S.done[9] && !(G.cur() && G.cur().id === 9) && G.inEl(p, 'p9board', 6), run() {
+  G.SFX.pof(); G.think('この床板は、しっかり はまってる');
+}});
+
 
 (() => {
 G.VIEWS.dbox = {box:[601, 790, 140, 196], h:'box', dial:true};
@@ -4466,7 +4484,7 @@ const def = {
     }
     if (view !== 'dbox' || opened()) return false;
     for (let i = 0; i < 4; i++) {
-      if (G.inR(p, 652 + i * 9.5, 871, 661.5 + i * 9.5, 905)) {
+      if (G.inR(p, 652 + i * 9.5, 869, 661.5 + i * 9.5, 891)) {   // 数字の窓の中だけ（下を押しても進んだ・10/17 公開版4）
         const d = digits().slice(); d[i] = (d[i] + 1) % 10; G.S.f.p10d = d; G.save(); draw(); G.SFX.dial(); G.buzz(5); return true;
       }
     }
