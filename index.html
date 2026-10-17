@@ -1036,6 +1036,7 @@ const EN = {
 "…あとは、ひなたで ねてる それだけだ": "…All that's left is that thing sleeping in the sun.",
 "（はじめ）": "(start)",
 "（さいご）": "(last)",
+"ひなたで ねている タマを 押してみよう": "Tap Tama napping in the sunny spot",
 "…コーンの下に、なにか ある": "…Something under the cone.",
 "扉。…もう、外から 開けてもらった": "The door. …Someone already opened it from outside.",
 "（2つめ）": "(2nd)",
@@ -2165,9 +2166,13 @@ function keepLine(who, t) { if (LINES[0] && LINES[0][0] === who && LINES[0][1] =
 
 let sideT = 0;
 function sideLater() { if (sideT) return; sideT = requestAnimationFrame(() => setTimeout(() => { sideT = 0; drawNotes($('sidenotes')); }, 0)); }
+let hintUntil = 0, hintSaying = false;
 function say(t, ms, who = 'ドラ') {
   if (probing) return;   // しらべるだけの間は 何も出さない・動かさない
   if (cbEp !== null && cbEp < tapN) return;   // 前に押した物の つづき（そのあと べつの物を押した）
+  // ヒントを 出している間は、ほかのことばで 上書きしない。おわってから 出す（ヒントが 落書きの返事で 消えた・10/17 公開版5の直し3）
+  const wait = hintUntil - performance.now();
+  if (!hintSaying && wait > 0) { fx++; setTimeout(() => { const e = cbEp; cbEp = null; try { say(t, ms, who); } finally { cbEp = e; } }, wait + 50); return; }
   fx++;
   keepLine(who, t);
   $('saywho').textContent = who; $('say').classList.toggle('mike', who !== 'ドラ');
@@ -2243,7 +2248,7 @@ function placeFloats() {
     if (thinkNew) { th.classList.add('on'); th.classList.remove('pop'); requestAnimationFrame(() => th.classList.add('pop')); thinkNew = false; }   // 出るたびに ぽんっと（入れかわったことが 分かるように・10/17）
   }
   if ($('toast').classList.contains('on')) placeToast();
-  if ($('don').children.length && $('don').parentNode === stage) donPlace();
+  if ($('don').children.length && $('don').parentNode === stage) { $('don').dataset.at = ''; donPlace(Math.max(1, $('don').querySelectorAll('span').length)); }
 }
 
 function placeToast() {
@@ -2277,7 +2282,7 @@ function miss(line) {
   // 謎7（4けたの番号）の間は、数が 答えに見えないように、1回目だけ ことわる（雄山 10/16）
   const c7 = !line && cur() && cur().id === 7 && !S.f.p7numsaid;
   if (c7) { S.f.p7numsaid = true; save(); }
-  setTimeout(() => say(c7 ? `…${n}。…これは、まちがいの数だ` : (line || r2 || FING[n] || '…' + n)), 350);
+  setTimeout(() => say(c7 || (n === 1 && !line && !r2) ? `…${n}。…これは、まちがいの数だ` : (line || r2 || FING[n] || '…' + n)), 350);   // 1回目は 何の数か 言う（とちゅうの「…1」が 手がかりに見えた・10/17 公開版5の直し3）
   if (n === 20 && !line && !r2) setTimeout(() => think('‥え？', 1600), 2600);
 }
 
@@ -2755,7 +2760,8 @@ $('hint').addEventListener('click', () => {
   if (step > now) { S.hintStep[c.id] = step; S.hintsUsed[c.id] = (S.hintsUsed[c.id] || 0) + 1; save(); }
   count('hint'); lid(true); updHint(); moved();
   const h = typeof c.hints === 'function' ? c.hints()[step - 1] : c.hints[step - 1];
-  say(h, 4500, c.hintWho ? c.hintWho() : 'ドラ');
+  hintSaying = true; try { say(h, 4500, c.hintWho ? c.hintWho() : 'ドラ'); } finally { hintSaying = false; }
+  hintUntil = performance.now() + Math.min(4500, readMs(h, 4500, 260));
   drawNotes($('sidenotes'));
 });
 
@@ -2910,6 +2916,7 @@ function donPlace(n = 4) {
     d.classList.remove('mini', 'row', 'col'); d.classList.add('free', best[4] ? 'col' : 'row');
     const right = best[0] + best[2] / 2 > W / 2 + 1;   // 右の はしなら、右から のびる
     d.style.left = right ? 'auto' : best[0] + 'px'; d.style.right = right ? (W - best[0] - best[2]) + 'px' : 'auto'; d.style.top = best[1] + 'px';
+    const sy = $('say'); if (sy.classList.contains('on') && !sy.classList.contains('low') && !sy.classList.contains('mid')) d.style.top = (sy.offsetTop + sy.offsetHeight + 4) + 'px';   // ふきだしの下に（ふきだしに かくれた）
     return;
   }
   if (d.parentNode !== stage) stage.insertBefore(d, $('say'));
@@ -3668,7 +3675,7 @@ G.puzzle({
   const DIR = {};
   for (const w of WHO) { const s = SL[ANS[w]], dx = T[0] - s[0], dy = T[1] - s[1], d = Math.hypot(dx, dy); DIR[w] = [dx / d, dy / d]; }
 
-  G.VIEWS.board = {box:[440, 330, 340, 476], h:'box', sayAt:'low', drag:true, keep:['o_smemo'], thinkAt:.36};   // keep：タマの心の声を 下のメモに かけない（10/17 公開版5）   // 吹き出しは下に（右上のタマの顔に かけない・10/18）   // 作戦ボードを 近くで見る（跳び箱の高さ）
+  G.VIEWS.board = {box:[440, 330, 340, 476], h:'box', sayAt:'low', drag:true, keep:['o_smemo', 'mg_dora', 'mg_tama', 'mg_mike', 'mg_tadashi', 'mg_ginzo'], thinkAt:.36, back:'box', backLabel:'← もどる'};   // keep：タマの心の声を 下のメモに かけない（10/17 公開版5）   // 吹き出しは下に（右上のタマの顔に かけない・10/18）   // 作戦ボードを 近くで見る（跳び箱の高さ）
 
   const st = () => (G.S.f.p4 = G.S.f.p4 || {got:false, pos:{}});
   const where = w => { const k = st().pos[w]; return k ? SL[k] : PARK[w]; };
@@ -3759,7 +3766,7 @@ G.puzzle({
       if (!s.got) { if (G.inR(p, 465, 375, 745, 690)) { G.SFX.pof(); G.think('コートの絵。丸いしるしが 6つ'); return true; } return false; }
       if (isCur && s.lit && correct() && G.near(p, T[0], T[1], 72)) { await this.found(); return true; }
       
-      const hit = WHO.find(w => G.near(p, ...where(w), w === 'ginzo' ? 32 : 26, 'mg_' + w));   // 24：となりの顔と 重ならない（hit_check・10/17）
+      const hit = WHO.find(w => G.inEl(p, 'mg_' + w, 3));   // 顔の絵の 四角（タダシの 蝶ネクタイの下で かべの返事だった・10/17 公開版5の直し3）   // 24：となりの顔と 重ならない（hit_check・10/17）
       if (hit && sel && hit !== sel && s.pos[hit]) { await this.put(sel, s.pos[hit]); return true; }   // 置いてある顔の上 → 入れかえ
       if (hit && hit !== sel) { sel = hit; G.SFX.choi(); G.buzz(6); ring(); if (!G.S.f.p4selsaid) { G.S.f.p4selsaid = true; G.save(); G.think('どこに おこう？ …ボードの 丸を押す（引っぱっても おける）', 2800); } else G.think('どこに おこう？', 1200); return true; }   // 選んだ合図を いつも（10/17 公開版4）   // 1回目だけ、次にすることを（10/17 再採点）
       if (hit && hit === sel) { sel = null; ring(); G.SFX.pof(); return true; }
@@ -3968,7 +3975,7 @@ G.puzzle(def);
 
 
 (() => {
-G.VIEWS.oku = {box:[1100, 540, 560, 784], h:'floor', back:'floor', backLabel:'← もどる', donY:.13};   // ドンは右上の かべ（箱の札に かけない・10/18）
+G.VIEWS.oku = {keep:['p7memo', 'o_sign1', 'o_sign2', 'o_sign3'], box:[1100, 540, 560, 784], h:'floor', back:'floor', backLabel:'← もどる', donY:.13};   // ドンは右上の かべ（箱の札に かけない・10/18）
 G.VIEWS.wall = {box:[230, 870, 380, 532], h:'floor', back:'floor', backLabel:'← もどる', donY:.13};   // かべの下のすきまを近くで
 const GAPS = {C:{x0:270, x1:322, cm:15, where:'左から1つめ（棚の下のおく）'}, W1:{x0:356, x1:404, cm:11, where:'左から2つめ'},
   W2:{x0:416, x1:467, cm:9, where:'左から3つめ'}, W3:{x0:479, x1:526, cm:12, where:'左から4つめ'}, W4:{x0:538, x1:588, cm:10, where:'左から5つめ'}};
@@ -4509,7 +4516,7 @@ G.flavor({view:'floor', test:p => !G.S.done[9] && !(G.cur() && G.cur().id === 9)
 
 (() => {
 G.VIEWS.dbox = {box:[601, 790, 140, 196], h:'box', dial:true};
-G.VIEWS.box.keep = ['p10ball'];   // 跳び箱の上の ことばを 古いボールに かけない（10/17 公開版5の直し）
+G.VIEWS.box.keep = ['p10ball', 'p10box'];   // 跳び箱の上の ことばを 古いボールに かけない（10/17 公開版5の直し）
 
 const BOX_WIDE = [601, 790, 140, 196], BOX_LOCK = [632, 810, 78, 109.2];
 const ANS = [6, 1, 8, 9];
@@ -4838,7 +4845,7 @@ G.puzzle({
   onView() { show(); mangaBtn(); },
   async tap(view, p) {
     if (!G.S.endTrue) return false;
-    const say = (k, line) => { G.SFX.pof(); if (!G.S.f['k5' + k]) { G.S.f['k5' + k] = true; G.save(); marks(); } G.say(line, 3600); nudgeLater(9000); return true; };
+    const say = (k, line) => { G.SFX.pof(); if (!G.S.f['k5' + k]) { G.S.f['k5' + k] = true; G.save(); marks(); if (counted() === 2 && !G.S.f.k5end) setTimeout(() => G.toast('ひなたで ねている タマを 押してみよう'), 2600); } G.say(line, 3600); nudgeLater(9000); return true; };   // 2つ数えたら、つぎに押す物を 知らせる（「ひなたで寝てる それ」が 分からなかった・10/17 雄山）
     if (view === 'floor' || view === 'shelf' || view === 'box') {
       // ねているタマ（ひなた）
       if (view === 'floor' && (G.inEl(p, 'k5tama', 6) || (G.S.f.k5pair && G.inEl(p, 'k5pair', 6)))) {   // 絵の形に（10/17 公開版3）
