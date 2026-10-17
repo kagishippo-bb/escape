@@ -1552,6 +1552,16 @@ const EN = {
 'コーンの下に…ねこの顔？': 'under the cone… cat faces?',
 
 
+'ドラ先輩の 顔。…どこに おこう？ ボードの 丸を押す（引っぱっても おける）': "Dora's face. …Where should it go? Tap a circle on the board (or drag it there)",
+'ドラ先輩の 顔。どこに おこう？': "Dora's face. Where should it go?",
+'タマの 顔（ぼく）。…どこに おこう？ ボードの 丸を押す（引っぱっても おける）': "Tama's face (that's me). …Where should it go? Tap a circle on the board (or drag it there)",
+'タマの 顔（ぼく）。どこに おこう？': "Tama's face (that's me). Where should it go?",
+'ミケさんの 顔。…どこに おこう？ ボードの 丸を押す（引っぱっても おける）': "Miké's face. …Where should it go? Tap a circle on the board (or drag it there)",
+'ミケさんの 顔。どこに おこう？': "Miké's face. Where should it go?",
+'タダシさんの 顔。…どこに おこう？ ボードの 丸を押す（引っぱっても おける）': "Tadashi's face. …Where should it go? Tap a circle on the board (or drag it there)",
+'タダシさんの 顔。どこに おこう？': "Tadashi's face. Where should it go?",
+'ギンゾー監督の 顔。…どこに おこう？ ボードの 丸を押す（引っぱっても おける）': "Coach Ginzo's face. …Where should it go? Tap a circle on the board (or drag it there)",
+'ギンゾー監督の 顔。どこに おこう？': "Coach Ginzo's face. Where should it go?",
 '長すぎる作戦名': "A Play Name That's Way Too Long",
 '…サクジ監督の作戦名、長いな。でも、ぜんぶ意味がある': "…Coach Sakuji's play names are long. But every word means something.",
 '…作戦名のとおりに、顔をならべてみろ': '…Put the faces where the play says.',
@@ -3706,6 +3716,7 @@ G.puzzle({
   const T = [760, 515];
   const ANS = {dora:'G', tama:'R', mike:'F', tadashi:'CL', ginzo:'CR'};
   const WHO = ['dora', 'tama', 'mike', 'tadashi', 'ginzo'];
+  const NAME = {dora:'ドラ先輩の 顔', tama:'タマの 顔（ぼく）', mike:'ミケさんの 顔', tadashi:'タダシさんの 顔', ginzo:'ギンゾー監督の 顔'};
   const PARK = {dora:[505, 658], tama:[555, 658], mike:[605, 658], tadashi:[655, 658], ginzo:[705, 658]};   // まんなかの線の丸から はなす（重なった・10/17 公開版5の直し2）
   const DIR = {};
   for (const w of WHO) { const s = SL[ANS[w]], dx = T[0] - s[0], dy = T[1] - s[1], d = Math.hypot(dx, dy); DIR[w] = [dx / d, dy / d]; }
@@ -3803,7 +3814,7 @@ G.puzzle({
       
       const hit = WHO.find(w => G.inEl(p, 'mg_' + w, 3));   // 顔の絵の 四角（タダシの 蝶ネクタイの下で かべの返事だった・10/17 公開版5の直し3）   // 24：となりの顔と 重ならない（hit_check・10/17）
       if (hit && sel && hit !== sel && s.pos[hit]) { await this.put(sel, s.pos[hit]); return true; }   // 置いてある顔の上 → 入れかえ
-      if (hit && hit !== sel) { sel = hit; G.SFX.choi(); G.buzz(6); ring(); if (!G.S.f.p4selsaid) { G.S.f.p4selsaid = true; G.save(); G.think('どこに おこう？ …ボードの 丸を押す（引っぱっても おける）', 2800); } else G.think('どこに おこう？', 1200); return true; }   // 選んだ合図を いつも（10/17 公開版4）   // 1回目だけ、次にすることを（10/17 再採点）
+      if (hit && hit !== sel) { sel = hit; G.SFX.choi(); G.buzz(6); ring(); const nm = NAME[hit]; if (!G.S.f.p4selsaid) { G.S.f.p4selsaid = true; G.save(); G.think(nm + '。…どこに おこう？ ボードの 丸を押す（引っぱっても おける）', 3200); } else G.think(nm + '。どこに おこう？', 1800); return true; }   // 顔を えらぶと 名前を言う（はじめての人は ミケ・タダシ・監督の顔を 知らない・10/17 夜 作者 案A）   // 選んだ合図を いつも（10/17 公開版4）   // 1回目だけ、次にすることを（10/17 再採点）
       if (hit && hit === sel) { sel = null; ring(); G.SFX.pof(); return true; }
       const slot = Object.keys(SL).find(k => G.near(p, ...SL[k], 30));
       if (!sel && G.inR0(p, 420, 250, 520, 390)) return false;   // スイッチは「かべ」ではない（名前を言う・hit_check 10/17）
