@@ -191,6 +191,11 @@ button,a.big,a.sbtn{transition:transform .2s cubic-bezier(.3,1.7,.5,1),filter .1
 .hb svg{width:30px;height:22px;flex:none}
 .hint{flex:1;min-width:110px}
 .note-b,.goron-b{flex:none;width:64px;flex-direction:column;gap:2px;font-size:13px}
+.note-b{position:relative}
+.note-b.got::after{content:attr(data-got);position:absolute;inset:-1.5px;display:flex;align-items:center;justify-content:center;background:var(--pink);color:#15121C;border-radius:16px;font-size:13px;font-weight:900;white-space:nowrap;animation:got 2s forwards;pointer-events:none}
+@keyframes got{0%{opacity:0;transform:scale(.8)}12%{opacity:1;transform:scale(1.1)}22%{transform:none}80%{opacity:1}100%{opacity:0}}
+.side .page.got{animation:sidegot 1.6s ease-out}
+@keyframes sidegot{0%{box-shadow:0 0 0 0 #F29CA3,0 10px 40px #000}30%{box-shadow:0 0 0 6px #F29CA3,0 10px 40px #000}100%{box-shadow:0 0 0 0 transparent,0 10px 40px #000}}
 @media (max-width:400px){.note-b,.goron-b{width:56px;padding-inline:4px}}  
 .hint span{white-space:nowrap}
 @media (max-width:400px){.hint{gap:4px;padding-inline:6px}.hint svg{width:24px;height:18px}}   
@@ -526,7 +531,7 @@ html.short .act{font-size:14px;padding:0 10px;white-space:normal;line-height:1.2
     <div class="acts"><button class="act" id="act" hidden></button><button class="act" id="down" hidden>↓ おりる</button></div>
   </div>
   <div class="hud">
-    <button class="tama" id="tama" aria-label="タマをなでる"><svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="-80 -80 160 160"><style>
+    <button class="tama" id="tama" aria-label="タマをなでる"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="-80 -80 160 160"><style>
 .o{fill:#F2A65A;stroke:#5A3A1E;stroke-width:2.5;stroke-linejoin:round}
 .c{fill:#FBE6C8;stroke:#5A3A1E;stroke-width:2.5;stroke-linejoin:round}
 .w{fill:#FFFFFF;stroke:#5A3A1E;stroke-width:2.5;stroke-linejoin:round}
@@ -1547,6 +1552,11 @@ const EN = {
 '巻き尺を、くわえた。すきまを はかれる': 'picked up the tape measure. now I can measure the gaps',
 '奥の部屋': 'the back room',
 '棚の下のおく': 'under the shelf, at the back',
+'左から1つめ（棚の下のおく）': '1st from the left (under the shelf, at the back)',
+'左から2つめ': '2nd from the left',
+'左から3つめ': '3rd from the left',
+'左から4つめ': '4th from the left',
+'左から5つめ': '5th from the left',
 'かべの下 左から1つめ': 'wall, 1st from the left',
 'かべの下 左から2つめ': 'wall, 2nd from the left',
 'かべの下 左から3つめ': 'wall, 3rd from the left',
@@ -1967,6 +1977,7 @@ let cam = VIEWS.floor.box.slice(), view = 'floor';
 const setCam = v => { cam = v; svg.setAttribute('viewBox', v.map(n => n.toFixed(1)).join(' ')); };
 function camTo(name, d = 450, e) { const a = cam.slice(), b = VIEWS[name].box; return tween(d, k => setCam(a.map((n, i) => lerp(n, b[i], k))), e); }
 function setView(name) {
+  if ($('say').classList.contains('on') && performance.now() - sayShown > 900) { clearTimeout(sayTimer); $('say').classList.remove('on'); stage.classList.remove('saylow', 'sayup'); }   // 部屋を移ったら、前の部屋の ふきだしは 消す（10/17 公開版2の再採点）
   view = name; const h = VIEWS[name].h, main = ['floor', 'box', 'shelf'].includes(name);
   heights();
   $('heights').style.display = main ? '' : 'none';   // 近くで見る画面・奥の部屋・上から見た画面では消す（雄山 10/16）
@@ -2004,11 +2015,11 @@ paw.move = (x, y, d, e = ease.io) => { const x0 = paw.x, y0 = paw.y; return twee
 paw.hide = (d = 200) => paw.move(150, 1700, d);
 
 
-let sayTimer, thinkTimer, toastTimer;
+let sayTimer, thinkTimer, toastTimer, sayShown = 0;
 
 
 const readMs = (t, ms, per) => { const en = typeof I18N !== 'undefined' && I18N.en, s = en ? I18N.t(t) : t;
-  return Math.max(ms || 2600, s.length <= (en ? 14 : 6) ? 0 : 5000, s.length * (en ? 85 : per + 60)); };   // もう少し長く（10/17 名人の審査：大事なひとことを 見落とす）   // 7字より長いものは 4.2秒より長く（10/17 再審査）
+  return Math.max(ms || 2600, s.length <= (en ? 14 : 6) ? 0 : 3600, s.length * (en ? 70 : per)); };   // 短く（5秒より長く残って 得点板や まどを かくした・10/17 公開版2の再採点）。見のがしても 手帳の「さっきのことば」で 見なおせる   // もう少し長く（10/17 名人の審査：大事なひとことを 見落とす）   // 7字より長いものは 4.2秒より長く（10/17 再審査）
 const LINES = [];
 function keepLine(who, t) { if (LINES[0] && LINES[0][0] === who && LINES[0][1] === t) return;   // 同じことばは、つづけて写さない
   LINES.unshift([who, t]); LINES.length = Math.min(LINES.length, 12); if (!$('notebook').hidden) drawNotes(); sideLater(); }   // 12行まで（8行だと 大事なひとことが すぐ押し出された・10/17 再採点）
@@ -2024,7 +2035,7 @@ function say(t, ms, who = 'ドラ') {
   // 上のほう（まどのカーテンなど）を押した すぐあとは、下に出す。さわった所の 変わりかたが 見えるように（10/17 作者・スマホ）
   if (!at && v && v.box && lastTap && lastTap.view === view && Date.now() - lastTap.t < 4000 && lastTap.p.y < v.box[1] + v.box[3] * .3) { at = 'low'; up = true; }
   $('say').classList.toggle('low', at === 'low'); $('say').classList.toggle('mid', at === 'mid'); stage.classList.toggle('saylow', at === 'low' && !up); stage.classList.toggle('sayup', up);
-  $('sayt').textContent = t; $('say').classList.add('on');
+  $('sayt').textContent = t; $('say').classList.add('on'); sayShown = performance.now();
   if ($('toast').classList.contains('on')) placeToast();
   clearTimeout(sayTimer); sayTimer = setTimeout(() => { $('say').classList.remove('on'); stage.classList.remove('saylow', 'sayup'); }, readMs(t, ms, 260));
 }
@@ -2039,7 +2050,13 @@ function think(t, ms, at) {
 
 function placeToast() {
   const r = stage.getBoundingClientRect(), sy = $('say'), up = sy.classList.contains('on') && !sy.classList.contains('low') && !sy.classList.contains('mid');
-  $('toast').style.top = (!($('title').hidden && $('clear').hidden) ? 14 : up ? Math.max(8, r.bottom - 52) : Math.max(8, r.top + 8)) + 'px';
+  $('toast').style.top = (!($('title').hidden && $('clear').hidden) ? 14 : up ? sy.getBoundingClientRect().bottom + 6 : Math.max(8, r.top + 8)) + 'px';   // 下のはしは タマの心の声と重なる → ふきだしの すぐ下
+}
+
+function noteGot() {
+  const b = $('noteb'), side = document.querySelector('.side .page');
+  b.dataset.got = typeof I18N !== 'undefined' && I18N.en ? 'Copied!' : '写した！';
+  for (const el of [b, side]) if (el) { el.classList.remove('got'); void el.offsetWidth; el.classList.add('got'); }
 }
 function toast(t) {   // 絵の上のはしに出す（いちばん上の「日本語 / English」や音のボタンに かぶっていた・10/17 再採点）
   $('toast').textContent = t; placeToast(); $('toast').classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('on'), 2600); }
@@ -2073,7 +2090,7 @@ function zoom(text, noteText) {
 $('zoom').addEventListener('pointerdown', () => { $('zoom').hidden = true; });
 function note(t) {
   if (S.notes.includes(t)) return;
-  S.notes.push(t); save(); toast('手帳に写した'); drawNotes($('sidenotes'));
+  S.notes.push(t); save(); noteGot(); drawNotes($('sidenotes'));
 }
 function drawNotes(box = $('notes')) {
   box.innerHTML = '';
@@ -2206,8 +2223,23 @@ function pawPrint(e, faint) {
   stage.appendChild(d); setTimeout(() => d.remove(), 760);
   return d;
 }
-const inR = (p, x0, y0, x1, y1) => p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1;
-const near = (p, x, y, r) => Math.hypot(p.x - x, p.y - y) <= r;
+
+const OBJ = ['cone', 'coneshadow', 'magpile', 'p5cage', 'spring', 'p6gapC', 'p6gapW1', 'p6gapW2', 'p6gapW3', 'p6gapW4', 'p5paper', 'p6note', 'p6tape', 'ball',
+  'fboard', 'holenote', 'teanote', 'teaset', 'p5under', 'p5tennis', 'p6butt', 'p9board', 'p9sanma', 'p9lever', 'p10box', 'p10page', 'toggle',
+  'k5tama', 'k5dora', 'graffiti', 'mg_dora', 'mg_tama', 'mg_mike', 'mg_tadashi', 'mg_ginzo'];
+let tapUnder = null;   // 押している間だけ：指の下の物 [{id, b:[x0,y0,x1,y1]}]
+function shown(el) { for (let e = el; e && e !== svg; e = e.parentNode) { if (e.getAttribute && (e.getAttribute('opacity') === '0' || e.style.opacity === '0' || e.style.display === 'none' || e.getAttribute('display') === 'none')) return false; } return true; }
+function objsAt(cx, cy) {
+  const ids = new Set(), m = svg.getScreenCTM().inverse(), W = (x, y) => { const q = svg.createSVGPoint(); q.x = x; q.y = y; return q.matrixTransform(m); };
+  for (const el of document.elementsFromPoint(cx, cy)) for (let e = el; e && e !== svg && e.id !== 'stage'; e = e.parentNode) if (e.id && OBJ.includes(e.id) && shown(e)) ids.add(e.id);
+  return [...ids].map(id => { const r = $(id).getBoundingClientRect(), a = W(r.left, r.top), b = W(r.right, r.bottom); return {id, b: [a.x, a.y, b.x, b.y]}; });
+}
+// 当たり [x0,y0,x1,y1] が、指の下の物の絵を 半分より多く ふくむか、当たりの半分より多くが その物の上なら、その物の当たり
+const owns = (x0, y0, x1, y1) => !tapUnder || !tapUnder.length || tapUnder.some(({b}) => {
+  const w = Math.max(0, Math.min(x1, b[2]) - Math.max(x0, b[0])), h = Math.max(0, Math.min(y1, b[3]) - Math.max(y0, b[1]));
+  return w * h >= .5 * Math.max(1, (b[2] - b[0]) * (b[3] - b[1])) || w * h >= .5 * Math.max(1, (x1 - x0) * (y1 - y0)); });   // 物の一部分（茶わん・ダイヤル）の当たりも 通す
+const inR = (p, x0, y0, x1, y1) => p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1 && owns(x0, y0, x1, y1);
+const near = (p, x, y, r) => Math.hypot(p.x - x, p.y - y) <= r && owns(x - r, y - r, x + r, y + r);
 const FLAVOR = [];   // どの謎にも入らないタップ：{view, test(p), run(p)}
 function flavor(f) { FLAVOR.push(f); }
 let empties = [], lastTap = null;
@@ -2233,21 +2265,25 @@ stage.addEventListener('pointerdown', async e => {
   const c = cur();
   // first: true の登録（真のエンディングのあとの「かたづけ」など）は、いちばん先に聞く
   const rest = P.filter(q => q !== c && !q.first), order = [...P.filter(q => q.first), ...(c && !c.first ? [c] : []), ...rest];
-  const tryAt = async p => { for (const q of order) { if (q.tap && (await q.tap(view, p, q === c))) return true; } return false; };
-  if (await tryAt(p)) return;
+  const tryAt = async (p, cx, cy) => { tapUnder = objsAt(cx, cy); try { for (const q of order) { if (q.tap && (await q.tap(view, p, q === c))) return true; } return false; } finally { tapUnder = null; } };
+  if (await tryAt(p, e.clientX, e.clientY)) return;
   // 少しだけ はずれたとき：指の太さの分（まわり 14px）も 謎の物を さがす（かべ・床などの ひとことより 先に）。
   // せまい画面で 床の小物が 押しにくかった（10/17 再採点）。数字の錠の画面では しない（となりの けたが まわってしまう）
+  // 物の絵の上を押したのに どの謎にも当たらないときは、となりを さがさない（コーンのかげで かごが開いた・10/17 公開版2の再採点）
+  const on = objsAt(e.clientX, e.clientY);
+  if (on.length) { tapUnder = on; const fl0 = FLAVOR.find(f => (!f.view || f.view === view) && f.test(p)); tapUnder = null; if (fl0) return fl0.run(p); return emptyTap(p); }
   if (!(VIEWS[view] && VIEWS[view].dial)) {
     for (const [dx, dy] of NEAR) {
       if (busy) return;
-      if (await tryAt(toWorld({clientX: e.clientX + dx, clientY: e.clientY + dy}))) return;
+      if (!objsAt(e.clientX + dx, e.clientY + dy).length) continue;   // 指のすぐ横に 物の絵があるときだけ（何もない所で となりの当たりを 拾わない・10/17 作者）
+      if (await tryAt(toWorld({clientX: e.clientX + dx, clientY: e.clientY + dy}), e.clientX + dx, e.clientY + dy)) return;
     }
   }
-  for (const f of FLAVOR) { if ((!f.view || f.view === view) && f.test(p)) return f.run(p); }
+  tapUnder = objsAt(e.clientX, e.clientY); const fl = FLAVOR.find(f => (!f.view || f.view === view) && f.test(p)); tapUnder = null;
+  if (fl) return fl.run(p);
   emptyTap(p);
 });
-const NEAR = [[0, -14], [14, 0], [0, 14], [-14, 0], [10, -10], [10, 10], [-10, 10], [-10, -10],
-  [0, -24], [24, 0], [0, 24], [-24, 0], [17, -17], [17, 17], [-17, 17], [-17, -17]];   // 24px の輪も（1回目が「なにもない」で、2回目で当たる物があった・10/17 公開版の再採点）
+const NEAR = [[0, -14], [14, 0], [0, 14], [-14, 0], [10, -10], [10, 10], [-10, 10], [-10, -10]];   // 24px の輪は やめた（となりの物が 反応しやすくなる・10/17 作者）
 
 let downAt = null;
 stage.addEventListener('pointerdown', e => { downAt = e.isTrusted && !e.target.closest('button') ? {x: e.clientX, y: e.clientY, view} : null; }, true);
@@ -2465,8 +2501,19 @@ function donPlace() {
       y = Math.min(Math.max(((y0 + y1) / 2 - b[1]) / b[3], .3), .7); ok = true; }
   }
   if (!ok && VIEWS[view].donY) y = VIEWS[view].donY;   // 右はしに 押す物がある画面は、ずらす（上から見た倉庫の 床板など）
-  d.classList.remove('row'); d.classList.toggle('mini', !ok);
+  d.classList.toggle('row', !ok); d.classList.toggle('mini', !ok);   // 近くで見る画面などは 横1列で 小さく（すきまを近くで見る画面で 右のすきまに かかった・10/17 公開版2の再採点）
   d.style.left = ok ? (x * 100) + '%' : ''; d.style.top = (y * 100) + '%';
+  // ドラのふきだし・タマの心の声と 重なったら、よける（ふきだしの下に もぐった・10/17 公開版2の再採点）
+  if (!d.children.length) return;
+  const st = stage.getBoundingClientRect(), dr = d.getBoundingClientRect();
+  for (const id of ['say', 'think']) {
+    const el = $(id); if (!el.classList.contains('on')) continue;
+    const r = el.getBoundingClientRect();
+    if (dr.right < r.left || dr.left > r.right || dr.bottom < r.top || dr.top > r.bottom) continue;
+    const mid = r.top + r.height / 2 < st.top + st.height / 2;   // 上のほうの ことば → その下へ／下のほうの ことば → その上へ
+    const cy = mid ? r.bottom + 6 + dr.height / 2 : r.top - 6 - dr.height / 2;
+    d.style.top = ((cy - st.top) / st.height * 100) + '%';
+  }
 }
 let lastDrib = 0;
 async function dribble() {
@@ -2761,7 +2808,7 @@ G.flavor({view:'floor', test:p => G.inR(p, 370, 1170, 580, 1255), async run() {
   G.think(G.rep('board', ['ふみきり板。ぼよん、とする。…重くて、動かせない', 'ぼよん！ …重くて、動かない', 'ぼよよん！ …たのしい。でも、動かせない', 'ぼよん、ぼよん、ぼよん']));   // 本編では動かないことを ことばで（10/17 名人の審査）
   if (n + 1 === 10) setTimeout(() => G.say('…あそんでるだろ。音で わかるぞ'), 700);
 }});
-G.flavor({view:'floor', test:p => G.inR(p, 100, 1200, 220, 1320), run() {
+G.flavor({view:'floor', test:p => G.inR(p, 128, 1200, 240, 1320), run() {
   G.SFX.pof();
   G.think(G.rep('cone', G.S.done[3]
     ? ['たおれたコーン。…ねてるみたい', 'コーンは、もう おきない', '（コーンの中を のぞいた）…からっぽ']
@@ -3114,7 +3161,7 @@ G.puzzle({
       // 茶わんの絵の所へ行く。線が光っていないうちは、何もおきない（ふつうに押したことになる）
       if (isCur && licked() && view !== 'tea') {
         const r = rot(), F = view === 'floor';
-        if (F && r === ANS && G.inR(p, 100, 1195, 230, 1312)) { await this.knock(); return true; }
+        if (F && r === ANS && G.inR(p, 128, 1195, 240, 1312)) { await this.knock(); return true; }
         const at = [
           (F || view === 'box') && G.inR(p, 550, 50, 870, 280),            // 0 高いまど
           (F || view === 'shelf') && G.inR(p, 80, 895, 335, 990),          // 1 棚の まいたマット
@@ -3240,7 +3287,7 @@ G.puzzle({
       const atT = isCur && s.lit && correct() && G.near(p, T[0], T[1], 60);
       if (view === 'floor') {
         if (atT) { G.SFX.pof(); G.think('みんなが 見てる ところ…床からだと、とどかない'); return true; }   // まちがいには しない
-        if (D[3] && !s.got && G.inR(p, 100, 1270, 205, 1335)) { await this.pick(); return true; }
+        if (D[3] && !s.got && G.inR(p, 128, 1240, 205, 1335)) { await this.pick(); return true; }
         if (G.inR(p, 462, 372, 748, 795)) {
           if (isCur) { await G.wallJump('作戦ボード…とどかない'); return true; }
           if (!G.inR(p, 360, 120, 580, 760)) { G.SFX.pof(); G.think('かべの高いところに、作戦ボード'); return true; }
@@ -3476,14 +3523,16 @@ G.puzzle(def);
 (() => {
 G.VIEWS.oku = {box:[1100, 540, 560, 784], h:'floor', back:'floor', backLabel:'← もどる', donY:.13};   // ドンは右上の かべ（箱の札に かけない・10/18）
 G.VIEWS.wall = {box:[230, 870, 380, 532], h:'floor', back:'floor', backLabel:'← もどる', donY:.13};   // かべの下のすきまを近くで
-const GAPS = {C:{x0:270, x1:322, cm:15, where:'棚の下のおく'}, W1:{x0:356, x1:404, cm:11, where:'かべの下 左から1つめ'},
-  W2:{x0:416, x1:467, cm:9, where:'かべの下 左から2つめ'}, W3:{x0:479, x1:526, cm:12, where:'かべの下 左から3つめ'}, W4:{x0:538, x1:588, cm:10, where:'かべの下 左から4つめ'}};
+const GAPS = {C:{x0:270, x1:322, cm:15, where:'左から1つめ（棚の下のおく）'}, W1:{x0:356, x1:404, cm:11, where:'左から2つめ'},
+  W2:{x0:416, x1:467, cm:9, where:'左から3つめ'}, W3:{x0:479, x1:526, cm:12, where:'左から4つめ'}, W4:{x0:538, x1:588, cm:10, where:'左から5つめ'}};
+// 手帳の番号は、すきまを近くで見たときの 左からの並び（5つ全部）にそろえた（「左から1つめ 11cm」なのに いちばん左は15cmだった・10/17 公開版2の再採点）
 const NOTE_T = 'サクジ監督のタマ研究ノート「ひげのはば 11cm。ただし、ひげより頭が大きい（13cm）」';
 const tapeLine = (x, y) => { G.$('p6tapepath').setAttribute('d', `M140 1300 L${x} ${y}`); G.$('p6tapeline').setAttribute('opacity', 1); };
 // すきまが ならんでいるので、いちばん近いものを えらぶ（まわりに 少しゆとり）
 // 床の画面では すきまが小さいので、当たりを広く（44px くらい・テスト係 10/16）
-const gapAt = p => { const fl = G.view === 'floor', m = fl ? 14 : 6;
-  return (p.y >= (fl ? 1040 : 1062) && p.y <= (fl ? 1188 : 1172) ? Object.entries(GAPS).filter(([, g]) => p.x >= g.x0 - m && p.x <= g.x1 + m)
+// 当たりは すきまの絵（1092〜1150）に ほぼそろえた。小さくて押しにくいぶんは、土台の「指のすぐ横の物の絵を拾う」で助ける（となりを拾わない・10/17 作者）
+const gapAt = p => { const fl = G.view === 'floor', m = fl ? 5 : 6, y0 = fl ? 1084 : 1062, y1 = fl ? 1160 : 1172;
+  return (p.y >= y0 && p.y <= y1 ? Object.entries(GAPS).filter(([, g]) => G.inR(p, g.x0 - m, y0, g.x1 + m, y1))   // G.inR：ふみきり板などを押したときに すきまが反応しない（10/17）
   .sort((a, b) => Math.abs(p.x - (a[1].x0 + a[1].x1) / 2) - Math.abs(p.x - (b[1].x0 + b[1].x1) / 2))[0] : null); };
 let lastGap = null;   // さいごに はかった すきま →「入ってみる」のボタン（テスト係 10/16）
 
@@ -4207,7 +4256,19 @@ async function movie() {
 
 (() => {
 const on = () => G.S.endTrue && !G.S.f.k5pair;
+
+const MARKS = {ball: [648, 1250], curt: [715, 210], board: [776, 1350], box: [700, 840], door: [880, 760], locker: [1190, 940]};
+function marks() {
+  const NS = 'http://www.w3.org/2000/svg';
+  let g = G.$('k5marks'); if (!g) { g = document.createElementNS(NS, 'g'); g.id = 'k5marks'; g.setAttribute('pointer-events', 'none'); G.svg.appendChild(g); }
+  g.innerHTML = '';
+  if (!G.S.endTrue || G.S.f.k5pair) return;
+  for (const [k, [x, y]] of Object.entries(MARKS)) if (G.S.f['k5' + k]) {
+    g.insertAdjacentHTML('beforeend', `<g transform="translate(${x},${y})"><circle r="24" fill="#F29CA3" stroke="#FFFFFF" stroke-width="5"/><path d="M-11 0 L-3 9 L12 -9" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></g>`);
+  }
+}
 const show = () => {
+  marks();
   const k = !!G.S.endTrue;
   G.$('k5dora').setAttribute('opacity', k && !G.S.f.k5pair ? 1 : 0);
   G.$('k5tama').setAttribute('opacity', k ? 1 : 0);
@@ -4230,18 +4291,18 @@ const SPOTS = [[648, 1288, 'ball'], [715, 170, 'curt'], [776, 1368, 'board'], [6
 let nudgeT = 0, glowing = false, due = 0, nudges = 0;
 const counted = () => SPOTS.filter(([, , k]) => G.S.f['k5' + k]).length;
 function nudgeLater(ms) { clearTimeout(nudgeT); due = Date.now() + ms; nudgeT = setTimeout(nudgeNow, ms); }
-async function glow(spots, r = 70) {   // 小さく うすい輪では 見えなかった（10/17 公開版の再採点）→ 大きく 濃い色で、全部いっしょに 2回 光らせる
+async function glow(spots, r = 88) {   // 小さく うすい輪では 見えなかった（10/17 公開版の再採点）→ 大きく 濃い色で、全部いっしょに 2回 光らせる
   const NS = 'http://www.w3.org/2000/svg', g = document.createElementNS(NS, 'g');
   g.setAttribute('pointer-events', 'none');
   const cs = spots.map(([x, y]) => {
     const a = document.createElementNS(NS, 'circle'), b = document.createElementNS(NS, 'circle');
-    a.setAttribute('cx', x); a.setAttribute('cy', y); a.setAttribute('r', r); a.setAttribute('fill', 'rgba(255,214,90,.35)'); a.setAttribute('stroke', '#FF9F1C'); a.setAttribute('stroke-width', 14);
+    a.setAttribute('cx', x); a.setAttribute('cy', y); a.setAttribute('r', r); a.setAttribute('fill', 'rgba(255,200,60,.5)'); a.setAttribute('stroke', '#FF8A00'); a.setAttribute('stroke-width', 18);
     b.setAttribute('cx', x); b.setAttribute('cy', y); b.setAttribute('r', r); b.setAttribute('fill', 'none'); b.setAttribute('stroke', '#FFFFFF'); b.setAttribute('stroke-width', 5);
     g.appendChild(a); g.appendChild(b); return [a, b];
   });
   G.svg.appendChild(g); G.SFX.find();
-  for (let i = 0; i < 2; i++) {
-    await G.tween(900, k => { const o = Math.sin(k * Math.PI); g.setAttribute('opacity', o); cs.forEach(([a, b]) => { a.setAttribute('r', r * (1 + .2 * k)); b.setAttribute('r', r * (1 + .2 * k) - 9); }); });
+  for (let i = 0; i < 3; i++) {   // 3回（2回では 見のがした・10/17 公開版2の再採点）
+    await G.tween(800, k => { const o = Math.sin(k * Math.PI); g.setAttribute('opacity', o); cs.forEach(([a, b]) => { a.setAttribute('r', r * (1 + .2 * k)); b.setAttribute('r', r * (1 + .2 * k) - 9); }); });
   }
   g.remove();
 }
@@ -4279,14 +4340,14 @@ G.puzzle({
   onView() { show(); mangaBtn(); },
   async tap(view, p) {
     if (!G.S.endTrue) return false;
-    const say = (k, line) => { G.SFX.pof(); if (!G.S.f['k5' + k]) { G.S.f['k5' + k] = true; G.save(); } G.say(line, 3600); nudgeLater(9000); return true; };
+    const say = (k, line) => { G.SFX.pof(); if (!G.S.f['k5' + k]) { G.S.f['k5' + k] = true; G.save(); marks(); } G.say(line, 3600); nudgeLater(9000); return true; };
     if (view === 'floor' || view === 'shelf' || view === 'box') {
       // ねているタマ（ひなた）
       if (view === 'floor' && G.inR(p, 380, 1260, 560, 1400)) {
         if (G.S.f.k5pair) { G.SFX.purr(); G.think('（すぅ…すぅ…）', 1800); return true; }
         if (!G.S.f.k5end && counted() < 2) { G.SFX.pof(); clearTimeout(nudgeT); due = 0; nudgeNow(); return true; }   // まだ 数えていないのに 終わらない（先に タマを押すと、数える場面を 見ずに 終わっていた・10/17 再採点）
         if (!G.S.f.k5end) { G.S.f.k5end = true; G.save(); show(); G.SFX.pof(); G.say('…かたづけ、おわり。……これは、かたづけない', 4200); nudgeLater(9000); return true; }
-        G.busy = true; G.S.f.k5pair = true; G.save();
+        G.busy = true; G.S.f.k5pair = true; G.save(); marks();
         await G.tween(500, k => G.$('k5dora').setAttribute('opacity', 1 - k));
         G.SFX.purr(); await G.tween(700, k => G.$('k5pair').setAttribute('opacity', k));
         G.say('…………ちょっとだけだ', 4200);
