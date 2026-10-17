@@ -82,7 +82,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .top .place .pn{display:none}
 
 .top .place .pc{display:inline-block}
-.top .place .pc.bump{animation:bump .9s ease-out}
+.top .place .pc.bump{animation:bump .9s ease-out;transform-origin:left center}   
 @keyframes bump{0%{transform:scale(1.7);color:#FFE38A;text-shadow:0 0 10px #FFD24A}100%{transform:none}}
 .stage.lit::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(255,240,196,.55),transparent 70%);pointer-events:none;z-index:2;animation:litflash .9s ease-out forwards}
 @keyframes litflash{from{opacity:1}to{opacity:0}}
@@ -154,6 +154,7 @@ button,a.big,a.sbtn{transition:transform .2s cubic-bezier(.3,1.7,.5,1),filter .1
 
 .don.mini{left:auto!important;right:6px;transform:translateY(-50%);padding:4px 6px;gap:0}
 .don.mini span{font-size:clamp(15px,4vw,18px)}
+.don i{font-style:normal;font-family:var(--ui);font-weight:700;font-size:clamp(11px,3vw,13px);color:#F4E6CF;white-space:nowrap}
 @keyframes don{from{transform:scale(1.6)}to{transform:none}}
 .page li.memo{cursor:pointer}
 .page .see{display:inline-block;font-size:12px;font-weight:900;line-height:1.4;padding:1px 8px;border-radius:999px;background:#E9D6B4;color:#5A3A1E;vertical-align:1px}
@@ -1001,6 +1002,14 @@ const EN = {
 "…まだ あるぞ。散らかしたもの": "…There's more. Your mess.",
 "…タマ。おまえが 散らかしたんだぞ": "…Tama. You made this mess, you know.",
 "…あとは、ひなたの それだけだ": "…All that's left is that thing in the sun.",
+"…光ってるのが、おまえの 散らかしたものだ": "…The glowing stuff. That's your mess.",
+"光った物を 押してみよう": "Tap the things that glow",
+"…もう、出られるだろ。…ねむい": "…You can get out now, right? …I'm sleepy.",
+"…ひなたで ねてる それ。…タマ、押してみろ": "…That thing sleeping in the sun. …Tama, tap it.",
+"…散らかしたものを 押してみろ。…おれが 数える": "…Tap the stuff you knocked over. …I'll count.",
+"…あとは、ひなたで ねてる それだけだ": "…All that's left is that thing sleeping in the sun.",
+"（はじめ）": "(start)",
+"（さいご）": "(last)",
 "…日なたができたな。床に、なにか 形がないか": "…There's sunlight now. See any shape on the floor?",
 "…その形、しっぽが長いな。どこを 指してる？": "…That shape has a long tail. Where's it pointing?",
 "しっぽの先の 床板だ。押してみろ": "The floorboard at the tip of the tail. Push it.",
@@ -1764,7 +1773,7 @@ html[lang="en"] .kagi-en{display:block}
 body:has(.cover:not([hidden])) .langfix{display:flex}
 body:has(#clear:not([hidden])) .langfix{display:none}
 .langin{align-self:flex-end}
-.langnb{display:none;width:max-content;margin:10px 0 0 auto;background:transparent;border-color:#C9B48F}
+.langnb{display:none;width:max-content;margin:10px 0 6px auto;background:transparent;border-color:#C9B48F}
 .langnb button{color:var(--paper-ink)}
 .langnb i{color:#C9B48F}   
 html.short .langnb{display:flex}   
@@ -1784,7 +1793,7 @@ html.short .langnb{display:flex}
   const kick = document.querySelector('#title .kicker');
   if (kick) { const k = document.createElement('p'); k.className = 'kagi-en'; k.lang = 'en'; k.innerHTML = '<b>Kagishippo</b>: Japanese for a cat with a hooked tail — said to hook good luck.'; kick.after(k); }
   const card = document.querySelector('#clear .card'); if (card) card.insertBefore(make('langin'), card.firstChild);
-  const nb = document.querySelector('#notebook .page'); if (nb) nb.appendChild(make('langnb'));
+  const nb = document.querySelector('#notebook .page'); if (nb) nb.insertBefore(make('langnb'), nb.querySelector('#noteclose'));   // 「とじる」の上に（下が手帳のふちで 切れていた・10/17 公開版の再採点）
 }
 function set(l) {
   if (l !== 'en' && l !== 'ja') return;
@@ -2016,6 +2025,7 @@ function say(t, ms, who = 'ドラ') {
   if (!at && v && v.box && lastTap && lastTap.view === view && Date.now() - lastTap.t < 4000 && lastTap.p.y < v.box[1] + v.box[3] * .3) { at = 'low'; up = true; }
   $('say').classList.toggle('low', at === 'low'); $('say').classList.toggle('mid', at === 'mid'); stage.classList.toggle('saylow', at === 'low' && !up); stage.classList.toggle('sayup', up);
   $('sayt').textContent = t; $('say').classList.add('on');
+  if ($('toast').classList.contains('on')) placeToast();
   clearTimeout(sayTimer); sayTimer = setTimeout(() => { $('say').classList.remove('on'); stage.classList.remove('saylow', 'sayup'); }, readMs(t, ms, 260));
 }
 let thinkN = 0;
@@ -2026,9 +2036,13 @@ function think(t, ms, at) {
   const th = $('think'); th.classList.remove('pop'); requestAnimationFrame(() => th.classList.add('pop'));   // 出るたびに ぽんっと（入れかわったことが 分かるように・10/17）。次のコマで付けなおす（その場で 形を測らせると、切りかえが おそくなる・10/17 再採点）
   clearTimeout(thinkTimer); thinkTimer = setTimeout(() => $('think').classList.remove('on'), readMs(t, ms, 220));
 }
+
+function placeToast() {
+  const r = stage.getBoundingClientRect(), sy = $('say'), up = sy.classList.contains('on') && !sy.classList.contains('low') && !sy.classList.contains('mid');
+  $('toast').style.top = (!($('title').hidden && $('clear').hidden) ? 14 : up ? Math.max(8, r.bottom - 52) : Math.max(8, r.top + 8)) + 'px';
+}
 function toast(t) {   // 絵の上のはしに出す（いちばん上の「日本語 / English」や音のボタンに かぶっていた・10/17 再採点）
-  const tp = $('title').hidden && $('clear').hidden ? Math.max(8, stage.getBoundingClientRect().top + 8) : 14; $('toast').style.top = tp + 'px';
-  $('toast').textContent = t; $('toast').classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('on'), 2600); }
+  $('toast').textContent = t; placeToast(); $('toast').classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('on'), 2600); }
 function shun() { const b = $('tama'); b.classList.add('shun'); setTimeout(() => b.classList.remove('shun'), 900); }
 
 function miss(line) {
@@ -2232,7 +2246,8 @@ stage.addEventListener('pointerdown', async e => {
   for (const f of FLAVOR) { if ((!f.view || f.view === view) && f.test(p)) return f.run(p); }
   emptyTap(p);
 });
-const NEAR = [[0, -14], [14, 0], [0, 14], [-14, 0], [10, -10], [10, 10], [-10, 10], [-10, -10]];
+const NEAR = [[0, -14], [14, 0], [0, 14], [-14, 0], [10, -10], [10, 10], [-10, 10], [-10, -10],
+  [0, -24], [24, 0], [0, 24], [-24, 0], [17, -17], [17, 17], [-17, 17], [-17, -17]];   // 24px の輪も（1回目が「なにもない」で、2回目で当たる物があった・10/17 公開版の再採点）
 
 let downAt = null;
 stage.addEventListener('pointerdown', e => { downAt = e.isTrusted && !e.target.closest('button') ? {x: e.clientX, y: e.clientY, view} : null; }, true);
@@ -2318,7 +2333,7 @@ function updHint() { const c = cur(); $('hintc').textContent = c && c.hints ? `�
 $('hint').addEventListener('click', () => {
   audio(); SFX.pof();
   const c = cur();
-  if (!c) return say(S.endTrue ? '…もう、出られるだろ' : G.uraHint ? G.uraHint() : '…それは、おれも知らない。…タマ、寝てたか？');   // 裏の謎は、すすみ具合で 少しずつ（ヒントの数には 入れない・10/17 再採点）
+  if (!c) return say(S.endTrue ? (G.k5hint ? G.k5hint() : '…もう、出られるだろ') : G.uraHint ? G.uraHint() : '…それは、おれも知らない。…タマ、寝てたか？');   // 裏の謎は、すすみ具合で 少しずつ（ヒントの数には 入れない・10/17 再採点）
   if ((performance.now() - activeSince) / 1000 < 10) return say(again() ? '…まだ10秒だ。2回目でも、10秒は10秒だ' : '…まだ10秒だ');
   if (c.hintGate && c.hintGate()) return;
   const now = S.hintStep[c.id] || 0, from = c.hintFrom ? c.hintFrom() : 0, step = Math.min(Math.max(now, from) + 1, 3);   // もう済んだことは 言わない（10/18 通しの再審査）
@@ -2461,8 +2476,10 @@ async function dribble() {
   for (let i = 0; i < 60 && document.querySelector('.zoom:not([hidden]), .notebook:not([hidden])'); i++) await sleep(300);
   const sh = $('dribshadow'), box = $('don');
   drawNotes($('sidenotes'));   // 「外の音を聞く」を「いま、聞こえている」に
-  for (const n of DRIBBLE) {
+  for (const [gi, n] of DRIBBLE.entries()) {
     donPlace(); box.classList.remove('out'); box.innerHTML = '';
+    // どこから はじまって どこで おわるか、字でも分かるように（音なしで 組の区切りが 分からなかった・10/17 公開版の再採点）
+    if (gi === 0 || gi === DRIBBLE.length - 1) { const t = document.createElement('i'); t.textContent = gi === 0 ? '（はじめ）' : '（さいご）'; box.appendChild(t); }
     for (let i = 0; i < n; i++) {
       SFX.dribble(.55); sh.setAttribute('opacity', .75);
       donPlace(); const s = document.createElement('span'); s.textContent = 'ドン'; box.appendChild(s);
@@ -2822,7 +2839,7 @@ G.puzzle({
     if (view === 'floor') {
       if (G.inR(p, 360, 120, 580, 760)) { await G.wallJump(G.near(p, 470, 315, 90) && isCur ? 'スイッチ…とどかない' : null); return true; }
       // 謎5のあとは、棚の下のおくの すきまC（奥の部屋の入り口）を 棚にとられないように（テスト係 10/16）
-      if (G.inR(p, 40, 620, 380, 1150) && !(G.S.done[5] && G.inR(p, 248, 1040, 346, 1190))) {
+      if (G.inR(p, 40, 620, 380, 1150) && !(G.S.done[1] && G.inR(p, 248, 1040, 420, 1190))) {   // 明かりのあとは、かべの下のすきま（C・W1）を 棚にとられない（2回 棚に登ってしまった・10/17 公開版の再採点）
         G.busy = true; await G.go('shelf');
         if (isCur) {
           G.paw.x = 150; G.paw.y = 1700; G.paw.draw(); await G.paw.move(196, 1300, 260, G.ease.out);
@@ -3404,12 +3421,12 @@ const def = {
     if (view === 'shelf' && G.inR(p, 2, 1150, 124, 1330) && !G.S.done[5]) { G.busy = true; await G.go('cagetop', 380); G.think('上から、かごの中が見える。…オレンジ3つ、白2つ、黄色1つ', 3200); G.note(SEEN.cage); G.busy = false; return true; }
     if (view === 'cagetop' && G.inR(p, 14, 1172, 122, 1252)) { G.SFX.pof(); G.think('かごの中の ボール。…オレンジ3つ、白2つ、黄色1つ', 3200); G.note(SEEN.cage); return true; }
     // かごを押すと、大きく映る（ダイヤルを押しやすく・操作性の直し 10/16）
-    if (view === 'floor' && isCur && G.inR(p, 2, 1150, 124, 1330)) { G.busy = true; await G.go('cage', 380); G.think('ボールかご。色のダイヤルが3つ'); G.busy = false; return true; }
+    if (view === 'floor' && !G.S.done[5] && G.inR(p, 2, 1150, 124, 1330)) { G.busy = true; await G.go('cage', 380); G.think('ボールかご。色のダイヤルが3つ'); G.busy = false; return true; }   // いまの謎でなくても、まず大きく見せる（部屋の画面で 小さいダイヤルが 直接まわっていた・10/17 公開版の再採点）
     // ダイヤル（オレンジ・白・黄）
     const xs = [31, 63, 95];
     for (let i = 0; i < 3; i++) {
       const big = view === 'cage' || view === 'cagetop';
-      if ((big || view === 'floor' || view === 'shelf') && G.inR(p, [8, 47, 79][i], big ? 1256 : 1258, [47, 79, 118][i], big ? 1326 : 1306)) {
+      if (big && G.inR(p, [8, 47, 79][i], 1256, [47, 79, 118][i], 1326)) {   // ダイヤルは 大きく見た画面でだけ まわす
         if (G.S.done[5]) { G.SFX.pof(); return true; }
         const d = dials().slice(); d[i] = (d[i] + 1) % 10; G.S.f.p5d = d; G.save(); drawDials(); G.SFX.dial(); G.buzz(5);
         const g = $('p5d' + (i + 1)), tr = `translate(${xs[i]},1282)`;
@@ -3522,7 +3539,7 @@ const def = {
     if (view === 'floor' && !isCur && !G.S.done[6] && G.S.done[1] && gapAt(p)) { G.SFX.pof(); G.think(G.rep('gap0', ['かべの下に、すきまが ならんでる。…せまそう', 'すきま。…ひげが、ピクッ', '向こうから、風が くる'])); return true; }
     if (!isCur && !G.S.done[6]) return false;
     // 巻き尺
-    if (view === 'floor' && isCur && !G.S.f.p6have && G.near(p, 140, 1300, 36)) {
+    if (view === 'floor' && isCur && !G.S.f.p6have && G.near(p, 140, 1300, 56)) {
       G.busy = true;
       if (!G.S.f.p6play) {
         G.S.f.p6play = true; G.save(); G.SFX.choi();
@@ -4210,31 +4227,50 @@ G.katazuke = async () => {   // movie() のあとに呼ぶ
 };
 
 const SPOTS = [[648, 1288, 'ball'], [715, 170, 'curt'], [776, 1368, 'board'], [671, 863, 'box'], [880, 820, 'door']];
-let nudgeT = 0, glowing = false, due = 0;
+let nudgeT = 0, glowing = false, due = 0, nudges = 0;
 const counted = () => SPOTS.filter(([, , k]) => G.S.f['k5' + k]).length;
 function nudgeLater(ms) { clearTimeout(nudgeT); due = Date.now() + ms; nudgeT = setTimeout(nudgeNow, ms); }
-async function glow(x, y, r = 56) {
-  const NS = 'http://www.w3.org/2000/svg', c = document.createElementNS(NS, 'circle');
-  c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', r); c.setAttribute('fill', 'none');
-  c.setAttribute('stroke', '#FFE38A'); c.setAttribute('stroke-width', 8); c.setAttribute('pointer-events', 'none'); G.svg.appendChild(c);
-  await G.tween(1100, k => { c.setAttribute('opacity', Math.sin(k * Math.PI)); c.setAttribute('r', r * (1 + .25 * k)); });
-  c.remove();
+async function glow(spots, r = 70) {   // 小さく うすい輪では 見えなかった（10/17 公開版の再採点）→ 大きく 濃い色で、全部いっしょに 2回 光らせる
+  const NS = 'http://www.w3.org/2000/svg', g = document.createElementNS(NS, 'g');
+  g.setAttribute('pointer-events', 'none');
+  const cs = spots.map(([x, y]) => {
+    const a = document.createElementNS(NS, 'circle'), b = document.createElementNS(NS, 'circle');
+    a.setAttribute('cx', x); a.setAttribute('cy', y); a.setAttribute('r', r); a.setAttribute('fill', 'rgba(255,214,90,.35)'); a.setAttribute('stroke', '#FF9F1C'); a.setAttribute('stroke-width', 14);
+    b.setAttribute('cx', x); b.setAttribute('cy', y); b.setAttribute('r', r); b.setAttribute('fill', 'none'); b.setAttribute('stroke', '#FFFFFF'); b.setAttribute('stroke-width', 5);
+    g.appendChild(a); g.appendChild(b); return [a, b];
+  });
+  G.svg.appendChild(g); G.SFX.find();
+  for (let i = 0; i < 2; i++) {
+    await G.tween(900, k => { const o = Math.sin(k * Math.PI); g.setAttribute('opacity', o); cs.forEach(([a, b]) => { a.setAttribute('r', r * (1 + .2 * k)); b.setAttribute('r', r * (1 + .2 * k) - 9); }); });
+  }
+  g.remove();
 }
-async function nudgeNow() {
+async function nudgeNow(quiet) {
   if (!G.S.endTrue || G.S.f.k5pair || glowing) return;
   if (G.view !== 'floor' || G.busy || G.goronOn) return nudgeLater(4000);
   glowing = true;
+  nudges++; if (quiet === true) nudges = Math.max(nudges, 3);   // ヒントから呼んだときは、セリフを かぶせない
   if (counted() < 2 && !G.S.f.k5end) {
-    G.say(counted() ? '…まだ あるぞ。散らかしたもの' : '…タマ。おまえが 散らかしたんだぞ', 3200);
-    for (const [x, y, k] of SPOTS) if (!G.S.f['k5' + k]) { await glow(x, y); await G.sleep(150); }
+    // セリフは 2回まで（同じことばを ずっと くり返していた・10/17 公開版の再採点）。そのあとは 光るだけ
+    if (nudges === 1) { G.say('…タマ。おまえが 散らかしたんだぞ', 3200); setTimeout(() => G.toast('光った物を 押してみよう'), 1200); }
+    else if (nudges === 2) G.say('…光ってるのが、おまえの 散らかしたものだ', 3200);
+    await glow(SPOTS.filter(([, , k]) => !G.S.f['k5' + k]));
   } else {
-    G.say('…あとは、ひなたの それだけだ', 3200);
-    await glow(470, 1330, 80); await G.sleep(200); await glow(470, 1330, 80);
+    if (quiet !== true && (nudges <= 2 || !G.S.f.k5end)) G.say('…あとは、ひなたの それだけだ', 3200);
+    await glow([[470, 1330]], 90);
   }
   glowing = false;
   if (due <= Date.now()) nudgeLater(14000);   // 光らせている間に 押していたら、そちらの時間を つかう
 }
 
+
+G.k5hint = () => {
+  if (G.S.f.k5pair) return '…もう、出られるだろ。…ねむい';
+  setTimeout(() => { clearTimeout(nudgeT); due = 0; nudgeNow(true); }, 1800);
+  if (G.S.f.k5end) return '…ひなたで ねてる それ。…タマ、押してみろ';
+  if (counted() < 2) return '…散らかしたものを 押してみろ。…おれが 数える';
+  return '…あとは、ひなたで ねてる それだけだ';
+};
 const mangaBtn = () => { if (G.S.f.k5pair && G.view === 'floor') G.act('漫画を 1話から読む', () => window.open(G.MANGA1, '_blank', 'noopener'), 'go'); };
 const N = () => G.S.c.lick || 0;
 G.puzzle({
