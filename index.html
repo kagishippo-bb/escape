@@ -1687,6 +1687,11 @@ const EN = {
 'マット。…ここで ねたら、気持ちよさそう': "The mat. …A nap here would feel nice.",
 '（すぅ…すぅ…）…ここでは、ねごとは 出なかった。…寝る場所で かわるのかな': "(zzz…) …No sleep-talking here. …Maybe it depends where I nap?",
 '…サンマは、かたづけない': "…The saury stays. Not tidying that.",
+'…トウモロコシ、1。……もぐ。かたづけた': "…Corn, one. ……munch. Tidied.",
+'（いま、なにか 光った…？）': "(Did something just… flash?)",
+'…なにも、見てない。…かたづけた': "…I saw nothing. …It's tidied.",
+'（トウモロコシの しん だけ、のこっている）': "(Only the corn cob is left.)",
+'…………腹が、いっぱいだ。…ちょっとだけだ': "…………I'm full. …Just for a bit.",
 'サンマ。…いいにおい': 'The saury. …smells good',
 '（サンマを、ぺろ）': '(lick the saury)',
 '…これは、ぼくの': '…this one is mine',
@@ -3297,7 +3302,7 @@ G.flavor({view:'floor', test:p => G.inR(p, 580, 880, 760, 1150), run() {
     : G.rep('box0', ['とび箱。くらくて、上がよく見えない', 'とび箱…くらくて、こわい', '（とび箱に、ほおずりした）']));
 }});
 
-G.flavor({test:p => (G.view === 'floor' || G.view === 'shelf') && G.S.done[1] && G.inR(p, 110, 1358, 205, 1400), run() { G.hide('corn', 'トウモロコシ！ …ドラせんぱいには、ないしょにしよう'); }});   // 棚の上からも 見える（棚の画面を 広げた・10/17）
+G.flavor({test:p => (G.view === 'floor' || G.view === 'shelf') && G.S.done[1] && !G.S.f.k5corn && G.inR(p, 110, 1358, 205, 1400), run() { G.hide('corn', 'トウモロコシ！ …ドラせんぱいには、ないしょにしよう'); }});   // 棚の上からも 見える（棚の画面を 広げた・10/17）
 G.flavor({test:p => (G.view === 'shelf' || G.view === 'tea') && G.inR(p, 80, 720, 240, 825), run() { G.SFX.pof(); G.think('からっぽの箱'); }});
 G.flavor({view:'shelf', test:p => G.inR(p, 88, 906, 326, 986), run() { G.SFX.pof(); G.think(G.rep('mat', ['まるめた 青いマット。…ふかふかしてそう', '（マットに、ほおずりした）', 'マット。…ここで ねたら、気持ちよさそう'])); }});   // 押しても 何もおきなかった（10/17 公開版5）
 G.flavor({view:'shelf', test:p => G.inEl(p, 'spring'), run() { G.SFX.pof(); G.think('下に、ふみきり板が見える'); }});
@@ -4639,7 +4644,11 @@ async function sparkle() {
   await G.tween(900, k => { g.setAttribute('transform', `translate(704,842) scale(${Math.sin(k * Math.PI) * 1.2}) rotate(${90 * k})`); g.setAttribute('opacity', Math.sin(k * Math.PI)); });
   g.remove();
 }
-const setSpring = k => G.$('spring').setAttribute('transform', `translate(${STAR_DX * k},0)`);
+const setSpring = k => {
+  G.$('spring').setAttribute('transform', `translate(${STAR_DX * k},0)`);
+  // ★まで押すと、床のドラの紙（謎5）に かぶっていた（10/18 作者）→ ふみきり板に押されて、手前へ すべる
+  if (k > 0) { const t = Math.max(0, Math.min(1, (k - .4) / .6)); G.$('p5paper').setAttribute('transform', `translate(${735 + 5 * t},${1196 + 104 * t}) rotate(${-6 + 14 * t})`); }
+};
 let ob = {x:722, y:874}, choi = 0;
 const drawBall = (r = 0, sc = 1) => { G.$('p10ball').setAttribute('transform', `translate(${ob.x},${ob.y}) scale(${sc})`); G.$('p10spin').setAttribute('transform', `rotate(${r})`); };
 
@@ -4887,6 +4896,36 @@ function marks() {
     else if (!G.S.f.k5end) g.insertAdjacentHTML('beforeend', `<g transform="translate(${x},${y})"><circle r="15" fill="rgba(255,200,60,.35)" stroke="#FF8A00" stroke-width="5" stroke-dasharray="7 5"/><circle r="4" fill="#FFFFFF"/></g>`);
   }
 }
+
+const CORN = [110, 1358, 205, 1400];
+function cob(on) {   // 食べたあとの しん
+  let c = G.$('k5cob');
+  if (!on) { if (c) c.remove(); G.$('o_corn').removeAttribute('opacity'); return; }
+  G.$('o_corn').setAttribute('opacity', 0);
+  if (c) return;
+  c = document.createElementNS('http://www.w3.org/2000/svg', 'g'); c.id = 'k5cob'; c.setAttribute('pointer-events', 'none');
+  c.setAttribute('transform', 'translate(176,1384) rotate(-8) scale(0.85)');
+  c.innerHTML = '<path d="M-30 0 Q-26 -8 0 -8 Q30 -7 34 0 Q30 7 0 8 Q-26 8 -30 0 Z" fill="#EFE2B8" stroke="#5A3A1E" stroke-width="4"/><path d="M-16 -5 V5 M-4 -7 V7 M8 -7 V7 M20 -5 V5" stroke="#D2BC86" stroke-width="2.5" fill="none"/>';
+  G.$('o_corn').after(c);
+}
+async function eatCorn() {
+  G.busy = true; clearTimeout(nudgeT);
+  G.say('…………', 1500); await G.sleep(1300);
+  const D = G.$('k5dora'), g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  g.setAttribute('pointer-events', 'none');
+  g.innerHTML = '<path d="M870 1170 L176 1384" stroke="rgba(255,214,90,.85)" stroke-width="52" stroke-linecap="round"/><path d="M870 1170 L176 1384" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round"/>';
+  G.SFX.jump(); D.setAttribute('opacity', 0); G.svg.appendChild(g);   // 光の すじ（ドラが 消えて、もどる）
+  await G.sleep(90);
+  G.S.f.k5corn = true; G.save(); cob(true);
+  G.SFX.choi(); setTimeout(() => G.SFX.choi(), 70); setTimeout(() => G.SFX.choi(), 140);
+  await G.sleep(90); D.setAttribute('opacity', 1);
+  await G.tween(280, k => g.setAttribute('opacity', 1 - k)); g.remove();
+  G.hide('corn', '（いま、なにか 光った…？）');   // まだ見つけていなかった人も、かくし要素に 入る（食べたあとは 見つけられないので）
+  await G.sleep(1800);
+  G.say('…トウモロコシ、1。……もぐ。かたづけた', 3400);
+  G.busy = false; nudgeLater(9000);
+  return true;
+}
 const show = () => {
   marks();
   const k = !!G.S.endTrue;
@@ -4898,6 +4937,7 @@ const show = () => {
   if (G.S.f.k5pair) G.$('p9sanma').setAttribute('opacity', 0);
   // かたづけた物は 元の場所へ（片づいて 見えなかった・10/17 雄山2回目）：ボールは かごへ・床板は はめなおす
   if (G.S.endTrue && G.S.f.k5ball) { G.ball.x = 64; G.ball.y = 1196; G.ball.draw(); G.ball.g.setAttribute('opacity', 0); }   // かごの中へ
+  cob(!!(G.S.endTrue && G.S.f.k5corn));
   if (G.S.endTrue && G.S.f.k5board) G.$('p9board').removeAttribute('transform');   // ならんで寝たら、サンマは タマの うで の中だけ（床にも 残っていた・10/17 公開版5の直し2）   // 奥の部屋の「かたづけ当番」タマの欄に 肉球
 };
 G.katazuke = async () => {   // movie() のあとに呼ぶ
@@ -4979,13 +5019,15 @@ G.puzzle({
         await G.tween(500, k => G.$('k5dora').setAttribute('opacity', 1 - k));
         const sm = G.$('p9sanma'), s0 = +(sm.getAttribute('opacity') || 1);
         G.SFX.purr(); await G.tween(700, k => { G.$('k5pair').setAttribute('opacity', k); sm.setAttribute('opacity', s0 * (1 - k)); });
-        G.say('…………ちょっとだけだ', 4200);
+        G.say(G.S.f.k5corn ? '…………腹が、いっぱいだ。…ちょっとだけだ' : '…………ちょっとだけだ', 4200);   // トウモロコシを食べたら、おなかいっぱいで ねむくなる（10/18 作者）
         clearTimeout(nudgeT);
         G.busy = false;
         setTimeout(mangaBtn, 4600);
         return true;
       }
+      if (view === 'floor' && G.S.f.k5corn && G.inR(p, ...CORN)) { G.SFX.pof(); if (on()) G.say('…なにも、見てない。…かたづけた', 2600); else G.think('（トウモロコシの しん だけ、のこっている）', 2600); return true; }
       if (!on()) return false;
+      if (view === 'floor' && G.inR(p, ...CORN)) return eatCorn();
       if (view === 'floor' && G.inEl(p, 'k5dora', 6)) { G.SFX.pof(); G.say('…なんだ。かたづけ中だ', 2400); return true; }
       if (view === 'floor' && G.ball.g.getAttribute('opacity') !== '0' && G.near(p, 648, 1288, 60, 'ball')) return say('ball', '…おまえが落としたボール、1');
       if (G.inR(p, 550, 60, 870, 280)) return say('curt', '…のぼったカーテン、1。…つめのあと、6');
