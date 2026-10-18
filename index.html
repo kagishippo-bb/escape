@@ -1090,7 +1090,7 @@ const EN = {
 'スイッチ…とどかない。…上から なにか 落とせたら': "The switch… can't reach. …If only I could drop something from above.",
 '…棚の上に、ボールが あった。下には、ふみきり板': "…There was a ball on the shelf. And a springboard below.",
 'サンマはいる。…でも、レバーが高い。…上から、なにか 落とせたら': "I've got Sanma. …But the lever's too high. …If only I could drop something on it.",
-'みんなが 見てる ところ…かべに、小さな 肉球の あと！ …作戦の「目」は、ここだったんだ': "Where everyone's looking… a tiny paw print on the wall! …So THIS is the play's \"eye.\"",
+'かべに、小さな 肉球の あと！ …作戦の「目」は、ここだ': "a tiny paw print on the wall! …THIS is the play's \"eye.\"",
 "ひなたで ねている タマを 押してみよう": "Tap Tama napping in the sunny spot",
 "…コーンの下に、なにか ある": "…Something under the cone.",
 "扉。…もう、外から 開けてもらった": "The door. …Someone already opened it from outside.",
@@ -1227,7 +1227,7 @@ const EN = {
 "かごの中の ボール。…オレンジ3つ、白2つ、黄色1つ": "the balls in the cage. …three orange, two white, one yellow",
 "ドラせんぱいの、古いボール。…どこに落とせばいいんだろう": "Dora's old ball. …where should I drop it?",
 "ドラせんぱいの箱。ページと、古いボール": "Dora's box. a page, and an old ball",
-"中に…古い練習ノートの1ページと、古いボール。…ページの字が、さかさま": "inside… a page from an old practice notebook, and an old ball. …the writing is upside down",
+'古い練習ノートの1ページと、古いボール。…字が、さかさま': "a page from an old practice notebook, and an old ball. …the writing is upside down",
 "……そのとびかた、どこで おぼえた": "……Where'd you learn to jump like that?",
 "（ドラせんぱいの、ふるいノート）": "(Dora's old notebook: \"Higher. …Still can't reach.\")",
 "今回、": "This time,",
@@ -1295,7 +1295,7 @@ const EN = {
 "…ドン、を数えろ": "…Count the thumps.",
 "↑ いちばん上へ": "↑ To the very top",
 "…扉のレバーは、高いぞ。上から、なにか落とせないか": "…That door lever's high. Could you drop something on it from above?",
-"（あいた…でも、あとにしよう。いまは、サンマといっしょに 出るのが先）": "(it opened… but later. getting out with Sanma comes first.)",
+'（あいた…でも、いまは サンマと出るのが先）': "(it opened… but getting out with Sanma comes first.)",
 "ドン": "Thump",
 
 'カギしっぽの用具倉庫': 'The Kagishippo Storeroom',
@@ -1605,7 +1605,7 @@ const EN = {
 'まず、顔を えらぶ': 'pick a face first',
 'かべ': 'the wall',
 '扉に つけても、しかたない': 'no point sticking it on the door',
-'猫の顔の マグネット。ドラ先輩・タマ・ミケさん・タダシさん・監督。…かべの作戦ボードに、はれそう': "face magnets: Dora, me, Miké, Tadashi, Coach Ginzo",
+'猫の顔の マグネットが5つ。…かべの作戦ボードに、はれそう': "five face magnets. …they'd stick on the play board",
 '…全員、同じところを 見てる！': "…they're all looking at the same spot!",
 '…目が光る、って そういうことか': '…"All eyes gleaming." So that\'s what it meant.',
 '目線が、ばらばら…': "eyes looking every which way…",
@@ -1691,7 +1691,7 @@ const EN = {
 "…まだ 見つけてないもの？ …タマ、ごろんして ねむってみろ。じっとしてると、おまえ ねごとを言うよな": "…Something nobody's found? …Tama, roll over and take a nap. You talk in your sleep when you lie still, you know.",
 "…跳び箱の上の 箱は、さわるな。…4けたの 錠でも、だ": "…Don't touch the box on the vaulting box. …Not even its 4-digit lock.",
 "…その数じゃない。…かべの 古いやつを、よく見ろ": "…Not that number. …Take a good look at the old thing on the wall.",
-"左の箱の、奥の、上…からっぽ。でも、サンマのにおいがする！ …床の下から、風といっしょに": "left box, top level, far half… empty. but it smells like Sanma! …coming up from under the floor, with a breeze",
+'左の箱の、奥の、上。からっぽ。でも、サンマのにおい！ …床の下から': "left box, far half, top. empty. but it smells like Sanma! …from under the floor",
 "サンマのにおい…床の下から？ …でも、どこ？": "I smell Sanma… from under the floor? …but where?",
 "…あれ、レバーの真上": "…huh. right above the lever",
 "（ねこじゃらしは、もう いらない。…そっと 置いた）": "(don't need the cat toy anymore. …set it down gently)",
@@ -2297,6 +2297,7 @@ function say(t, ms, who = 'ドラ') {
   $('saywho').textContent = who; $('say').classList.toggle('mike', who !== 'ドラ');
   const v = VIEWS[view];
   sayPref = v && v.sayAt ? (typeof v.sayAt === 'function' ? v.sayAt(who) : v.sayAt) : '';   // だいじな顔に かけない（10/18）
+  if (thinkWant) { clearTimeout(thinkTimer); thinkWant = false; $('think').classList.remove('on'); }   // ことばは いつも1つずつ（2つ同時だと 読みきれない・10/19 遊んだ人の声）
   $('sayt').textContent = t; sayWant = true; sayShown = performance.now(); sayNew = true;
   floatsLater();
   clearTimeout(sayTimer); sayTimer = setTimeout(() => { sayWant = false; $('say').classList.remove('on'); floatsLater(); }, readMs(t, ms, 260));
@@ -2307,6 +2308,7 @@ function think(t, ms, at) {
   if (cbEp !== null && cbEp < tapN) return;
   fx++; thinkN++;
   if (!/^(ちょい|ちょい、ちょい|ポトッ|ゴロゴロ…)$/.test(t)) keepLine('タマ', t);
+  if (sayWant && !hintSaying) { clearTimeout(sayTimer); sayWant = false; $('say').classList.remove('on'); }   // ことばは いつも1つずつ（ヒントは 消さない）
   $('think').textContent = t; thinkPref = at || ''; thinkWant = true; thinkNew = true;
   floatsLater();
   clearTimeout(thinkTimer); thinkTimer = setTimeout(() => { thinkWant = false; $('think').classList.remove('on'); floatsLater(); }, readMs(t, ms, 220));
@@ -3530,7 +3532,7 @@ G.puzzle({
       G.tween(2400, k => { m.setAttribute('cx', G.lerp(470, 720, k)); m.setAttribute('cy', G.lerp(y0, 1360, k) - Math.sin(k * Math.PI) * 14); m.setAttribute('opacity', Math.sin(k * Math.PI) * .9); }, G.ease.lin).then(() => m.remove());
     }, 900);
   }
-  const shapeLine = () => { if (sawShape) return; sawShape = true; setTimeout(() => G.say('…監督、どれだけ寝てるんだ'), 900); };
+  const shapeLine = () => { if (sawShape) return; sawShape = true; };   // ドラのつづけてのひとことは消した（ことばを へらす・10/19）
 
   G.puzzle({
     id: 2, name: 'ひなたの席',
@@ -3915,7 +3917,7 @@ G.puzzle({
       await G.tween(260, k => { pile.setAttribute('opacity', 1 - k); pile.setAttribute('transform', `translate(152,${1300 - 30 * k})`); });
       const s = st(); s.got = true; G.save();
       for (const w of WHO) { G.$('mg_' + w).setAttribute('opacity', 1); place(w, where(w)); }
-      G.think('猫の顔の マグネット。ドラ先輩・タマ・ミケさん・タダシさん・監督。…かべの作戦ボードに、はれそう', 3600);
+      G.think('猫の顔の マグネットが5つ。…かべの作戦ボードに、はれそう', 3600);
       G.busy = false;
     },
     
@@ -3934,7 +3936,7 @@ G.puzzle({
         await G.sleep(250);
         const ok = correct();
         await gaze(ok);
-        if (ok) { s.lit = true; G.save(); G.SFX.find(); G.buzz([10, 40, 10]); G.think('…全員、同じところを 見てる！', 3000); setTimeout(() => G.say('…目が光る、って そういうことか'), 1600); }
+        if (ok) { s.lit = true; G.save(); G.SFX.find(); G.buzz([10, 40, 10]); G.think('…全員、同じところを 見てる！', 3000); }
         else { G.think('目線が、ばらばら…', 2000); G.miss(); setTimeout(() => { if (!st().lit) gazeOff(); }, 1800); }
       }
       G.busy = false;
@@ -3955,7 +3957,7 @@ G.puzzle({
     
     async found() {
       G.busy = true; G.SFX.pof();
-      G.think('みんなが 見てる ところ…かべに、小さな 肉球の あと！ …作戦の「目」は、ここだったんだ', 3200);   // ごほうびを 絵とことばで（10/17 雄山の案5）
+      G.think('かべに、小さな 肉球の あと！ …作戦の「目」は、ここだ', 3200);   // ごほうびを 絵とことばで（10/17 雄山の案5）
       const m = G.$('mark4');
       { const NS = 'http://www.w3.org/2000/svg', c = document.createElementNS(NS, 'circle'); c.setAttribute('cx', T[0]); c.setAttribute('cy', T[1]); c.setAttribute('fill', 'none'); c.setAttribute('stroke', '#FFE38A'); c.setAttribute('stroke-width', 6); c.setAttribute('pointer-events', 'none'); G.svg.appendChild(c);
         G.tween(900, k => { c.setAttribute('r', 10 + 60 * k); c.setAttribute('opacity', 1 - k); }).then(() => c.remove()); }
@@ -4415,7 +4417,7 @@ const def = {
     if (i === 0 && back && up) {
       pick = null; drawPick(); G.act(null);
       G.SFX.find();
-      G.think('左の箱の、奥の、上…からっぽ。でも、サンマのにおいがする！ …床の下から、風といっしょに', 3600);
+      G.think('左の箱の、奥の、上。からっぽ。でも、サンマのにおい！ …床の下から', 3600);
       answering = true;
       await G.sleep(1800);
       G.say('そうそう、そこ。…わたしから見て、右の手前よ', 3400, 'ミケ');
@@ -4767,7 +4769,7 @@ const def = {
   async tryOpen() {
     if (opened()) return;
     if (digits().every((n, i) => n === ANS[i])) {
-      if (!G.S.ended) { G.SFX.pof(); G.think('（あいた…でも、あとにしよう。いまは、サンマといっしょに 出るのが先）', 3200); return; }
+      if (!G.S.ended) { G.SFX.pof(); G.think('（あいた…でも、いまは サンマと出るのが先）', 3200); return; }
       G.act(null); await this.open(); G.VIEWS.dbox.box = BOX_WIDE; G.busy = true; await G.camTo('dbox', 380); G.busy = false; return;
     }
     G.SFX.thud(); G.buzz([10, 30, 10]); G.think('（ガタッ）…あかない', 2000);
@@ -4837,7 +4839,7 @@ const def = {
     }
     // 跳び箱の上の箱（ねごとの あとだけ）
     if (!boxShown()) return false;
-    if (view === 'floor' && G.inR(p, 626, 830, 716, 896)) { G.SFX.pof(); G.think('跳び箱の上に、箱。「ドラ　さわるな」'); setTimeout(() => G.say('…さわるな'), 800); return true; }
+    if (view === 'floor' && G.inR(p, 626, 830, 716, 896)) { G.SFX.pof(); G.think('跳び箱の上に、箱。「ドラ　さわるな」'); return true; }
     if (view === 'box' && G.inR(p, 626, 830, 716, 896)) {
       G.VIEWS.dbox.box = opened() ? BOX_WIDE : BOX_LOCK;
       G.busy = true; await G.go('dbox', 380); G.think(opened() ? 'ドラせんぱいの箱。ページと、古いボール' : '「ドラ　さわるな」。4けたの錠'); G.busy = false; return true;
@@ -4859,7 +4861,7 @@ const def = {
     await G.tween(300, k => b.setAttribute('transform', `translate(0,${-6 * Math.sin(k * Math.PI)})`));
     G.S.f.p10open = true; G.save();
     await G.tween(400, k => { $('p10page').setAttribute('opacity', k); $('p10ball').setAttribute('opacity', k); });
-    G.think('中に…古い練習ノートの1ページと、古いボール。…ページの字が、さかさま', 3400);
+    G.think('古い練習ノートの1ページと、古いボール。…字が、さかさま', 3400);
     G.busy = false;
   },
   
