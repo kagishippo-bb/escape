@@ -14,7 +14,7 @@
 </head>
 <meta charset="utf-8">
 <title>カギしっぽの用具倉庫</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="description" content="カギしっぽバスケ部の脱出ゲーム。今回、あなたは猫です。">
 
 <meta name="theme-color" content="#15121C">
@@ -2572,6 +2572,9 @@ function emptyTap(p) {
   if (empties.length >= 3) { empties = []; think('…ここに、何かある気がする', 2400); setTimeout(() => say('…なにもない'), 1600); }
 }
 let fx = 0, emptyNow = false;   // fx：押したあとに 何かが動いたか（ことば・画面・動き）。当たった手ごたえに使う
+
+let lastTouchEnd = 0;
+document.addEventListener('touchend', e => { const n = e.timeStamp; if (n - lastTouchEnd < 350) e.preventDefault(); lastTouchEnd = n; }, {passive: false});
 stage.addEventListener('pointerdown', async e => {
   if (e.target.closest('button')) return;
   audio(); const pp = pawPrint(e, busy && !goronOn);
