@@ -98,6 +98,15 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .stage{position:relative;width:min(100%,calc((100dvh - 204px) * .7143));aspect-ratio:1000/1400;max-width:100%;border-radius:14px;overflow:hidden;background:#07060D;box-shadow:0 0 0 1.5px var(--line)}
 #scene{-webkit-user-select:none;user-select:none;width:100%;height:100%;display:block;transition:transform .5s cubic-bezier(.3,1.4,.5,1)}
 #scene.goron{transform:rotate(180deg)}
+.kpad{position:fixed;left:50%;bottom:max(10px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(380px,calc(100% - 20px));background:rgba(21,18,28,.97);border:1.5px solid var(--line);border-radius:18px;padding:10px;z-index:15;box-shadow:0 8px 28px rgba(0,0,0,.55)}   
+.kpad[hidden]{display:none}
+.kshow{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:8px}
+.kshow .kd{width:44px;height:48px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--paper-ink);font-size:26px;font-weight:900;padding:0}
+.kshow .kd.sel{border-color:var(--orange);box-shadow:0 0 0 3px var(--orange)}
+.kshow .kx{position:absolute;right:10px;top:10px;width:44px;height:44px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--muted);font-size:20px;font-weight:900;padding:0}
+.kkeys{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.kkeys button{min-height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel);font-size:24px;font-weight:900;color:var(--ink);padding:0}
+.kkeys button:active{transform:scale(.94);background:var(--line)}
 .say{position:absolute;left:10px;right:10px;top:10px;background:rgba(21,18,28,.92);border:1.5px solid var(--line);border-radius:14px;padding:10px 14px;display:flex;gap:10px;align-items:center;font-family:var(--hand);font-size:clamp(18px,4.8vw,22px);line-height:1.5;transform:translateY(-130%);transition:transform .25s ease;pointer-events:none;z-index:3}
 .say.on{transform:none}
 
@@ -587,6 +596,7 @@ html.short .act{font-size:14px;padding:0 10px;white-space:normal;line-height:1.2
     <button class="hb goron-b" id="goron" aria-pressed="false" hidden><svg viewBox="0 0 30 22" aria-hidden="true"><path d="M4 14 Q4 4 15 4 Q26 4 26 14 Z" fill="#fff" stroke="#5A3A1E" stroke-width="2"/><path d="M8 14 L6 19 M13 14 L12 19 M18 14 L19 19 M23 14 L25 19" stroke="#5A3A1E" stroke-width="2" stroke-linecap="round"/></svg>ごろん</button>
     <button class="hb note-b" id="noteb"><svg viewBox="0 0 30 22" aria-hidden="true"><rect x="6" y="2" width="18" height="18" rx="2" fill="#FBF3E4" stroke="#5A3A1E" stroke-width="2"/><path d="M10 8 H20 M10 12 H20 M10 16 H16" stroke="#5A3A1E" stroke-width="1.6"/></svg>手帳</button>
   </div>
+  <div class="kpad" id="kpad" hidden><div class="kshow" id="kshow"></div><div class="kkeys" id="kkeys"></div></div>
  </div>
  <aside class="side" aria-label="タマの手帳"><div class="page"><h3>タマの手帳</h3><div id="sidenotes"></div></div><p class="hint-line">大事な字や絵を押すと、ここに写ります。</p></aside>
 </div>
@@ -2196,7 +2206,34 @@ const VIEWS = {floor:{box:[0, 0, 1000, 1400], h:'floor'}, shelf:{box:[-12, 520, 
 let cam = VIEWS.floor.box.slice(), view = 'floor';
 const setCam = v => { cam = v; svg.setAttribute('viewBox', v.map(n => n.toFixed(1)).join(' ')); };
 function camTo(name, d = 450, e) { const a = cam.slice(), b = VIEWS[name].box; return tween(d, k => setCam(a.map((n, i) => lerp(n, b[i], k))), e); }
+
+let KP = null;
+function keypad(o, i) {   // o = {n, get: () => [数], set: (i, v) => {}, colors: [けたの色]}
+  KP = Object.assign({}, o, {i}); kdraw(); $('kpad').hidden = false;
+}
+function kclose() { KP = null; $('kpad').hidden = true; }
+function kdraw() {
+  if (!KP) return;
+  const d = KP.get(), sh = $('kshow'); sh.textContent = '';
+  for (let j = 0; j < KP.n; j++) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'kd' + (j === KP.i ? ' sel' : ''); b.textContent = d[j];
+    if (KP.colors) b.style.background = KP.colors[j];
+    b.addEventListener('click', () => { KP.i = j; kdraw(); SFX.click(); });
+    sh.appendChild(b);
+  }
+  const x = document.createElement('button'); x.type = 'button'; x.className = 'kx'; x.textContent = '✕'; x.setAttribute('aria-label', 'close');
+  x.addEventListener('click', kclose); sh.appendChild(x);
+}
+{
+  const ks = $('kkeys');
+  for (const v of [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]) {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = v; b.dataset.v = v;
+    b.addEventListener('click', () => { if (!KP) return; KP.set(KP.i, v); SFX.dial(); buzz(5); if (KP.i < KP.n - 1) { KP.i++; kdraw(); } else kclose(); });
+    ks.appendChild(b);
+  }
+}
 function setView(name) {
+  if (KP && !(VIEWS[name] && VIEWS[name].dial)) kclose();   // 錠の画面を はなれたら とじる
   if (sayWant && performance.now() - sayShown > 900) { clearTimeout(sayTimer); sayWant = false; $('say').classList.remove('on'); }   // 部屋を移ったら、前の部屋の ふきだしは 消す（10/17 公開版2の再採点）
   view = name; const h = VIEWS[name].h, main = ['floor', 'box', 'shelf'].includes(name);
   heights();
@@ -3230,7 +3267,7 @@ $('cont').addEventListener('click', () => { audio(); welcomeBack(); });
 
 return {sleep: ms => { const e = tapN; return new Promise(r => setTimeout(() => { cbEp = e; r(); queueMicrotask(() => { cbEp = null; }); }, ms)); },   // 謎のファイル用（前の場面の ことばが、押した物の返事を 上書きしていた・10/17 公開版4）
   playSong, get moving() { return viewMoving; }, get tapN() { return tapN; }, _ep: e => { cbEp = e; }, _probe: probe, _map: hitMap, _audit: audit, _wb: worldBox, _c2w: c2w, inR0, inEl, elBox, get S() { return S; }, save, count, rep, again, get round() { return S.round; }, bgm, SFX, tween, ease, lerp, sleep, buzz, $, svg, VIEWS, camTo, setCam, setView, go, get view() { return view; },
-  ball, paw, say, think, toast, miss, nudge, dribble, zoom, note, hide, puzzle, cur, solve, light, flavor, inR, near, emptyTap, act, tamaMode, MANGA1,
+  keypad, kclose, ball, paw, say, think, toast, miss, nudge, dribble, zoom, note, hide, puzzle, cur, solve, light, flavor, inR, near, emptyTap, act, tamaMode, MANGA1,
   get dribbling() { return dribbling; }, get busy() { return busy; }, get lastTap() { return lastTap; }, set busy(v) { busy = v; if (v) fx++; }, learnGoron, setGoron, get goronOn() { return goronOn; },
   boot() {
     if (S.started && (Object.keys(S.done).length || S.notes.length || S.elapsed > 5)) $('cont').hidden = false;   // 遊んだ記録が あるときだけ（記録がないのに「つづきから」が出た・10/17 公開版5）
@@ -4029,9 +4066,12 @@ const def = {
       const big = view === 'cage' || view === 'cagetop';
       if (big && G.near(p, xs[i], 1282, 15.5)) {   // 丸の絵（半径14＋線）に そろえる。となりとの すき間では まわさない（10/17 公開版5）   // ダイヤルは 大きく見た画面でだけ、丸の上だけで まわす（下の箱を押しても回った・10/17 公開版3）
         if (G.S.done[5]) { G.SFX.pof(); return true; }
-        const d = dials().slice(); d[i] = (d[i] + 1) % 10; G.S.f.p5d = d; G.save(); drawDials(); G.SFX.dial(); G.buzz(5);
-        const g = $('p5d' + (i + 1)), tr = `translate(${xs[i]},1282)`;
-        G.tween(120, k => g.setAttribute('transform', `${tr} rotate(${36 * (1 - k)})`));
+        // 押すたびに1つずつ増えるのは ストレス → 数字の板で えらぶ（10/19 作者）
+        G.keypad({n: 3, get: dials, colors: ['#F2A65A', '#FFFFFF', '#F4D35E'], set: (j, v) => {
+          const d = dials().slice(); d[j] = v; G.S.f.p5d = d; G.save(); drawDials();
+          const g = $('p5d' + (j + 1)), tr = `translate(${xs[j]},1282)`;
+          G.tween(120, k => g.setAttribute('transform', `${tr} rotate(${36 * (1 - k)})`));
+        }}, i); G.SFX.click();
         // 合わせても 自動では開かない。「ふたを開けてみる」で たしかめる（回している とちゅうで 偶然 開いた・ロッカーと そろえる・10/17 公開版5の直し）
         return true;
       }
@@ -4266,7 +4306,7 @@ const def = {
     // いちばん近い数字（数字のあいだも、どれかに当たる・押しやすく 10/17）
     if (view === 'locker' && G.inR(p, 1142, 962, 1238, 1022)) {
       const i = Math.max(0, Math.min(3, Math.round((p.x - 1161.5) / 19)));
-      const d = digits().slice(); d[i] = (d[i] + 1) % 10; G.S.f.p7d = d; G.save(); draw(); G.SFX.dial(); G.buzz(5); return true;
+      G.keypad({n: 4, get: digits, set: (j, v) => { const d = digits().slice(); d[j] = v; G.S.f.p7d = d; G.save(); draw(); }}, i); G.SFX.click(); return true;   // 数字の板で えらぶ（10/19 作者）
     }
     // とってのあたり（開けてみる）
     if (G.inR(p, 1138, 1022, 1250, 1100)) { await this.tryOpen(); return true; }
@@ -4805,7 +4845,7 @@ const def = {
     if (view !== 'dbox' || opened()) return false;
     for (let i = 0; i < 4; i++) {
       if (G.inR(p, 652 + i * 9.5, 869, 661.5 + i * 9.5, 891)) {   // 数字の窓の中だけ（下を押しても進んだ・10/17 公開版4）
-        const d = digits().slice(); d[i] = (d[i] + 1) % 10; G.S.f.p10d = d; G.save(); draw(); G.SFX.dial(); G.buzz(5); return true;
+        G.keypad({n: 4, get: digits, set: (j, v) => { const d = digits().slice(); d[j] = v; G.S.f.p10d = d; G.save(); draw(); }}, i); G.SFX.click(); return true;   // 数字の板で えらぶ（10/19 作者）
       }
     }
     if (G.inR(p, 632, 836, 712, 870)) { await this.tryOpen(); return true; }   // ふた・名札を押しても 開けてみる
