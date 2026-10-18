@@ -56,7 +56,8 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 [hidden]{display:none!important}
-body{background:var(--bg);color:var(--ink);font-family:var(--ui);margin:0;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);margin:0;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation;-webkit-touch-callout:none}
+*{touch-action:manipulation}   
 button{font-family:var(--ui);color:var(--ink);cursor:pointer}
 button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .app{height:100%;display:flex;justify-content:center;gap:24px;padding-inline:16px;padding-block:8px 10px}
