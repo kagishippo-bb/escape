@@ -227,6 +227,9 @@ h1{word-break:keep-all;font-family:var(--ui);font-weight:900;font-size:clamp(28p
 .intro p{font-family:var(--hand);font-size:clamp(19px,5.2vw,24px);line-height:1.8;margin:0;opacity:0;transition:opacity .6s}
 .intro p.on{opacity:1}
 .intro .dora{color:var(--orange)}
+.intro p.next{font-family:inherit;font-size:15px;margin-top:28px;color:#BFB6A8;animation:nextBlink 1.6s ease-in-out infinite}
+.intro p.next:not(.on){opacity:0;animation:none}
+@keyframes nextBlink{0%,100%{opacity:.35}50%{opacity:1}}
 .clear h2{font-size:clamp(26px,7vw,34px);font-weight:900;margin:0;text-wrap:balance;word-break:keep-all;overflow-wrap:anywhere}   
 .stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .stats span{border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
@@ -258,6 +261,9 @@ h1{word-break:keep-all;font-family:var(--ui);font-weight:900;font-size:clamp(28p
 
 .zoom{position:fixed;inset:0;z-index:12;background:rgba(10,8,14,.75);display:flex;align-items:center;justify-content:center;padding-inline:16px;padding-block:24px}
 .zoom[hidden]{display:none!important}
+.zoom .zwrap{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px}
+.zoom .zclose{position:absolute;top:-14px;right:-14px;width:44px;height:44px;border-radius:50%;border:2px solid #5A3A1E;background:#FFFDF6;color:#5A3A1E;font-size:26px;line-height:1;cursor:pointer;z-index:1}
+.zoom .zhint{margin:0;font-size:14px;color:#E8DFD0}
 .zoom .page{font-family:var(--hand);font-size:19px;line-height:34px;white-space:pre-wrap}
 
 .tama{position:relative}
@@ -606,6 +612,7 @@ html.short .act{font-size:14px;padding:0 10px;white-space:normal;line-height:1.2
     <p>タマの宝物、魚のぬいぐるみの「サンマ」が、<br>用具倉庫へころがっていった。</p>
     <p>追いかけて入ると、扉が<br>ガチャン。</p>
     <p class="dora">「…タマ？ またか」</p>
+    <p class="next" id="introNext">押すと、つぎへ ▶</p>
   </div>
 </div>
 
@@ -923,7 +930,7 @@ html.short .act{font-size:14px;padding:0 10px;white-space:normal;line-height:1.2
 </div>
 
 <div class="notebook" id="notebook" hidden><div class="page"><h3>タマの手帳</h3><div id="notes"></div><button id="noteclose">とじる</button></div></div>
-<div class="zoom" id="zoom" hidden><div class="page" id="zoomt"></div></div>
+<div class="zoom" id="zoom" hidden><div class="zwrap"><button class="zclose" id="zclose" aria-label="閉じる">×</button><div class="page" id="zoomt"></div><p class="zhint">どこを押しても、閉じます</p></div></div>
 <div class="toast" id="toast"></div>
 <template id="mvframes"><div data-f="0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300"><style>
 .o{fill:#F2A65A;stroke:#5A3A1E;stroke-width:2.5;stroke-linejoin:round}
@@ -1691,6 +1698,10 @@ const EN = {
 '（いま、なにか 光った…？）': "(Did something just… flash?)",
 '…なにも、見てない。…かたづけた': "…I saw nothing. …It's tidied.",
 '（トウモロコシの しん だけ、のこっている）': "(Only the corn cob is left.)",
+'押すと、つぎへ ▶': "Tap to continue ▶",
+'どこを押しても、閉じます': "Tap anywhere to close",
+'（いまは、まだ なにも おきない）': "(Nothing happens… not yet.)",
+'（いまは まだ。…あとで 使うのかも）': "(Not now. …Maybe it's for later.)",
 '…………腹が、いっぱいだ。…ちょっとだけだ': "…………I'm full. …Just for a bit.",
 'サンマ。…いいにおい': 'The saury. …smells good',
 '（サンマを、ぺろ）': '(lick the saury)',
@@ -1998,6 +2009,7 @@ let AC = null, master = null, NB = null;
 function audio() {
   if (!AC) { try { AC = new (window.AudioContext || window.webkitAudioContext)(); master = AC.createGain(); master.gain.value = .8; master.connect(AC.destination); } catch (e) { AC = null; } }
   if (AC && AC.state === 'suspended') AC.resume();
+  try { if (navigator.audioSession && S.sound) navigator.audioSession.type = 'playback'; } catch (e) {}   // iPhone のマナーモードでも 鳴らす（ドリブルの音が 聞こえなかった・10/18 マムさん）
 }
 function tone(f, d, o = {}) {
   if (probing) return;   // しらべるだけの間は 何も出さない・動かさない
@@ -2534,7 +2546,8 @@ let empties = [], lastTap = null;
 function emptyTap(p) {
   if (probing) { const e = new Error('probe'); e.probe = true; e.r = ['empty']; throw e; }
   emptyNow = true; SFX.pof(); count('empty');
-  if (S.done[1] && !S.endTrue) think(rep('empty', ['（くんくん）', '…なにもない', '（じっと見た）', '（ちょい）…なにもない']), 1100);   // 押したら、かならず 返事（10/18）
+  const onObj = lastTap && lastTap.el && LOOK[lastTap.el];   // 物の上なのに 何もおきない → 「まちがい」ではなく「いまは まだ」と分かるように（10/18 マムさん）
+  if (S.done[1] && !S.endTrue) think(onObj ? rep('emptyObj', ['（いまは、まだ なにも おきない）', '（いまは まだ。…あとで 使うのかも）']) : rep('empty', ['（くんくん）', '…なにもない', '（じっと見た）', '（ちょい）…なにもない']), onObj ? 1800 : 1100);   // 押したら、かならず 返事（10/18）
   empties = empties.filter(q => near(q, p.x, p.y, 90)); empties.push(p);
   if (empties.length >= 3) { empties = []; think('…ここに、何かある気がする', 2400); setTimeout(() => say('…なにもない'), 1600); }
 }
@@ -3024,7 +3037,8 @@ function dribbleLoop() {
 let clearPlayed = false;
 function ending() {
   if (!clearPlayed) { clearPlayed = true; setTimeout(() => mbox(CLEAR_TUNE, 84, .1), 900); }   // クリアの4コマ：しめの一節（雄山 10/17）
-  tick(); S.ended = true; save();
+  tick(); if (S.elapsed < 30 && S.t0) S.elapsed = (Date.now() - S.t0) / 1000;   // 数えられなかったときは、はじめた時刻から（0分00秒で『風のように』が出た・10/18）
+  S.ended = true; save();
   const t = Math.round(S.elapsed), hints = Object.values(S.hintsUsed).reduce((a, b) => a + b, 0);
   const last = P.filter(p => p.id <= 9).length < 9;
   $('clk').textContent = last ? '試し版' : '脱出';
@@ -3145,26 +3159,28 @@ function blink() {
   setTimeout(blink, 2500 + Math.random() * 3500);
 }
 function enter() {
+  activeSince = performance.now(); playStart = performance.now();   // 時間は いちばん先に（あとで つまずくと 0分00秒・ドリブルも鳴らなかった・10/18 マムさん）
+  const safe = f => { try { f(); } catch (e) { console.error(e); } };
   $('title').hidden = true; $('intro').hidden = true; $('back').hidden = true; titleMusicStop();
   setTimeout(placeLine, 600);   // せまい画面では、部屋に入ったときに 明かりの札を3秒出す
   setCam(VIEWS.floor.box); setView('floor'); ball.draw(); paw.draw();
-  for (const p of P) if (p.restore) p.restore(!!S.done[p.id]);
-  for (const p of P) if (p.onView) p.onView('floor');
+  for (const p of P) if (p.restore) safe(() => p.restore(!!S.done[p.id]));
+  for (const p of P) if (p.onView) safe(() => p.onView('floor'));
+  safe(dribbleLoop);
   light(false); showStamps(); updHint(); lid(false); lamps(); placeLine(); moved(); drawNotes($('sidenotes')); bgm(true);
   if (S.goron) $('goron').hidden = false;
-  activeSince = performance.now(); playStart = performance.now();
-  setTimeout(blink, 3000); dribbleLoop();
+  setTimeout(blink, 3000);
   const c = cur(); if (c && c.resume) c.resume();
 }
-async function intro() {
+async function intro() {   // 押したら つぎへ（自動で進むと、読む前に始まった・10/18 JUN さん）
   const box = $('intro'); box.hidden = false;
-  const ps = box.querySelectorAll('p');
+  const ps = box.querySelectorAll('p:not(.next)'), nx = $('introNext');
   if (again()) ps[2].textContent = S.round === 2 ? '「…タマ？ …またか。2回目だぞ」' : `「…またか。${S.round}回目だぞ」`;
-  let skip = false;
-  box.addEventListener('pointerdown', () => { skip = true; }, {once:true});
-  ps[0].classList.add('on'); for (let i = 0; i < 25 && !skip; i++) await sleep(100);
-  ps[1].classList.add('on'); SFX.gachan(); buzz([30, 40, 60]); for (let i = 0; i < 18 && !skip; i++) await sleep(100);
-  ps[2].classList.add('on'); for (let i = 0; i < 22 && !skip; i++) await sleep(100);
+  const tap = () => new Promise(r => { const t0 = performance.now(); const f = () => { if (performance.now() - t0 < 500) return; box.removeEventListener('pointerdown', f); r(); }; box.addEventListener('pointerdown', f); });
+  ps[0].classList.add('on'); await sleep(900); nx.classList.add('on'); await tap();
+  ps[1].classList.add('on'); SFX.gachan(); buzz([30, 40, 60]); await tap();
+  ps[2].classList.add('on'); await tap();
+  nx.classList.remove('on');
   enter();
   setTimeout(() => think(again() ? 'まっくら…（なんだか、見おぼえがある）' : 'まっくら…'), 400);
 }
@@ -3180,7 +3196,7 @@ function welcomeBack() {
 $('backgo').addEventListener('click', () => { audio(); enter(); });
 // はじめる：前の遊びの絵が残らないように、前の記録があるときは まっさらにして読みなおしてから始める（10/16 見つけた不具合）
 $('start').addEventListener('click', () => {
-  audio(); const snd = S.sound, mus = S.music, had = S.started; S = fresh(); S.sound = snd; S.music = mus; S.started = true; S.round = CLEARS + 1; save();
+  audio(); const snd = S.sound, mus = S.music, had = S.started; S = fresh(); S.sound = snd; S.music = mus; S.started = true; S.round = CLEARS + 1; S.t0 = Date.now(); save();
   if (had) { try { sessionStorage.setItem('kagishippo-autostart', '1'); } catch (e) {} location.reload(); return; }
   intro();
 });
