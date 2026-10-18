@@ -1708,6 +1708,13 @@ const EN = {
 '裏のエンディングを さがす': "Find the secret ending",
 '…まだ、つづきがあります': "…There's more.",
 'つづきへ ▶': "Continue ▶",
+'おしまい': "The end",
+'ありますように。': "of sunlight.",
+'あったかい ひなたが': "have a warm patch",
+'あなたの毎日にも、': "May your days, too,",
+'あそんでくれて、ありがとう。': "Thank you for playing.",
+'かたづけなくていい。': "don't need tidying away.",
+'だいじなものは、': "Some things that matter",
 '真のエンディング　…まだ つづきがあります': "True ending · …there's more",
 '裏のエンディングが、まだある ▼': "There's a secret ending ▼",
 'どこを押しても、閉じます': "Tap anywhere to close",
@@ -4840,7 +4847,6 @@ G.puzzle(def);
 
 async function movie() {
   // 真のエンディングの曲（オルゴール・約35秒。解くたびに鳴った「ド・ミ・ソ・ド」から 生まれた ふし・作者 OK 10/17）。音を切っている人には 鳴らさない
-  const songP = G.playSong('ending.m4a');
   const box = document.createElement('div');
   box.className = 'cover';
   box.style.background = '#000'; box.style.zIndex = 30; box.style.flexDirection = 'column'; box.style.gap = '18px';
@@ -4898,12 +4904,10 @@ async function movie() {
   // 絵2：いまの体育館のゴールを見上げる、2匹
   if (!skip && showF(1)) { t.textContent = ''; await wait(2400); }
   t.textContent = 'ドラ「……むかしの はなしだ」'; await wait(2600);   // 宣伝の前に ドラの ひとことで 余韻（10/17 雄山2回目）
-  t.textContent = 'カギしっぽバスケ部'; await wait(1600);
-  t.innerHTML = '決勝は、12月。<br>毎日20時に、連載中。<br><span style="font-size:16px;color:var(--orange)">…まだ、つづきがあります</span>';   // ここで終わりだと思った（10/18 マムさん）
+  t.innerHTML = '<span style="font-size:18px;color:var(--orange)">…まだ、つづきがあります</span>';   // 宣伝と曲は、2匹が ならんで寝たあとの エンドロールへ（10/18 作者）
   box.querySelector('#mv-skip').textContent = 'つづきへ ▶';
   await new Promise(r => box.querySelector('#mv-skip').addEventListener('click', r, {once:true}));
   box.remove();
-  songP.then(stop => stop());   // とじたら すっと消す
   G.toast('真のエンディング　…まだ つづきがあります');
   G.say('…タマ、ねてたか？ …なにを見た');
   await G.sleep(3200);
@@ -4956,6 +4960,44 @@ async function eatCorn() {
   G.say('…トウモロコシ、1。……もぐ。かたづけた', 3400);
   G.busy = false; nudgeLater(9000);
   return true;
+}
+
+async function endRoll() {
+  const pr = G.$('k5pair').getBoundingClientRect(), cx = pr.left + pr.width / 2, cy = pr.top + pr.height / 2, r = Math.max(pr.width, pr.height);
+  const songP = G.playSong('ending.m4a');   // 真のエンディングの曲（オルゴール）。音を切っている人には 鳴らさない
+  const ov = document.createElement('div');
+  ov.style.cssText = `position:fixed;inset:0;z-index:30;opacity:0;transition:opacity 2.6s ease;cursor:pointer;display:flex;flex-direction:column;align-items:center;padding:11vh 20px 0;`
+    + `background:radial-gradient(circle at ${cx}px ${cy}px, rgba(10,8,14,0) 0, rgba(10,8,14,0) ${r * .7}px, rgba(10,8,14,.94) ${r * 1.9}px)`;
+  const t = document.createElement('p');
+  t.style.cssText = 'font-family:var(--hand);font-size:clamp(23px,6.4vw,31px);line-height:1.9;color:#FFF3DF;text-align:center;margin:0;opacity:0;transition:opacity 1.2s ease;text-shadow:0 2px 10px rgba(0,0,0,.7)';
+  const sk = document.createElement('button');
+  sk.className = 'ghost'; sk.textContent = 'とばす';
+  sk.style.cssText = 'position:absolute;right:16px;bottom:16px;max-width:140px;opacity:.7';
+  ov.append(t, sk); document.body.appendChild(ov);
+  let next = false, skip = false;
+  ov.addEventListener('pointerdown', e => { if (e.target !== sk) next = true; });
+  sk.addEventListener('click', e => { e.stopPropagation(); skip = true; });
+  const wait = async ms => { next = false; for (let i = 0; i < ms / 100 && !next && !skip; i++) await G.sleep(100); };
+  const line = async (html, ms, small) => {
+    if (skip) return;
+    t.style.fontSize = small ? '16px' : ''; t.innerHTML = html; t.style.opacity = 1;
+    await wait(ms + 1200); t.style.opacity = 0; if (!skip) await G.sleep(1100);
+  };
+  requestAnimationFrame(() => { ov.style.opacity = 1; });
+  await wait(3000);
+  await line('カギしっぽバスケ部', 2400);
+  await line('だいじなものは、<br>かたづけなくていい。', 3800);
+  await line('あそんでくれて、ありがとう。', 3000);
+  await line('あなたの毎日にも、<br>あったかい ひなたが<br>ありますように。', 4800);
+  await line('決勝は、12月。<br>毎日20時に、連載中。', 3200);
+  await line('つくった人　カギしっぽバスケ部', 2400, true);
+  t.style.fontSize = ''; t.textContent = 'おしまい'; t.style.opacity = 1;
+  sk.textContent = 'とじる'; sk.style.opacity = 1; skip = false;
+  await new Promise(res => { const done = () => res(); ov.addEventListener('pointerdown', done, {once:true}); sk.addEventListener('click', done, {once:true}); });
+  G.S.f.k5roll = true; G.save();
+  ov.style.transition = 'opacity 1.2s ease'; ov.style.opacity = 0;
+  songP.then(stop => stop());   // とじたら すっと消す
+  await G.sleep(1200); ov.remove();
 }
 const show = () => {
   marks();
@@ -5052,8 +5094,10 @@ G.puzzle({
         G.SFX.purr(); await G.tween(700, k => { G.$('k5pair').setAttribute('opacity', k); sm.setAttribute('opacity', s0 * (1 - k)); });
         G.say(G.S.f.k5corn ? '…………腹が、いっぱいだ。…ちょっとだけだ' : '…………ちょっとだけだ', 4200);   // トウモロコシを食べたら、おなかいっぱいで ねむくなる（10/18 作者）
         clearTimeout(nudgeT);
+        await G.sleep(4800);
+        if (!G.S.f.k5roll) await endRoll();   // ならんで寝る 2匹で、エンドロール（10/18 作者「2匹寝た後に エンディングが流れるのが いちばんいい」）
         G.busy = false;
-        setTimeout(mangaBtn, 4600);
+        mangaBtn();
         return true;
       }
       if (view === 'floor' && G.S.f.k5corn && G.inR(p, ...CORN)) { G.SFX.pof(); if (on()) G.say('…なにも、見てない。…かたづけた', 2600); else G.think('（トウモロコシの しん だけ、のこっている）', 2600); return true; }
