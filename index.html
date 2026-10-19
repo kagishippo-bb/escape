@@ -1138,7 +1138,7 @@ try {
 } catch (e) { lang = /^ja\b/i.test(navigator.language || '') ? 'ja' : 'en'; }
 
 const EN = {
-'カチッ': "CLICK", 'ガチャン！': "KA-CHUNK!", 'ボヨン！': "BOING!", 'キラーン☆': "TWINKLE☆", 'ガガガガガ': "NOMNOMNOM", '釣れた！': "Got it!", '扉の外': "outside the door", 'ドラとタマの LINE スタンプ、あります': "Dora & Tama LINE stickers are out!", 'あしたの練習、10時ね': "Practice tomorrow at 10!", 'きょうも ありがとう': "Thanks for today!", 'LINE スタンプを見る': "See the LINE stickers", 'かたづけに もどる': "back to tidying", '…ん。…かたづけの つづきだ': "…Hm. …Back to tidying.", '…ん。…かたづけの つづきだ。……腹が、へったな': "…Hm. …Back to tidying. ……I'm kinda hungry.", '…3142。おれのロッカーの番号だ': "…3142. My locker number.",   // 見せ場の 大きな字（10/19）
+'カチッ': "CLICK", 'ガチャン！': "KA-CHUNK!", 'ボヨン！': "BOING!", 'キラーン☆': "TWINKLE☆", 'ガガガガガ': "NOMNOMNOM", '釣れた！': "Got it!", '扉の外': "outside the door", '（カチャ）…まだ、開けられそうにない。ほかを さがそう': "(click) …Won't open yet. Let's look around.", 'ドラとタマの LINE スタンプ、あります': "Dora & Tama LINE stickers are out!", 'あしたの練習、10時ね': "Practice tomorrow at 10!", 'きょうも ありがとう': "Thanks for today!", 'LINE スタンプを見る': "See the LINE stickers", 'かたづけに もどる': "back to tidying", '…ん。…かたづけの つづきだ': "…Hm. …Back to tidying.", '…ん。…かたづけの つづきだ。……腹が、へったな': "…Hm. …Back to tidying. ……I'm kinda hungry.", '…3142。おれのロッカーの番号だ': "…3142. My locker number.",   // 見せ場の 大きな字（10/19）
 "…茶わんの絵は、お盆の線とつながると、倉庫にある物の絵になる。…タダシのノートは、お茶セットの横だ": "…Line up the picture on the bowl with the lines on the tray. It turns into something in this storeroom. …Tadashi's notebook is right by the tea set.",
 "…正面は、魚が こっちを 見てる向きだ。新しい作法も 書いてあったろ。そこから 手前に2回": "…The front is where the fish is looking right at you. And there was a new rule in there, too. From the front, turn it toward you twice.",
 "魚をなめろ。それから 魚をこっちに向けて、手前に2回だ。その絵の物の ところへ行け": "Lick the fish. Then turn the fish to face you, and turn it toward you twice. Go to whatever the picture shows.",
@@ -1991,6 +1991,7 @@ const RULES = [
   [/^用具倉庫　明かり (\d+)\/9$/, m => `Storeroom · Lights ${m[1]}/9`],
   [/^ドラ「([\s\S]+)」$/, m => sub(m[1]) && `Dora: "${sub(m[1])}"`],
   [/^用具倉庫　かくし要素 (\d+)\/5$/, m => `Storeroom · Secrets ${m[1]}/5`],
+  [/^見つけた かくし要素　(\d+)\/5$/, m => `Secrets found ${m[1]}/5`],
   [/^かくし要素 (\d+)\/5 みつけた$/, m => `Secret found! (${m[1]}/5)`],
   [/^かくし要素 (\d+)\/5$/, m => `Secrets ${m[1]}/5`],
   [/^エンディング (\d)\/2$/, m => `Endings ${m[1]}/2`],
@@ -2499,6 +2500,7 @@ function placeFloats() {
     if ($('toast').classList.contains('on')) placeToast(); return;
   }
   const st = stage.getBoundingClientRect(), tr = tapRect(st), avoid = tr ? [tr] : [];
+  for (const id of ['k5pair', 'k5tama']) { const el = $(id); if (el && shown(el)) { const r = el.getBoundingClientRect(); if (r.width && r.bottom > st.top && r.top < st.bottom) avoid.push(grow(r, 4)); } }   // ひなたで 寝ている タマ（と 2匹）に ことばを かけない（10/19 遊んだ人の声）
   // ドラのふきだし：上（ふつう）・下・まん中 のうち、押した物に かからない所
   let sr = null;
   if (sayWant) {
@@ -2587,7 +2589,7 @@ function drawNotes(box = $('notes')) {
   box.innerHTML = '';
   nowLine(box);
   bodyLine(box);
-  if (!S.notes.length) { const p = document.createElement('p'); p.className = 'empty'; p.textContent = 'まだ、なにも書いてない。'; box.appendChild(p); hintLog(box); lastLines(box); return; }
+  if (!S.notes.length) { const p = document.createElement('p'); p.className = 'empty'; p.textContent = 'まだ、なにも書いてない。'; box.appendChild(p); hideLog(box); hintLog(box); lastLines(box); return; }
   const ol = document.createElement('ol');
   for (const t of S.notes) {
     const li = document.createElement('li'); li.textContent = t;
@@ -2600,6 +2602,7 @@ function drawNotes(box = $('notes')) {
   }
   box.appendChild(ol);
   if (S.memo && Object.keys(S.memo).length) { const h = document.createElement('p'); h.className = 'memo-h'; h.textContent = '「メモを見る」を押すと、元のメモが もう一度見られます'; box.appendChild(h); }
+  hideLog(box);
   hintLog(box);
   lastLines(box);
 }
@@ -2634,6 +2637,15 @@ function nowLine(box) {
   }
 }
 
+
+function hideLog(box) {
+  if (!S.started || !S.done[1]) return;
+  const n = Object.keys(S.found).length;
+  const h = document.createElement('p'); h.className = 'lastlines-h'; h.textContent = `見つけた かくし要素　${n}/5`; box.appendChild(h);
+  const ul = document.createElement('ul'); ul.className = 'lastlines hidelog';
+  try { for (const [k, name, where] of HIDES) { const li = document.createElement('li'), t = document.createElement('span'); t.textContent = S.found[k] ? name : `？？？（${where}）`; li.append(S.found[k] ? '🐾 ' : '', t); ul.appendChild(li); } } catch (e) { return; }
+  box.appendChild(ul);
+}
 function hintLog(box) {
   const c = cur(), n = c ? (S.hintStep[c.id] || 0) : 0;
   if (!c || !n) return;
@@ -4136,7 +4148,8 @@ G.VIEWS.cage = {box:[0, 1140, 140, 196], h:'floor', back:'floor', backLabel:'←
 G.VIEWS.cagetop = {box:[0, 1140, 140, 196], h:'shelf', back:'shelf', backLabel:'← もどる', dial:true, keep:['p5dials']};
 const showByView = name => {
   const $ = G.$;
-  if ((name === 'cage' || name === 'cagetop') && G.cur() && G.cur().id === 5) G.act('ふたを開けてみる', () => def.tryOpen());
+  // まだ この謎の番でなくても ボタンは出す。押したら「まだ 開けられそうにない」（数字だけ回せて、開ける所が なかった・10/19 遊んだ人の声）
+  if ((name === 'cage' || name === 'cagetop') && !G.S.done[5]) G.act('ふたを開けてみる', () => G.cur() && G.cur().id === 5 ? def.tryOpen() : (G.SFX.pof(), G.think('（カチャ）…まだ、開けられそうにない。ほかを さがそう', 2600)));
   $('p5inside').setAttribute('opacity', name === 'shelf' || name === 'cagetop' || name === 'cage' || G.S.done[5] ? 1 : 0);   // 床から 大きく見ても、中のボールが見える（棚からしか 見えなかった・10/17 公開版5）
   $('p5under').setAttribute('opacity', name === 'floor' ? 1 : 0);
   $('p5tennis').setAttribute('opacity', name === 'box' && G.S.done[2] && !G.S.done[5] ? 1 : 0);
@@ -4444,7 +4457,7 @@ async function listen() {
 
 const def = {
   id: 7, name: '外のドリブル',
-  onView(name) { if (name === 'locker' && !G.S.done[7] && G.cur() && G.cur().id === 7) G.act('開けてみる', () => def.tryOpen()); },
+  onView(name) { if (name === 'locker' && !G.S.done[7]) G.act('開けてみる', () => G.cur() && G.cur().id === 7 ? def.tryOpen() : (G.SFX.pof(), G.think('（カチャ）…まだ、開けられそうにない。ほかを さがそう', 2600))); },   // まだ番でなくても ボタンは出す（10/19）
   hints: ['…監督のメモに、おれのクセが 書いてあるらしいな。…そんなクセ、あったか？', '…ドンは、ひと息ずつ 区切れてるだろ。かたまりで 数えてみろ', 'ドン、のかたまりを数えろ。かたまりごとに、1けただ'],   // 1つ目にも 新しい手がかり（10/17 名人の審査）
   start() { setTimeout(() => G.think('ロッカーに「ドラ」の名札…', 2400), 2800); },
   restore(done) {
