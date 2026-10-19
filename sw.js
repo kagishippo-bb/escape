@@ -1,5 +1,5 @@
 
-const VERSION = '4941a6272f';
+const VERSION = '06edbbe6dd';
 const CACHE = 'kagishippo-escape-' + VERSION;
 const FONTS = 'kagishippo-escape-fonts';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'manifest-en.webmanifest', 'icon.png', 'og.png', 'ending.m4a'];

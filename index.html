@@ -2464,11 +2464,12 @@ let cam = VIEWS.floor.box.slice(), view = 'floor';
 const setCam = v => { cam = v; svg.setAttribute('viewBox', v.map(n => n.toFixed(1)).join(' ')); };
 function camTo(name, d = 450, e) { const a = cam.slice(), b = VIEWS[name].box; return tween(d, k => setCam(a.map((n, i) => lerp(n, b[i], k))), e); }
 
-const GC = '';   // 登録したら サイトの 名前（例 'kagishippo'）を入れる
-if (GC) { const s = document.createElement('script'); s.async = true; s.src = 'https://gc.zgo.at/count.js'; s.dataset.goatcounter = `https://${GC}.goatcounter.com/count`; document.head.appendChild(s); }
+const GC = 'kagishippo';   // 10/19 登録ずみ。登録したら サイトの 名前（例 'kagishippo'）を入れる
+if (GC && location.protocol === 'https:') { const s = document.createElement('script');   // 手元の ためし（file:）や 公開前の 関門では 数えない
+   s.async = true; s.src = 'https://gc.zgo.at/count.js'; s.dataset.goatcounter = `https://${GC}.goatcounter.com/count`; document.head.appendChild(s); }
 function gc(name, once = true, n = 0) {
   try {
-    if (!GC || probing) return;
+    if (!GC || probing || location.protocol !== 'https:') return;
     const k = 'kgc-' + name;
     if (once && !n && localStorage.getItem(k)) return;
     if (!(window.goatcounter && window.goatcounter.count)) { if (n < 6) setTimeout(() => gc(name, once, n + 1), 1500); return; }   // まだ 読みこみ中
