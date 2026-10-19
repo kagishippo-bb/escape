@@ -109,6 +109,10 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .kkeys button:active{transform:scale(.94);background:var(--line)}
 .eat{position:absolute;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 50%,rgba(255,236,170,.92),rgba(242,166,90,.88) 55%,rgba(21,18,28,.9));pointer-events:none;opacity:0;transition:opacity .15s;overflow:hidden}   
 .eat.on{opacity:1}
+.wipe{position:absolute;left:4%;bottom:10%;width:44%;aspect-ratio:1;border-radius:50%;overflow:hidden;border:4px solid #FFFFFF;box-shadow:0 0 0 3px #5A3A1E,0 6px 18px rgba(0,0,0,.45);z-index:5;pointer-events:none;opacity:0;transform:scale(.6);transition:opacity .25s,transform .25s}   
+.wipe.on{opacity:1;transform:none}
+.wipe svg{width:100%;height:100%;display:block}
+.wipe .wl{position:absolute;left:0;right:0;top:8%;text-align:center;font-family:var(--ui);font-weight:900;font-size:clamp(11px,3.2vw,15px);color:#FFFFFF;text-shadow:0 1px 3px #000}
 .eat.dribs{flex-direction:column;background:radial-gradient(circle at 50% 40%,rgba(255,240,200,.95),rgba(214,170,110,.92) 60%,rgba(21,18,28,.92))}
 .eat .ea.dr{aspect-ratio:340/300;width:min(92%,520px);overflow:hidden;border-radius:16px}
 .eat .db{position:absolute;width:21%;aspect-ratio:1;margin:-10.5% 0 0 -10.5%;border-radius:50%;background:radial-gradient(circle at 35% 35%,#F7A35C,#D9692A 70%);border:3px solid #5A3A1E;box-sizing:border-box}
@@ -1125,7 +1129,7 @@ try {
 } catch (e) { lang = /^ja\b/i.test(navigator.language || '') ? 'ja' : 'en'; }
 
 const EN = {
-'カチッ': "CLICK", 'ガチャン！': "KA-CHUNK!", 'ボヨン！': "BOING!", 'キラーン☆': "TWINKLE☆", 'ガガガガガ': "NOMNOMNOM", '釣れた！': "Got it!", '…3142。おれのロッカーの番号だ': "…3142. My locker number.",   // 見せ場の 大きな字（10/19）
+'カチッ': "CLICK", 'ガチャン！': "KA-CHUNK!", 'ボヨン！': "BOING!", 'キラーン☆': "TWINKLE☆", 'ガガガガガ': "NOMNOMNOM", '釣れた！': "Got it!", '扉の外': "outside the door", '…3142。おれのロッカーの番号だ': "…3142. My locker number.",   // 見せ場の 大きな字（10/19）
 "…茶わんの絵は、お盆の線とつながると、倉庫にある物の絵になる。…タダシのノートは、お茶セットの横だ": "…Line up the picture on the bowl with the lines on the tray. It turns into something in this storeroom. …Tadashi's notebook is right by the tea set.",
 "…正面は、魚が こっちを 見てる向きだ。新しい作法も 書いてあったろ。そこから 手前に2回": "…The front is where the fish is looking right at you. And there was a new rule in there, too. From the front, turn it toward you twice.",
 "魚をなめろ。それから 魚をこっちに向けて、手前に2回だ。その絵の物の ところへ行け": "Lick the fish. Then turn the fish to face you, and turn it toward you twice. Go to whatever the picture shows.",
@@ -1197,7 +1201,7 @@ const EN = {
 '…ちがうわよ。わたしから見て、よ': "…Not there. I meant from MY side.",
 '…わたしは、まどの外から 見てるの': "…I'm looking in from outside the window, you know.",
 '…上と下は、どこから見ても 上と下よ': "…Up and down are the same from anywhere.",
-'…ミケさんの右は、ぼくの左…！ 手前と奥も、逆…！': "…Mike's right is my left…! And front and back are flipped too…!",
+'…ミケちゃんの右は、ぼくの左…！ 手前と奥も、逆…！': "…Mike's right is my left…! And front and back are flipped too…!",
 '（うんしょ）…重い。もう少し': "(heave) …Heavy. A bit more.",
 '（うんしょ、うんしょ）…あと ちょっと': "(heave, heave) …Almost there.",
 '★のところに、ふみきり板！': "The springboard is on the ★!",
@@ -1693,12 +1697,12 @@ const EN = {
 'コーンの下に…ねこの顔？': 'under the cone… cat faces?',
 
 
-'ドラ先輩の 顔。…どこに おこう？ ボードの 丸を押す（引っぱっても おける）': "Dora's face. …Where should it go? Tap a circle on the board (or drag it there)",
-'ドラ先輩の 顔。どこに おこう？': "Dora's face. Where should it go?",
+'ドラせんぱいの 顔。…どこに おこう？ ボードの 丸を押す（引っぱっても おける）': "Dora's face. …Where should it go? Tap a circle on the board (or drag it there)",
+'ドラせんぱいの 顔。どこに おこう？': "Dora's face. Where should it go?",
 'タマの 顔（ぼく）。…どこに おこう？ ボードの 丸を押す（引っぱっても おける）': "Tama's face (that's me). …Where should it go? Tap a circle on the board (or drag it there)",
 'タマの 顔（ぼく）。どこに おこう？': "Tama's face (that's me). Where should it go?",
-'ミケさんの 顔。…どこに おこう？ ボードの 丸を押す（引っぱっても おける）': "Miké's face. …Where should it go? Tap a circle on the board (or drag it there)",
-'ミケさんの 顔。どこに おこう？': "Miké's face. Where should it go?",
+'ミケちゃんの 顔。…どこに おこう？ ボードの 丸を押す（引っぱっても おける）': "Miké's face. …Where should it go? Tap a circle on the board (or drag it there)",
+'ミケちゃんの 顔。どこに おこう？': "Miké's face. Where should it go?",
 'タダシさんの 顔。…どこに おこう？ ボードの 丸を押す（引っぱっても おける）': "Tadashi's face. …Where should it go? Tap a circle on the board (or drag it there)",
 'タダシさんの 顔。どこに おこう？': "Tadashi's face. Where should it go?",
 'ギンゾー監督の 顔。…どこに おこう？ ボードの 丸を押す（引っぱっても おける）': "Coach Ginzo's face. …Where should it go? Tap a circle on the board (or drag it there)",
@@ -1890,13 +1894,13 @@ const EN = {
 '…ロッカーに、なにか入ってたか': '…Was there anything in the locker?',
 '（がまんできない！）': "(can't… resist!)",
 'ミケ「右の箱の、手前の、上のほう」（まどの外から）': 'Miké (outside the window): "The box on the right — top level, the near half."',
-'…み、ミケ…？': '…M-Miké…?',
+'…み、ミケさん…？': '…M-Miké…?',
 '…まだ やってるのか': '…Still at it?',
 '段ボール箱。上と下の2段。どの段も、手前と奥に しきりがある': "a cardboard box with two levels, top and bottom. each level has a divider: near half, far half",
 '左の箱の、奥の、上…からっぽ。でも、サンマのにおいがする！': "left box, top level, far half… empty. but it smells like Sanma!",
 '左の箱の、奥の、下。…からっぽ。ぜんぶ 逆にしたのに': "left box, bottom level, far half. …empty. and I flipped everything!",
 '左': 'left', 'まんなか': 'middle', '右': 'right',
-'…ミ、ミケ、帰ったか。…ふう': "…M-Miké's gone? …Phew.",
+'…ミ、ミケさん、帰ったか。…ふう': "…M-Miké's gone? …Phew.",
 
 
 'サンマはどこ': "Where's Sanma?",
@@ -3933,7 +3937,7 @@ G.puzzle({
   const T = [760, 515];
   const ANS = {dora:'G', tama:'R', mike:'F', tadashi:'CL', ginzo:'CR'};
   const WHO = ['dora', 'tama', 'mike', 'tadashi', 'ginzo'];
-  const NAME = {dora:'ドラ先輩の 顔', tama:'タマの 顔（ぼく）', mike:'ミケさんの 顔', tadashi:'タダシさんの 顔', ginzo:'ギンゾー監督の 顔'};
+  const NAME = {dora:'ドラせんぱいの 顔', tama:'タマの 顔（ぼく）', mike:'ミケちゃんの 顔', tadashi:'タダシさんの 顔', ginzo:'ギンゾー監督の 顔'};
   const PARK = {dora:[505, 658], tama:[555, 658], mike:[605, 658], tadashi:[655, 658], ginzo:[705, 658]};   // まんなかの線の丸から はなす（重なった・10/17 公開版5の直し2）
   const DIR = {};
   for (const w of WHO) { const s = SL[ANS[w]], dx = T[0] - s[0], dy = T[1] - s[1], d = Math.hypot(dx, dy); DIR[w] = [dx / d, dy / d]; }
@@ -4530,7 +4534,7 @@ function drawPick() {
   if (!pick || !m) { r.setAttribute('opacity', 0); return; }
   const [x0, y0, x1, y1] = cellR(+m[1], pick.up, pick.back);
   r.setAttribute('x', x0 + 3); r.setAttribute('y', y0 + 3); r.setAttribute('width', x1 - x0 - 6); r.setAttribute('height', y1 - y0 - 6); r.setAttribute('opacity', 1);
-}   // ミケの答え合わせの間は、ドラの「…み、ミケ…？」を出さない
+}   // ミケの答え合わせの間は、ドラの「…み、ミケさん…？」を出さない
 const showMike = on => G.$('p8mike').setAttribute('opacity', on ? 1 : 0);
 
 G.VIEWS.oku.sayAt = () => (+G.$('p8mike').getAttribute('opacity') > 0 ? 'mid' : '');
@@ -4562,7 +4566,7 @@ const def = {
         await G.sleep(700); G.S.f.p8mike = true; G.save();
         const m = $('p8mike'); G.SFX.pof(); await G.tween(400, k => m.setAttribute('opacity', k));
         G.say(MIKE, 5200, 'ミケ'); G.note('ミケ「右の箱の、手前の、上のほう」（まどの外から）');
-        setTimeout(() => { if (!answering) G.say('…み、ミケ…？', 2000); }, 5600);
+        setTimeout(() => { if (!answering) { G.say('…み、ミケさん…？', 2000); tailHeart(); } }, 5600);
       } else G.say('…まだ やってるのか', 1800);
       G.busy = false; return true;
     }
@@ -4595,9 +4599,9 @@ const def = {
       await G.sleep(1800);
       G.say('そうそう、そこ。…わたしから見て、右の手前よ', 3400, 'ミケ');
       await G.sleep(2600);
-      G.think('…ミケさんの右は、ぼくの左…！ 手前と奥も、逆…！', 3200); await G.sleep(2800);   // 気づきは 正解のあとに（雄山の案1）
+      G.think('…ミケちゃんの右は、ぼくの左…！ 手前と奥も、逆…！', 3200); await G.sleep(2800);   // 気づきは 正解のあとに（雄山の案1）
       await G.tween(400, k => $('p8mike').setAttribute('opacity', 1 - k)); showMike(false);
-      setTimeout(() => G.say('…ミ、ミケ、帰ったか。…ふう', 2400), 600);
+      setTimeout(() => G.say('…ミ、ミケさん、帰ったか。…ふう', 2400), 600);
       await G.sleep(2600); G.think('（ねこじゃらしは、もう いらない。…そっと 置いた）', 2400); await G.sleep(1800);
       await G.go('oku', 300);
       await G.solve(8);
@@ -4610,6 +4614,31 @@ const def = {
   },
 };
 G.puzzle(def);
+
+G._tailHeart = () => tailHeart();   // 作る人が ためす用
+async function tailHeart() {
+  const st = G.$('stage'); if (!st || st.querySelector('.wipe')) return;
+  const w = document.createElement('div'); w.className = 'wipe';
+  const INK = '#5A3A1E', O = '#F2A65A';
+  const stroke = d => `<path d="${d}" fill="none" stroke="${INK}" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${O}" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const heart = (x, y, s, fill) => `<path transform="translate(${x},${y}) scale(${s})" d="M0 12 C-22 -4 -14 -24 0 -12 C14 -24 22 -4 0 12 Z" fill="${fill}" stroke="${INK}" stroke-width="${3 / s}"/>`;
+  w.innerHTML = `<svg viewBox="0 0 200 200"><rect width="200" height="122" fill="#6E8F7E"/><path d="M0 40 H200 M0 84 H200" stroke="#5E7E6E" stroke-width="4"/>
+    <rect y="118" width="200" height="10" fill="#2A1E14"/><rect y="128" width="200" height="72" fill="#C98E55"/><path d="M0 160 H200" stroke="#B57A44" stroke-width="3"/>
+    <g id="wt" transform="translate(0,60)">${stroke('M70 124 Q96 150 118 132 L122 104')}<g id="wh" transform="translate(122,96) scale(0)">${heart(0, -6, 2.3, O)}</g>
+    <path id="wk" d="M122 104 L108 96" fill="none" stroke="${INK}" stroke-width="24" stroke-linecap="round"/><path id="wk2" d="M122 104 L108 96" fill="none" stroke="${O}" stroke-width="15" stroke-linecap="round"/></g>
+    <g id="wp" opacity="0">${heart(150, 60, .7, '#F29CA3')}${heart(170, 34, .5, '#F29CA3')}${heart(140, 30, .4, '#F29CA3')}</g></svg><div class="wl">扉の外</div>`;
+  st.appendChild(w);
+  requestAnimationFrame(() => w.classList.add('on'));
+  const q = s => w.querySelector(s);
+  await G.tween(350, k => q('#wt').setAttribute('transform', `translate(0,${60 * (1 - k)})`), G.ease.out);   // すきまから のぞく
+  await G.sleep(350);
+  q('#wk').setAttribute('opacity', 0); q('#wk2').setAttribute('opacity', 0);   // かぎの先が…
+  G.SFX.pof();
+  await G.tween(260, k => q('#wh').setAttribute('transform', `translate(122,96) scale(${k < .7 ? k / .7 * 1.15 : 1.15 - .15 * (k - .7) / .3})`));   // ハートに
+  await G.tween(500, k => { q('#wp').setAttribute('opacity', k); q('#wp').setAttribute('transform', `translate(0,${-10 * k})`); });
+  await G.sleep(1600);
+  w.classList.remove('on'); await G.sleep(300); w.remove();
+}
 })();
 
 
