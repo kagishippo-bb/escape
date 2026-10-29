@@ -2634,6 +2634,7 @@ function placeFloats() {
     if ($('toast').classList.contains('on')) placeToast(); return;
   }
   const st = stage.getBoundingClientRect(), tr = tapRect(st), avoid = tr ? [tr] : [];
+  { const wp = stage.querySelector('.wipe.on'); if (wp) avoid.push(grow(wp.getBoundingClientRect(), 4)); }   // 謎8の「扉の外」の丸に ことばを かけない（10/29 通しで 字の頭が かくれた）
   for (const id of ['k5pair', 'k5tama']) { const el = $(id); if (el && shown(el)) { const r = el.getBoundingClientRect(); if (r.width && r.bottom > st.top && r.top < st.bottom) avoid.push(grow(r, 4)); } }   // ひなたで 寝ている タマ（と 2匹）に ことばを かけない（10/19 遊んだ人の声）
   // ドラのふきだし：上（ふつう）・下・まん中 のうち、押した物に かからない所
   let sr = null;
@@ -4252,7 +4253,7 @@ G.puzzle({
         await G.sleep(250);
         const ok = correct();
         await gaze(ok);
-        if (ok) { s.lit = true; G.save(); G.SFX.find(); G.buzz([10, 40, 10]); G.think('…全員、同じところを 見てる！', 3000); }
+        if (ok) { s.lit = true; G.save(); G.SFX.find(); G.buzz([10, 40, 10]); G.think('…全員、同じところを 見てる！', 3000, 'top'); }   // 上に：目線の線と 光る先に かけない（10/29）
         else { G.think('目線が、ばらばら…', 2000); G.miss(); setTimeout(() => { if (!st().lit) gazeOff(); }, 1800); }
       }
       G.busy = false;
@@ -4273,7 +4274,7 @@ G.puzzle({
     
     async found() {
       G.busy = true; G.SFX.pof();
-      G.think('かべに、小さな 肉球の あと！ …作戦の「目」は、ここだ', 3200);   // ごほうびを 絵とことばで（10/17 雄山の案5）
+      G.think('かべに、小さな 肉球の あと！ …作戦の「目」は、ここだ', 3200, 'top');   // ごほうびを 絵とことばで（10/17 雄山の案5）
       const m = G.$('mark4');
       { const NS = 'http://www.w3.org/2000/svg', c = document.createElementNS(NS, 'circle'); c.setAttribute('cx', T[0]); c.setAttribute('cy', T[1]); c.setAttribute('fill', 'none'); c.setAttribute('stroke', '#FFE38A'); c.setAttribute('stroke-width', 6); c.setAttribute('pointer-events', 'none'); G.svg.appendChild(c);
         G.tween(900, k => { c.setAttribute('r', 10 + 60 * k); c.setAttribute('opacity', 1 - k); }).then(() => c.remove()); }
@@ -4826,7 +4827,7 @@ async function tailHeart() {
 
 (() => {
 G.VIEWS.top = {box:[2000, 540, 560, 784], h:'shelf', donY:.82};   // ドンは右下に（右のまん中は 口の先の床板）
-G.VIEWS.hole = {box:[2700, 540, 560, 784], h:'floor', back:'floor', backLabel:'← もどる', donY:.1};   // 【試作】床板の下を のぞく
+G.VIEWS.hole = {box:[2700, 540, 560, 784], h:'floor', back:'floor', backLabel:'← もどる', donY:.1, keep:['p9tail']};   // keep：しっぽと前足に 字を かけない（10/29）   // 【試作】床板の下を のぞく
 const HX = 2700, HY = 540;
 const deepX = () => -28 * Math.min(2, G.S.f.p9push || 0);   // 前足でかくと、奥へ（2回まで。それより奥へは 行かない）
 const drawDeep = () => G.$('p9deep').setAttribute('transform', `translate(${-deepX()},0)`);
