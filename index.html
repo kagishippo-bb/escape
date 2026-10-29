@@ -1348,7 +1348,7 @@ const EN = {
 '…ミケちゃんの右は、ぼくの左…！ 手前と奥も、逆…！': "…Miké's right is my left…! And front and back are flipped too…!",
 '（うんしょ）…重い。もう少し': "(heave) …Heavy. A bit more.",
 '（うんしょ、うんしょ）…あと ちょっと': "(heave, heave) …Almost there.",
-'★のところに、ふみきり板！': "The springboard is on the ★!",
+'★のところに、ふみきり板！ …ちょうど 跳び箱の 古いボールの 下だ': "The springboard is on the ★! …Right under the old ball on the vaulting box.",
 '…床から、ふみきり板を 押してみろ。…重いぞ。何回も だ': "…Push the springboard from the floor. …It's heavy. Keep pushing.",
 '…ねごとは、寝る場所で かわるらしい。…おまえの すきな寝どこ、あるだろ': "…Your sleep-talk changes with where you nap. …You've got favorite spots, right?",
 '…ひなたとか、やわらかい所とか。…サクジ監督の ノートにも 書いてあったな': "…Sunny spots, soft spots. …Coach Sakuji's notebook said so too.",
@@ -1481,8 +1481,8 @@ const EN = {
 "…ごろんしたまま、ページを 見てみろ": "…Look at the page while you're lying upside down.",
 "…★は、跳び箱の前。まどの下だ": "…The ★ is in front of the vaulting box. Under the window.",
 "…床から、ふみきり板を 押してみろ": "…From the floor, try pushing the springboard.",
-"…古いボールか。…跳び箱の上から、どうする": "…An old ball, huh. …So, from up on the vaulting box, what do you do?",
-"…跳び箱の上で、古いボールを ちょい、ちょい、だ": "…Up on the vaulting box. The old ball: tap, tap.",
+"…古いボールか。…跳び箱の上から、★の ふみきり板に 落としてみろ": "…An old ball, huh. …From up on the vaulting box, try dropping it onto the springboard on the ★.",
+"…跳び箱の上で、古いボールを 3回 ちょい、ちょい、ちょい、だ": "…Up on the vaulting box. Tap the old ball three times: tap, tap, tap.",
 "ボール：かごの中 オレンジ3・白2・黄色1": "Balls: in the cage — orange 3, white 2, yellow 1",
 "ボール：棚の下（床から）オレンジ1・白1": "Balls: under the shelf (from the floor) orange 1, white 1",
 "ボール：まどのわく（跳び箱から）黄色1": "Balls: window frame (from the vaulting box) yellow 1",
@@ -1769,6 +1769,8 @@ const EN = {
 '…それは、食べものじゃない': "…That's not food.",
 'ちょい': 'tap',
 'ちょい、ちょい': 'tap, tap',
+'ちょい …ボールが ゆれた': 'tap …the ball wobbled',
+'ちょい、ちょい …あと 1回で 落ちそう': 'tap, tap …one more and it falls',
 'ポトッ': 'plop',
 '…ついたか': '…Lights on?',
 "あかるい！ …サンマは、どこ？": "it's bright! …where's Sanma?",
@@ -5194,7 +5196,7 @@ const URA = {
     '…4けたの 錠だ。…さわるな'],
   page: ['…さかさまのページか。…おまえ、さかさまになるの、とくいだろ', '…ごろんしたまま、ページを 見てみろ'],
   star: ['…★は、跳び箱の前。まどの下だ', '…床から、ふみきり板を 押してみろ。…重いぞ。何回も だ'],
-  dunk: ['…古いボールか。…跳び箱の上から、どうする', '…跳び箱の上で、古いボールを ちょい、ちょい、だ'],
+  dunk: ['…古いボールか。…跳び箱の上から、★の ふみきり板に 落としてみろ', '…跳び箱の上で、古いボールを 3回 ちょい、ちょい、ちょい、だ'],   // 10/30 初見の人が ここで10分 止まった：落とす先と 回数を はっきり
 };
 G.uraHint = () => {
   const k = !opened() ? (boxShown() ? 'box' : 'sleep') : !G.S.f.p10read ? 'page' : !G.S.f.p10spring ? 'star' : 'dunk';
@@ -5268,14 +5270,14 @@ const def = {
         G.busy = true; G.SFX.roll(); G.buzz(8);
         await G.tween(320, k => setSpring((n0 + k) / 3));
         if (n < 3) { G.SFX.thud(); G.think(n === 1 ? '（うんしょ）…重い。もう少し' : '（うんしょ、うんしょ）…あと ちょっと', 1800); }
-        else { G.S.f.p10spring = true; G.save(); G.SFX.land(); G.think('★のところに、ふみきり板！', 2200); }
+        else { G.S.f.p10spring = true; G.save(); G.SFX.land(); G.think('★のところに、ふみきり板！ …ちょうど 跳び箱の 古いボールの 下だ', 3000); }
         G.busy = false; return true;
       }
       if ((view === 'box' || view === 'dbox') && G.near(p, ob.x, ob.y, 34)) {   // 跳び箱の画面では 下のはしで 小さいので 広く（10/17 公開版5の直し4）
         if (!G.S.f.p10spring) { G.SFX.pof(); G.think('ドラせんぱいの、古いボール。…どこに落とせばいいんだろう', 2600); return true; }
         // 自分の前足で ちょい、ちょい、ポトッ（押しただけで 自動だった・10/17 雄山の案2）
         choi = (choi || 0) + 1;
-        if (choi < 3) { G.SFX.choi(); G.buzz(6); const x0 = ob.x; G.tween(90, k => { ob.x = x0 + 4 * Math.sin(k * Math.PI); drawBall(9 * Math.sin(k * Math.PI)); }); G.think(choi === 1 ? 'ちょい' : 'ちょい、ちょい', 900); return true; }
+        if (choi < 3) { G.SFX.choi(); G.buzz(6); const x0 = ob.x; G.tween(90, k => { ob.x = x0 + 4 * Math.sin(k * Math.PI); drawBall(9 * Math.sin(k * Math.PI)); }); G.think(choi === 1 ? 'ちょい …ボールが ゆれた' : 'ちょい、ちょい …あと 1回で 落ちそう', 1600); return true; }
         choi = 0; await this.dunk(); return true;
       }
     }
