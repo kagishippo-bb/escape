@@ -132,7 +132,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .lchat{background:#8CABD9;border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;margin:8px 0 10px}
 .lchat .q{align-self:flex-start;background:#FFFFFF;color:#222;border-radius:14px;padding:6px 12px;font-size:14px;font-weight:700}
 .lchat img{align-self:flex-end;width:96px;height:auto}
-.say{position:absolute;left:10px;right:10px;top:10px;background:rgba(21,18,28,.92);border:1.5px solid var(--line);border-radius:14px;padding:10px 14px;display:flex;gap:10px;align-items:center;font-family:var(--hand);font-size:clamp(18px,4.8vw,22px);line-height:1.5;transform:translateY(-130%);transition:transform .25s ease;pointer-events:none;z-index:3}
+.say{position:absolute;left:10px;right:10px;top:10px;background:rgba(21,18,28,.92);border:1.5px solid var(--line);border-radius:14px;padding:7px 12px;display:flex;gap:9px;align-items:center;font-family:var(--hand);font-size:clamp(16px,4.3vw,20px);line-height:1.45;transform:translateY(-130%);transition:transform .25s ease;pointer-events:none;z-index:3}
 .say.on{transform:none}
 
 .say.low,.say.mid{transform:none;opacity:0;transition:opacity .25s}
@@ -1567,6 +1567,8 @@ const EN = {
 "…ひまだろ。\n倉庫じゅうのボールを、\n数えてから来い。\n高い所も、低い所も だ。\n\n　オレンジ □\n　白　　　 □\n　黄色　　 □\n\n（ドラの字）": "…Bored?\nCount every ball\nin the storeroom.\nHigh places and low places.\n\n  Orange □\n  White  □\n  Yellow □\n\n(Dora's handwriting)",
 "（…でも、ドラせんぱいの紙は「倉庫じゅう」。かごの外にも、あるかも）": "(…But Dora's note said \"every ball in the storeroom.\" Maybe there are more outside the basket.)",
 "（ガタッ）…かごの中だけじゃ、足りないみたい": "(Clunk) …Just the basket isn't enough, I guess.",
+"（カチャ）…まだ、数字を 合わせてない": "(Click) …I haven't set the numbers yet.",
+"外の ドン：●●●　●　●●●●　●●": "Thumps outside: ●●●　●　●●●●　●●",
 '（あいた…でも、いまは サンマと出るのが先）': "(it opened… but getting out with Sanma comes first.)",
 "ドン": "Thump",
 
@@ -2659,8 +2661,8 @@ function sayGo(t, ms) { say(t, ms); if (sayWant) { const s = $('say'); s.dataset
 
 function floatsAway() {
   const now = performance.now();
-  if (sayWant && !hintSaying && now - sayShown > 1000) { clearTimeout(sayTimer); sayWant = false; $('say').classList.remove('on'); }
-  if (thinkWant && now - thinkShown > 1000) { clearTimeout(thinkTimer); thinkWant = false; $('think').classList.remove('on'); }
+  if (sayWant && !hintSaying && now - sayShown > 350) { clearTimeout(sayTimer); sayWant = false; $('say').classList.remove('on'); }
+  if (thinkWant && now - thinkShown > 350) { clearTimeout(thinkTimer); thinkWant = false; $('think').classList.remove('on'); }
 }
 let thinkShown = 0;
 let thinkN = 0;
@@ -3451,7 +3453,7 @@ async function dribble() {
   dribbling = true;
   // メモや手帳を見ている間は、とじるまで待つ（見のがさないように）
   for (let i = 0; i < 60 && document.querySelector('.zoom:not([hidden]), .notebook:not([hidden])'); i++) await sleep(300);
-  const sh = $('dribshadow'), box = $('don');
+  const sh = $('dribshadow'), box = $('don'); let hidden0 = false;
   drawNotes($('sidenotes'));   // 「外の音を聞く」を「いま、聞こえている」に
   for (const [gi, n] of DRIBBLE.entries()) {
     box.innerHTML = ''; donPlace(n); box.classList.remove('out');
@@ -3464,9 +3466,12 @@ async function dribble() {
       donPlace(n); const s = document.createElement('span'); s.textContent = 'ドン'; box.appendChild(s);
       await sleep(170); sh.setAttribute('opacity', 0); await sleep(330);
     }
+    if (document.hidden) hidden0 = true;
     await sleep(2200); box.classList.add('out'); await sleep(750);   // かたまりを 長めに残して、音なしでも 数えられるように（10/17 名人の審査）
   }
   box.innerHTML = ''; box.classList.remove('out');
+  // 1回ぜんぶ聞いたら、聞こえたドンを ● で手帳に残す（見のがすと とりかえせなかった・10/30 3回目の通し）。数字には しない
+  if (S.done[1] && !hidden0) note('外の ドン：' + DRIBBLE.map(c => '●'.repeat(c)).join('　'));
   dribbling = false; lastDrib = performance.now();
   if (S.done[1]) note('外で、ドラがドリブルしている');   // 数は写さない（雄山 10/16）
   drawNotes($('sidenotes'));
@@ -4149,8 +4154,9 @@ G.puzzle({
         G.think(D[2] ? 'お茶セットと、礼儀ノート' : 'お茶セット。タダシさんの、わすれもの？'); return true;
       }
       if (view === 'tea') {
-        if (D[2] && G.near(p, 186, 810, 20)) { G.hide('reigi100', '「100冊目」…タダシさん、100冊も 書いたの？'); return true; }   // 表紙の「100」。少し広く（10/17 再採点）
-        if (D[3] && G.S.f.p3note && !G.S.found.meishi && G.inR(p, 132, 762, 208, 830)) {
+        const meishiOk = D[3] && G.S.f.p3note && !G.S.found.meishi && G.inR(p, 132, 762, 208, 830);   // 名刺が先（「100」の当たりが 先に取って、名刺が 出なかった・10/30 3回目の通し）
+        if (!meishiOk && D[2] && G.near(p, 186, 810, 20)) { G.hide('reigi100', '「100冊目」…タダシさん、100冊も 書いたの？'); return true; }   // 表紙の「100」。少し広く（10/17 再採点）
+        if (meishiOk) {
           // かくし要素：ノートの間から、タダシの名刺（審査キンゴー案3・10/16）
           G.zoom('（ノートの間から、名刺が おちた）\n\n長しっぽ　主将　タダシ\n\nうら：「この名刺は、いちばん低いところで\nお受けとりください」');
           G.hide('meishi', '…ひくく。…ひくく（棚の上で、板みたいに平らになった）');
@@ -4174,7 +4180,7 @@ G.puzzle({
       // 茶わんの絵の所へ行く。線が光っていないうちは、何もおきない（ふつうに押したことになる）
       if (isCur && licked() && view !== 'tea') {
         const r = rot(), F = view === 'floor';
-        if (F && r === ANS && G.inEl(p, 'cone', 8)) { await this.knock(); return true; }
+        if (r === ANS && G.inEl(p, 'cone', 8)) { if (!F) { G.busy = true; await G.go('floor', 380); G.busy = false; } await this.knock(); return true; }   // 棚・跳び箱の上から押しても（1回目が「食べられないほうの」で、ここではないと思った・10/30 3回目の通し）
         const at = [
           (F || view === 'box') && G.inR(p, 550, 50, 870, 280),            // 0 高いまど
           (F || view === 'shelf') && G.inR(p, 80, 895, 345, 990),          // 1 棚の まいたマット
@@ -4551,6 +4557,7 @@ const def = {
   },
   
   async tryOpen() {
+    if (dials().every(n => n === 0)) { G.SFX.pof(); G.think('（カチャ）…まだ、数字を 合わせてない', 2200); return; }   // 000 のまま 開けてみたのを まちがいに数えた（10/30 3回目の通し）
     if (dials().every((n, i) => n === ANS[i])) { if (G.view === 'cage' || G.view === 'cagetop') await G.go('floor', 300); await this.open(); return; }
     G.busy = true; G.SFX.thud(); await G.shake(.6); await G.shake(-.6);
     const w = (G.S.f.p5wrong || 0) + 1; G.S.f.p5wrong = w; G.save();
