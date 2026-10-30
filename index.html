@@ -1879,6 +1879,7 @@ const EN = {
 '…作法が、ちがう気がする': "…I don't think I'm doing the etiquette right",
 '線が、うすい…': 'the lines are so faint…',
 '…作法が、ちがう気がする。線が 光らない': "…I must be doing the etiquette wrong. the lines won't glow",
+'（作法、できた！） …コーンの下に、ねこの顔？': '(Got the etiquette right!) …cat faces under the cone?',
 
 'まど': 'window', 'マット': 'mat', 'コーン': 'cone', 'かご': 'ball cage', 'ボール': 'ball',
 'お盆。川みたいな 青い線が かいてある': 'a tray. blue lines on it, like a river',
@@ -2530,7 +2531,7 @@ function tween(d, fn, e = ease.io) {
 const lerp = (a, b, k) => a + (b - a) * k;
 
 
-const VIEWS = {floor:{box:[0, 0, 1000, 1400], h:'floor'}, shelf:{box:[-12, 520, 612, 856.8], h:'shelf'}, box:{box:[420, 60, 580, 812], h:'box'}};
+const VIEWS = {floor:{box:[0, 0, 1000, 1400], h:'floor', keep:['o_hole','ball']}, shelf:{box:[-12, 520, 612, 856.8], h:'shelf', back:'floor'}, box:{box:[420, 60, 580, 812], h:'box'}};
 let cam = VIEWS.floor.box.slice(), view = 'floor';
 const setCam = v => { cam = v; svg.setAttribute('viewBox', v.map(n => n.toFixed(1)).join(' ')); };
 function camTo(name, d = 450, e) { const a = cam.slice(), b = VIEWS[name].box; return tween(d, k => setCam(a.map((n, i) => lerp(n, b[i], k))), e); }
@@ -2597,8 +2598,9 @@ function setView(name) {
   act(null);                                          // 画面がかわったら、その画面のボタンは 謎のファイルが onView で出しなおす
   const v = VIEWS[name];
   stage.classList.toggle('dragok', !!v.drag);   // 引っぱれる画面では、指で画面が動かないように
-  $('down').hidden = (h === 'floor' && !v.back) || (main && S.done[1]);   // 明かりのあとは「床」のボタンが おりる役（ボタンの列を せまくしない）
+  $('down').hidden = (h === 'floor' && !v.back) || (main && S.done[1] && !v.back);   // 明かりのあとは「床」のボタンが おりる役（ボタンの列を せまくしない）
   $('down').textContent = v.backLabel || '↓ おりる';
+  if (sayWant) sayNew = true; floatsLater();
   if ($('don').children.length) donPlace(Math.max(1, $('don').querySelectorAll('span').length));   // ドンの とちゅうで 画面が かわったら、置きなおす
 }
 
@@ -2678,6 +2680,7 @@ function think(t, ms, at) {
   clearTimeout(thinkTimer); thinkTimer = setTimeout(() => { thinkWant = false; $('think').classList.remove('on'); floatsLater(); }, readMs(t, Math.max(ms || 0, 3000), 240));   // 読み終わる前に消えた（10/30 2回目の通し）。長いと じゃまなら、絵を押せば すぐ消える
 }
 
+let lastLowSay = false;
 let floatT = 0, sayPref = '', thinkPref = '', sayWant = false, thinkWant = false, sayNew = false, thinkNew = false;
 function floatsLater() { if (!floatT) floatT = requestAnimationFrame(() => { floatT = 0; placeFloats(); }); }
 const hit2 = (a, b) => !!a && !!b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
@@ -2705,6 +2708,8 @@ function placeFloats() {
     if (sayWant && sayNew) { sy.classList.add('on'); sayNew = false; } if (thinkWant && thinkNew) { th.classList.add('on'); thinkNew = false; }
     if ($('toast').classList.contains('on')) placeToast(); return;
   }
+  const forceLow = $('toast').classList.contains('on') && $('toast').dataset.trueEnd === '1';   // 672：真のエンディングの帯の間だけ下（片付けの間まで下に固定すると、ドラとタマの顔にかかった・部門）
+  if (forceLow !== lastLowSay) { sayNew = true; lastLowSay = forceLow; }
   const st = stage.getBoundingClientRect(), tr = tapRect(st), avoid = tr ? [tr] : [];
   { const wp = stage.querySelector('.wipe.on'); if (wp) avoid.push(grow(wp.getBoundingClientRect(), 4)); }   // 謎8の「扉の外」の丸に ことばを かけない（10/29 通しで 字の頭が かくれた）
   for (const id of ['k5pair', 'k5tama']) { const el = $(id); if (el && shown(el)) { const r = el.getBoundingClientRect(); if (r.width && r.bottom > st.top && r.top < st.bottom) avoid.push(grow(r, 4)); } }   // ひなたで 寝ている タマ（と 2匹）に ことばを かけない（10/19 遊んだ人の声）
@@ -2713,7 +2718,7 @@ function placeFloats() {
   if (sayWant) {
     if (sayNew) {
       const h = sy.offsetHeight, at = {'': st.top + 10, low: st.bottom - 10 - h, mid: st.top + st.height * .31};
-      const order = [...new Set([sayPref, '', 'low', 'mid'])];
+      const order = forceLow ? ['low'] : S.endTrue ? ['mid', 'low', ''] : [...new Set([sayPref, '', 'low', 'mid'])];   // 片付けは 上の窓の光・カーテンに かけない
       const pick = order.find(k => !avoid.some(a => hit2(a, {left: st.left, right: st.right, top: at[k], bottom: at[k] + h}))) ?? order[0];
       sy.classList.toggle('low', pick === 'low'); sy.classList.toggle('mid', pick === 'mid');
       sy.classList.add('on'); sayNew = false;
@@ -2757,7 +2762,7 @@ function noteGot() {
   clearTimeout(noteGot.t); noteGot.t = setTimeout(() => b.classList.remove('got'), 2100);
 }
 function toast(t) { if (probing) return;   // 絵の上のはしに出す（いちばん上の「日本語 / English」や音のボタンに かぶっていた・10/17 再採点）
-  $('toast').textContent = t; $('toast').classList.add('on'); placeToast(); clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('on'), readMs(t, 3400, 200)); }   // 読み終わる前に消えた（10/30 2回目の通し）
+  $('toast').textContent = t; $('toast').dataset.trueEnd = t === '真のエンディング　…まだ つづきがあります' ? '1' : ''; $('toast').classList.add('on'); sayNew = true; floatsLater(); placeToast(); clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('toast').classList.remove('on'); sayNew = true; floatsLater(); }, readMs(t, 3400, 200)); }   // 読み終わる前に消えた（10/30 2回目の通し）
 function shun() { const b = $('tama'); b.classList.add('shun'); setTimeout(() => b.classList.remove('shun'), 900); }
 
 function miss(line) {
@@ -2781,13 +2786,21 @@ function placeSay() { const dst = LAND.matches ? $('lsay') : stage; for (const i
 if (LAND.addEventListener) LAND.addEventListener('change', placeSay); else LAND.addListener(placeSay);
 placeSay();
 
+let zoomClosePointer = null;
 function zoom(text, noteText) {
   if (probing) return;   // しらべるだけの間は 何も出さない・動かさない
   fx++;
-  $('zoomt').textContent = text; $('zoom').hidden = false; SFX.paper();
+  zoomClosePointer = null; $('zoomt').textContent = text; $('zoom').hidden = false; SFX.paper();
   if (noteText) { S.memo = S.memo || {}; S.memo[noteText] = text; save(); note(noteText); }   // 元のメモを覚えておく → 手帳から もう一度見られる（10/17）
 }
-$('zoom').addEventListener('pointerdown', () => { $('zoom').hidden = true; });
+$('zoom').addEventListener('pointerdown', e => { zoomClosePointer = e.pointerId; e.preventDefault(); e.stopPropagation(); });
+$('zoom').addEventListener('pointercancel', () => { zoomClosePointer = null; });
+$('zoom').addEventListener('click', e => {
+  e.preventDefault(); e.stopPropagation();
+  const close = zoomClosePointer !== null && zoomClosePointer === e.pointerId;
+  const keyboard = e.detail === 0 && e.target.closest('.zclose');
+  zoomClosePointer = null; if (close || keyboard) $('zoom').hidden = true;
+});   // zoom上から始めた入力だけ閉じる。開いたstage入力の終端clickは消費だけ
 function note(t) {
   if (probing) return;   // しらべるだけの間は 何も出さない・動かさない
   if (S.notes.includes(t)) return;
@@ -2908,11 +2921,18 @@ function showStamps() { for (const p of P) if (S.done[p.id] && !S.hintsUsed[p.id
 
 
 const BODY_PART = {1: '前足', 2: 'つめ', 3: 'した', 4: '目', 5: 'うしろ足', 6: 'ひげと頭', 7: '耳', 8: '鼻', 9: 'カギしっぽ'};
+function placeBodyStamp(el) {
+  const st = stage.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
+  const avoid = ['p10board','don','say','think'].map(id => $(id)).filter(e => e && shown(e) && (e.id !== 'say' && e.id !== 'think' || e.classList.contains('on'))).map(e => grow(e.getBoundingClientRect(), 5));
+  const spots = [[st.width-w-10,10],[10,10],[st.width-w-10,st.height-h-10],[10,st.height-h-10],[st.width-w-10,st.height*.35]];
+  const at = spots.find(([x,y]) => !avoid.some(a => hit2(a,{left:st.left+x,right:st.left+x+w,top:st.top+y,bottom:st.top+y+h}))) || spots[4];
+  el.style.left = at[0]+'px'; el.style.top = at[1]+'px';
+}
 function bodyStamp(id) {
   if (!BODY_PART[id] || probing) return;
   let el = $('bodystamp'); if (!el) { el = document.createElement('div'); el.id = 'bodystamp'; el.className = 'bodystamp'; stage.appendChild(el); }
   el.textContent = `🐾 ${BODY_PART[id]}`; el.classList.remove('on'); void el.offsetWidth;
-  setTimeout(() => { el.classList.add('on'); SFX.stamp(); }, 700);
+  setTimeout(() => { el.classList.add('on'); placeBodyStamp(el); SFX.stamp(); }, 700);
   clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), 3400);
 }
 async function solve(id, opt = {}) {
@@ -2953,7 +2973,7 @@ function pawPrint(e, faint) {
   return d;
 }
 
-const OBJ = ['cone', 'magpile', 'p5cage', 'spring', 'p6gapC', 'p6gapW1', 'p6gapW2', 'p6gapW3', 'p6gapW4', 'p5paper', 'p6note', 'p6tape', 'ball',
+const OBJ = ['p10ball', 'o_corn', 'cone', 'magpile', 'p5cage', 'spring', 'p6gapC', 'p6gapW1', 'p6gapW2', 'p6gapW3', 'p6gapW4', 'p5paper', 'p6note', 'p6tape', 'ball',
   'fboard', 'holenote', 'teanote', 'teaset', 'p5under', 'p5tennis', 'p6butt', 'p9board', 'p9sanma', 'p9lever', 'p10box', 'p10page', 'toggle',
   'k5tama', 'k5dora', 'graffiti', 'mg_dora', 'mg_tama', 'mg_mike', 'mg_tadashi', 'mg_ginzo'];
 let tapUnder = null;   // 押している間だけ：指の下の物 [{id, b:[x0,y0,x1,y1]}]
@@ -2985,6 +3005,29 @@ function worldBox(el) {
   const c = [P(bb.x, bb.y), P(bb.x + bb.width, bb.y), P(bb.x, bb.y + bb.height), P(bb.x + bb.width, bb.y + bb.height)];
   return [Math.min(...c.map(q => q.x)), Math.min(...c.map(q => q.y)), Math.max(...c.map(q => q.x)), Math.max(...c.map(q => q.y))]; }
 const inEl = (p, id, pad) => { const b = elBox(id, pad); return !!b && inR(p, ...b, id); };
+
+const TOUCH44 = new Set(['p10ball','p10box','p6note','o_corn']);
+function touchBox(id, base) {
+  if (!TOUCH44.has(id)) return null;
+  const el = $(id); if (!el || !shown(el)) return null;
+  const b = base || worldBox(el); if (!b) return null;
+  const st = stage.getBoundingClientRect(), q0 = c2w(st.left,st.top), q1 = c2w(st.right,st.bottom);
+  const lim = [Math.min(q0.x,q1.x),Math.min(q0.y,q1.y),Math.max(q0.x,q1.x),Math.max(q0.y,q1.y)];
+  if(b[2]<lim[0] || b[0]>lim[2] || b[3]<lim[1] || b[1]>lim[3]) return null;
+  const k = st.width/(lim[2]-lim[0]), w = id==='p10box' ? 44.1/k : Math.max(b[2]-b[0],44.1/k), h = Math.max(b[3]-b[1],44.1/k);
+  let cx=id==='p10box' ? b[0]+w/2 : (b[0]+b[2])/2, cy=(b[1]+b[3])/2;
+  if (id==='p10ball' && shown($('p10box'))) { const box=worldBox($('p10box')); if(box) cx=Math.max(cx,box[2]+1/k+w/2); }
+  cx=Math.max(lim[0]+w/2,Math.min(lim[2]-w/2,cx)); cy=Math.max(lim[1]+h/2,Math.min(lim[3]-h/2,cy));
+  return [cx-w/2,cy-h/2,cx+w/2,cy+h/2];
+}
+function touch(p,id,base) {
+  const b=touchBox(id,base); if(!b) return false;
+  const onOwn = tapUnder && tapUnder[0] && tapUnder[0].id===id;
+  if(!inR0(p,...b) && !onOwn) return false;
+  // The normal strict owner still wins on any visible neighbouring small object.
+  if(tapUnder && tapUnder[0] && tapUnder[0].id!==id) return false;
+  return hitP([...b,'#'+id,'touch44']);
+}
 const inR0 = (p, x0, y0, x1, y1) => p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1;   // 「ここは のぞく」用（しらべる道具に 数えない）
 const FLAVOR = [];   // どの謎にも入らないタップ：{view, test(p), run(p)}
 function flavor(f) { FLAVOR.push(f); }
@@ -3000,7 +3043,7 @@ function emptyTap(p) {
 let fx = 0, emptyNow = false;   // fx：押したあとに 何かが動いたか（ことば・画面・動き）。当たった手ごたえに使う
 
 let lastTouchEnd = 0;
-document.addEventListener('touchend', e => { const n = e.timeStamp; if (n - lastTouchEnd < 350) e.preventDefault(); lastTouchEnd = n; }, {passive: false});
+document.addEventListener('touchend', e => { const n = e.timeStamp; const sceneTap = e.target.closest && e.target.closest('#stage') && !e.target.closest('button') && $('zoom').hidden && $('notebook').hidden; if (sceneTap && n - lastTouchEnd < 350) e.preventDefault(); lastTouchEnd = n; }, {passive: false});   // 672: clickで動く手帳/とじる/操作ボタンの別タップは消さない
 stage.addEventListener('pointerdown', async e => {
   if (e.target.closest('button')) return;
   audio(); const pp = pawPrint(e, busy && !goronOn);
@@ -3150,7 +3193,9 @@ async function audit(step = 8) {
     if (!own) { own = top; if (!own) { if (!AUDIT_OK.has('wall:' + view)) bad.push({x, y, key, why: '絵の外（何も描いていない所で返事）'}); continue; } }
     // 絵の外：押した所が、返事をした物の 四角（＋ゆとり 30。スマホで 指 10px くらい）より 外
     const w = c2w(cx, cy), b = worldBox(own), T = 30;
-    if (!b || w.x < b[0] - T || w.x > b[2] + T || w.y < b[1] - T || w.y > b[3] + T) bad.push({x, y, key, own: own.id, why: '絵の外（' + own.id + ' の絵から はなれている）'});
+    const tb = r && r.includes('touch44') && TOUCH44.has(own.id) ? touchBox(own.id) : null;
+    const touchMargin = tb && inR0(w,...tb);
+    if (!touchMargin && (!b || w.x < b[0] - T || w.x > b[2] + T || w.y < b[1] - T || w.y > b[3] + T)) bad.push({x, y, key, own: own.id, why: '絵の外（' + own.id + ' の絵から はなれている）'});
     // 重なり：押した所の いちばん上が、べつの 小さな物（OBJ）
     else if (top && OBJ.includes(top.id) && !related(top, own)) bad.push({x, y, key, own: own.id, top: top.id, w: [Math.round(w.x), Math.round(w.y)], at: at.map(e => e.id), why: '重なり（上に ' + top.id + ' の絵）'});
   }
@@ -3693,7 +3738,7 @@ $('cont').addEventListener('click', () => { audio(); welcomeBack(); });
 return {sleep: ms => { const e = tapN; return new Promise(r => setTimeout(() => { cbEp = e; r(); queueMicrotask(() => { cbEp = null; }); }, ms)); },   // 謎のファイル用（前の場面の ことばが、押した物の返事を 上書きしていた・10/17 公開版4）
   playSong, get moving() { return viewMoving; }, get tapN() { return tapN; }, _ep: e => { cbEp = e; }, _probe: probe, _map: hitMap, _audit: audit, _wb: worldBox, _c2w: c2w, inR0, inEl, elBox, get S() { return S; }, save, count, rep, again, get round() { return S.round; }, bgm, SFX, tween, ease, lerp, sleep, buzz, $, svg, VIEWS, camTo, setCam, setView, go, get view() { return view; },
   gc, keypad, kclose, bang, shake, follow, get cam() { return cam.slice(); }, ball, paw, say, sayGo, think, toast, miss, nudge, dribble, zoom, note, hide, puzzle, cur, solve, light, flavor, inR, near, emptyTap, act, tamaMode, MANGA1,
-  get dribbling() { return dribbling; }, get busy() { return busy; }, get lastTap() { return lastTap; }, set busy(v) { busy = v; if (v) fx++; }, learnGoron, setGoron, get goronOn() { return goronOn; },
+  get dribbling() { return dribbling; }, get busy() { return busy; }, get lastTap() { return lastTap; }, touch, _touchBox:touchBox, set busy(v) { busy = v; if (v) fx++; }, learnGoron, setGoron, get goronOn() { return goronOn; },
   boot() {
     if (S.started && (Object.keys(S.done).length || S.notes.length || S.elapsed > 5)) $('cont').hidden = false;   // 遊んだ記録が あるときだけ（記録がないのに「つづきから」が出た・10/17 公開版5）
     sndLabel();
@@ -3806,7 +3851,7 @@ G.flavor({view:'floor', test:p => G.inR(p, 580, 880, 760, 1150), run() {
     : G.rep('box0', ['とび箱。くらくて、上がよく見えない', 'とび箱…くらくて、こわい', '（とび箱に、ほおずりした）']));
 }});
 
-G.flavor({test:p => (G.view === 'floor' || G.view === 'shelf') && G.S.done[1] && !G.S.f.k5corn && G.inR(p, 110, 1358, 205, 1400), run() { G.hide('corn', 'トウモロコシ！ …ドラせんぱいには、ないしょにしよう'); }});   // 棚の上からも 見える（棚の画面を 広げた・10/17）
+G.flavor({test:p => (G.view === 'floor' || G.view === 'shelf') && G.S.done[1] && !G.S.f.k5corn && G.touch(p, 'o_corn'), run() { G.hide('corn', 'トウモロコシ！ …ドラせんぱいには、ないしょにしよう'); }});   // 棚の上からも 見える（棚の画面を 広げた・10/17）
 G.flavor({test:p => (G.view === 'shelf' || G.view === 'tea') && G.inR(p, 80, 720, 240, 825), run() { G.SFX.pof(); G.think('からっぽの箱'); }});
 G.flavor({view:'shelf', test:p => G.inR(p, 88, 906, 326, 986), run() { G.SFX.pof(); G.think(G.rep('mat', ['まるめた 青いマット。…ふかふかしてそう', '（マットに、ほおずりした）', 'マット。…ここで ねたら、気持ちよさそう'])); }});   // 押しても 何もおきなかった（10/17 公開版5）
 G.flavor({view:'shelf', test:p => G.inEl(p, 'spring'), run() { G.SFX.pof(); G.think('下に、ふみきり板が見える'); }});
@@ -4123,7 +4168,7 @@ G.puzzle({
   };
   let trapped = -1;   // 同じ わなで 何回も 数えない
 
-  G.VIEWS.tea = {box:[100, 620, 300, 420], h:'shelf'};   // お茶セットを 近くで見る
+  G.VIEWS.tea = {box:[100, 620, 300, 420], h:'shelf', back:'shelf'};   // お茶セットを 近くで見る
 
   const fishShown = () => !!FISH[rot()];
   
@@ -4139,18 +4184,44 @@ G.puzzle({
     if (star) star.setAttribute('display', on ? 'inline' : 'none');
   };
   
+  // 672: 成功の1秒だけ、回転や答えを変えず同じ魚の部品を重ねる。
+  // 正解rot=2のcupには魚がないため、front()の星だけでは手ごたえにならない。
+  let successFish = null, successFishTimer = 0;
+  const clearTeaSuccess = () => {
+    clearTimeout(successFishTimer); successFishTimer = 0;
+    if (successFish) { successFish.remove(); successFish = null; }
+  };
+  const teaSuccess = () => {
+    clearTeaSuccess();
+    const source = G.$('cup0').querySelector('g');
+    if (source) {
+      successFish = source.cloneNode(true);
+      successFish.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
+      successFish.setAttribute('id', 'p3-success-fish');
+      successFish.setAttribute('opacity', 1);
+      successFish.setAttribute('pointer-events', 'none');
+      successFish.style.filter = 'drop-shadow(0 0 4px #FFE078) drop-shadow(0 0 2px #FFF5C2)';
+      G.$('cuppat').appendChild(successFish);
+      successFishTimer = setTimeout(clearTeaSuccess, 1000);
+    }
+  };
+  // 時間切れだけでなく、次の実タップ/ボタン操作でも必ず表示を片づける。
+  document.addEventListener('pointerdown', clearTeaSuccess, {capture:true, passive:true});
+  document.addEventListener('click', clearTeaSuccess, true);
+
   const pero = () => G.tamaMode(G.view === 'tea' && G.cur() && G.cur().id === 3 && G.S.f.p3note && !licked() ? () => (fishShown() ? def.lick() : G.think('…魚の絵が、見えない', 2000)) : null);
   const def = {
     id: 3, name: 'お茶の作法',
     hints: ['…茶わんの絵は、お盆の線とつながると、倉庫にある物の絵になる。…タダシのノートは、お茶セットの横だ', '…正面は、魚が こっちを 見てる向きだ。新しい作法も 書いてあったろ。そこから 手前に2回', '魚をなめろ。それから 魚をこっちに向けて、手前に2回だ。その絵の物の ところへ行け'],   // 1つ目にも 新しい手がかり（10/17 名人の審査）
     restore(done) {
+      clearTeaSuccess();
       G.$('teaset').setAttribute('opacity', G.S.done[1] ? 1 : 0);
       G.$('teanote').setAttribute('opacity', G.S.done[2] ? 1 : 0);
       showCup(rot()); glow(); setCone(done ? 1 : 0); front();
       G.$('mark3').setAttribute('opacity', done ? 1 : 0);
     },
     resume() { G.think('お茶セットが、気になる'); },
-    onView() { pero(); },
+    onView() { clearTeaSuccess(); pero(); },
     async tap(view, p, isCur) {
       const D = G.S.done;
       if ((view === 'shelf' || (view === 'floor' && !G.goronOn)) && D[1] && (G.inR(p, 220, 735, 350, 828, 'teaset') || (D[2] && G.inR(p, 130, 760, 210, 830, 'teanote')))) {
@@ -4202,6 +4273,7 @@ G.puzzle({
     },
     
     async turn() {
+      clearTeaSuccess();
       const r0 = rot(), r1 = (r0 + 1) % N;
       const a = G.$('cup' + r0), b = G.$('cup' + r1);
       G.busy = true; G.SFX.choi(); G.SFX.dial(); G.buzz(6);
@@ -4212,7 +4284,7 @@ G.puzzle({
       a.removeAttribute('transform'); b.removeAttribute('transform');
       G.S.f.p3rot = r1; G.save(); trapped = -1; front();
       // どの向きも 絵になる。答えだけ 音や字を かえない（総当たりで 当てられないように）
-      if (!licked()) G.think(r1 === 0 ? '魚が、こっちを 見てる。…線は、うすいまま' : G.rep('p3faint', ['…作法が、ちがう気がする', '線が、うすい…', '…作法が、ちがう気がする。線が 光らない']), 2200);
+      if (!licked()) G.think(r1 === 0 ? '魚が、こっちを 見てる。…線は、うすいまま' : G.rep('p3faint', ['…作法が、ちがう気がする', '線が、うすい…', '…作法が、ちがう気がする。線が 光らない']), 2200);   // 672 部門：手がかりの3通りは残す
       else { G.SFX.find(); G.think(`線が 光った！ …${PICS[r1]}の絵？ ${['魚が、こっちを 見てる', '魚が、ななめ', '魚は、うら', '魚は、うら', '魚は、うら', '魚が、ななめ'][r1]}`, 2600); }   // 正面が ひと目で分かるように（10/17 名人の審査）
       G.busy = false;
     },
@@ -4245,7 +4317,7 @@ G.puzzle({
       await G.sleep(300);
       const pile = G.$('magpile');
       await G.tween(300, k => { pile.setAttribute('opacity', k); pile.setAttribute('transform', `translate(152,${1300 + 10 * (1 - k)})`); }, G.ease.out);
-      S.find(); G.think('コーンの下に…ねこの顔？', 2400);
+      S.find(); G.think('（作法、できた！） …コーンの下に、ねこの顔？', 3400); teaSuccess();   // 672 部門：次に見る所（コーンの下）は残す
       const m = G.$('mark3'); m.setAttribute('opacity', 1);
       await G.solve(3); front();
       G.busy = false;
@@ -4644,13 +4716,13 @@ const def = {
   async tap(view, p, isCur) {
     const $ = G.$;
     // タマ研究ノート（床のすみ）
-    if (view === 'floor' && G.S.f.p6note && !G.S.found.nazo && G.inR(p, 855, 1190, 945, 1255)) {
+    if (view === 'floor' && G.S.f.p6note && !G.S.found.nazo && G.touch(p, 'p6note')) {
       G.zoom('タマ君 研究ノート（サクジ）\n　…さいごのページ\n\n　　なぞ');
       G.hide('nazo', '…ぼくのこと、研究して、なぞ？');
       setTimeout(() => G.say('…ああ'), 3400); setTimeout(() => G.think('ぼく、なぞなの？', 2200), 5000); setTimeout(() => G.say('…おれも、ずっと いっしょに住んでる。…………なぞだ', 4200), 7200);
       return true;
     }
-    if (view === 'floor' && G.inR(p, 855, 1190, 945, 1255)) {
+    if (view === 'floor' && G.touch(p, 'p6note')) {
       G.S.f.p6note = true; G.save();
       G.zoom('タマ君 研究ノート（サクジ）\n\n・ひげのはば：11cm\n・ただし、タマ君は\n　ひげより頭が大きい（13cm）\n・好きな寝どこ：ひなた、\n　やわらかいところ、\n　せまいところ\n\n研究の結果 →\n　（つぎのページへ つづく）', NOTE_T);   // 「研究の結果」の下が空白で、切れて見えた（10/30 2回目の通し）。もう一度読むと さいごのページ
       return true;
@@ -5380,7 +5452,7 @@ const def = {
   async tap(view, p) {
     const $ = G.$;
     if (G.S.endTrue) {
-      if ((view === 'box' || view === 'dbox') && G.inEl(p, 'p10box', 8)) { G.SFX.pof(); G.think('ドラの箱。…ないしょにしておこう'); return true; }
+      if ((view === 'box' || view === 'dbox') && G.touch(p, 'p10box')) { G.SFX.pof(); G.think('ドラの箱。…ないしょにしておこう'); return true; }
       return false;
     }
     // 2段目：ページ・ふみきり板・古いボール
@@ -5401,7 +5473,7 @@ const def = {
         else { G.S.f.p10spring = true; G.save(); G.SFX.land(); G.think('★のところに、ふみきり板！ …ちょうど 跳び箱の 古いボールの 下だ', 3000); }
         G.busy = false; return true;
       }
-      if ((view === 'box' || view === 'dbox') && G.near(p, ob.x, ob.y, 34)) {   // 跳び箱の画面では 下のはしで 小さいので 広く（10/17 公開版5の直し4）
+      if ((view === 'box' || view === 'dbox') && G.touch(p, 'p10ball')) {   // 跳び箱の画面では 下のはしで 小さいので 広く（10/17 公開版5の直し4）
         if (!G.S.f.p10spring) { G.SFX.pof(); G.think('ドラせんぱいの、古いボール。…どこに落とせばいいんだろう', 2600); return true; }
         // 自分の前足で ちょい、ちょい、ポトッ（押しただけで 自動だった・10/17 雄山の案2）
         choi = (choi || 0) + 1;
@@ -5415,8 +5487,8 @@ const def = {
     }
     // 跳び箱の上の箱（ねごとの あとだけ）
     if (!boxShown()) return false;
-    if (view === 'floor' && G.inR(p, 626, 830, 716, 896)) { G.SFX.pof(); G.think('跳び箱の上に、箱。「ドラ　さわるな」'); return true; }
-    if (view === 'box' && G.inR(p, 626, 830, 716, 896)) {
+    if (view === 'floor' && G.touch(p, 'p10box')) { G.SFX.pof(); G.think('跳び箱の上に、箱。「ドラ　さわるな」'); return true; }
+    if (view === 'box' && G.touch(p, 'p10box')) {
       G.VIEWS.dbox.box = opened() ? BOX_WIDE : BOX_LOCK;
       G.busy = true; await G.go('dbox', 380); G.think(opened() ? 'ドラせんぱいの箱。ページと、古いボール' : '「ドラ　さわるな」。4けたの錠'); G.busy = false; return true;
     }
@@ -5790,13 +5862,13 @@ G.puzzle({
       }
       if (view === 'floor' && G.S.f.k5corn && G.inR(p, ...CORN)) { G.SFX.pof(); if (on()) G.say('…なにも、見てない。…かたづけた', 2600); else G.think('（トウモロコシの しん だけ、のこっている）', 2600); return true; }
       if (!on()) return false;
-      if (view === 'floor' && G.inR(p, ...CORN)) return eatCorn();
+      if (view === 'floor' && G.touch(p, 'o_corn')) return eatCorn();
       if (view === 'floor' && G.inEl(p, 'k5dora', 6)) { G.SFX.pof(); G.say('…なんだ。かたづけ中だ', 2400); return true; }
       if (view === 'floor' && G.ball.g.getAttribute('opacity') !== '0' && G.near(p, 648, 1288, 60, 'ball')) return say('ball', '…おまえが落としたボール、1');
       if (G.inR(p, 550, 60, 870, 280)) return say('curt', '…のぼったカーテン、1。…つめのあと、6');
       if (view === 'floor' && G.$('p9sanma').getAttribute('opacity') !== '0' && G.inEl(p, 'p9sanma', 4)) { G.SFX.pof(); G.say('…サンマは、かたづけない', 2600); return true; }   // サンマを押して「床板」と数えていた（10/17 公開版3）
       if (view === 'floor' && (G.inEl(p, 'fboard', 6) || G.inEl(p, 'p9board', 6))) return say('board', '…はがした床板、2');   // 動かした床板の 絵の上（hit_check）
-      if (G.inR(p, 626, 830, 716, 896)) return say('box', '…開けた箱、1。……まあ、いい');
+      if (G.touch(p, 'p10box')) return say('box', '…開けた箱、1。……まあ、いい');
       if (view === 'floor' && G.inR(p, 762, 540, 1000, 1100)) return say('door', N() ? `…なめた扉、1。……${N()}回` : '…扉。……なめてないのか。…えらいな');
       return false;
     }
