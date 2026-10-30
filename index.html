@@ -1771,6 +1771,37 @@ const EN = {
 'ちょい、ちょい': 'tap, tap',
 'ちょい …ボールが ゆれた': 'tap …the ball wobbled',
 'ちょい、ちょい …あと 1回で 落ちそう': 'tap, tap …one more and it falls',
+'まっくら…（…でも、ねこの目なら）': 'Pitch dark… (…but cat eyes can handle this)',
+'…スイッチは、扉の左の 上だ。…おまえじゃ、とどかないけどな': '…The switch is up, left of the door. …Not that you can reach it.',
+'（棚の上に、まるいもの）': '(Something round, up on the shelf)',
+'…いま、ボールが1回 ぼよんって 言ったな': '…That ball just went boing. Once.',
+'（…数えてる）': "(…He's counting)",
+'…監督の ひなたの席、暗幕で ふさがってるな。…監督が おこる': "…Coach's sunny spot is blocked by the curtain. …He won't like that.",
+'…監督の形、床に 焼けてるのか。…まるいな': "…Coach's shape is sun-burned into the floor? …Round.",
+'（ドラせんぱいも、だいたい まるい）': "(Dora's pretty round too)",
+'…聞こえてるぞ': '…I can hear you.',
+'…タダシの ノートか。あいつ、お茶に うるさい': "…Tadashi's notebook. He's fussy about tea.",
+'…茶わん、何回 まわした': '…How many times did you turn the cup?',
+'（7回くらい）': '(About seven)',
+'…作法は、2回だ': '…Etiquette says two.',
+'…作戦名、ぜんぶ 読んだのか': '…Did you read the whole play name?',
+'（読んでない）': '(Nope)',
+'…それでいい。おれも 読んだことない': '…Good. I never have either.',
+'（ドラせんぱいの 数え方、まねした）': '(I counted like Dora does)',
+'…まねするな。……いや、していい': "…Don't copy me. ……Actually, fine.",
+'…巻き尺か。ひげより 正直だぞ': '…A tape measure. More honest than whiskers.',
+'（通れた。…しっぽが、まだ 向こう）': "(Made it. …My tail's still on the other side)",
+'…しっぽは、あとから 来る': '…Tails catch up.',
+'…奥に、おれの ロッカーがある。…開けるなよ': "…My locker's back there. …Don't open it.",
+'（ねこじゃらし。…ドラせんぱい、これで 遊んでる？）': '(A feather toy. …Dora plays with this?)',
+'…練習用だ': "…It's for practice.",
+'（なんの？）': '(Practice for what?)',
+'（ドラせんぱい、ミケちゃんと 話すと、声が ちいさい）': '(Dora gets so quiet around Mike)',
+'…上から見たら、なにか 分かるかもな': '…Maybe it makes sense from up high.',
+'タマちゃん、またね。…ドラくんにも、よろしくね': 'Bye, Tama. …Say hi to Dora for me.',
+'（ミケちゃんは、まどの むこう。…むこうから 見たら、右と左は…？）': "(Mike's outside the window. …From her side, which way is right…?)",
+'古い得点板。「68 − 19」…（さかさまが すき、って 寝言…）': 'An old scoreboard. "68 − 19" …(upside down… I said that in my sleep…)',
+'練習ノートの1ページ。…字が、さかさま。（ぼくが さかさまに なったら、読める？）': "A page from a practice notebook. …It's upside down. (If I go upside down, can I read it?)",
 'ポトッ': 'plop',
 '…ついたか': '…Lights on?',
 "あかるい！ …サンマは、どこ？": "it's bright! …where's Sanma?",
@@ -1895,6 +1926,8 @@ const EN = {
 'かごの中。もう、なにもない': "inside the cage. nothing left",
 'ボールかご。色のダイヤルがついてる': 'the ball cage. it has color dials',
 '…ちがう。数えなおせ': "…Nope. Count again.",
+'…ちがう。床で ごろんして、棚の下も 数えたか': "…Nope. Did you roll over on the floor and count under the shelf too?",
+'…ちがう。まどの外や、自分で おとしたボールも 数えたか': "…Nope. Did you count the one by the window, and the ball you knocked down yourself?",
 'かごの中に、巻き尺！': 'a tape measure in the cage!',
 '…ちゃんと数えたな': '…You counted right.',
 
@@ -2366,6 +2399,7 @@ const SFX = {
   thud() { tone(80, .22, {v:.28, to:48}); noise(.12, {v:.16, f:420}); },
   lick() { noise(.1, {v:.12, type:'bandpass', f:3600, q:3}); noise(.1, {v:.1, type:'bandpass', f:3000, q:3, at:.16}); },
   miss() { tone(330, .26, {type:'triangle', v:.07, to:215}); },
+  bell() { tone(2794, .5, {type:'sine', v:.035}); tone(4186, .3, {type:'sine', v:.02, at:.012}); },   // ドラの首輪の鈴（10/30 予告編・11/12 の前ふり）
   stamp() { tone(420, .14, {v:.22, to:250}); noise(.06, {v:.16, f:1200}); },
   find() { [784, 988, 1319].forEach((f, i) => tone(f, .35, {type:'triangle', v:.1, at:i * .07})); },
   paper() { noise(.25, {v:.08, type:'highpass', f:2500, to:5000}); },
@@ -2841,7 +2875,7 @@ const P = [];
 function puzzle(def) { P.push(def); P.sort((a, b) => a.id - b.id); }
 const cur = () => P.find(p => !S.done[p.id] && p.id <= 9) || null;
 let busy = false, activeSince = 0;
-const LIGHT = [.95, .45, .38, .32, .26, .2, .15, .11, .08, .05];
+const LIGHT = [.84, .45, .38, .32, .26, .2, .15, .11, .08, .05];
 function light(anim) {
   const n = Object.keys(S.done).filter(k => +k <= 9).length;
   const o = LIGHT[Math.min(n, LIGHT.length - 1)];
@@ -2878,7 +2912,8 @@ async function solve(id, opt = {}) {
   if (id === 1) setTimeout(() => toast('手帳の「タマのからだ」に、肉球の印がついた'), 2400);
   const nx = cur();
   if (!nx) { await sleep(1800); ending(); }
-  else if (nx.start) nx.start();
+  else if (nx.start) { const go = () => nx.start(); G.afterSolve ? G.afterSolve(id).then(go, go) : go(); }   // 解けたあとの ひとことが 終わってから（10/30）
+  else if (G.afterSolve) G.afterSolve(id);
 }
 
 
@@ -3232,7 +3267,7 @@ function tamaMode(fn) {
 }
 addEventListener('langchange', () => { tamaMode(tamaAct); sndLabel(); });
 $('tama').addEventListener('click', () => {
-  if (tamaAct) { audio(); if (!busy) tamaAct(); return; }
+  if (tamaAct) { audio(); if (!busy) tamaAct(); else { SFX.pof(); buzz(6); } return; }
   audio(); SFX.purr(); buzz([8, 30, 8, 30, 8, 30, 8]);
   const b = $('tama'); b.classList.remove('purr'); void b.offsetWidth; b.classList.add('purr');
   const n = count('pet');
@@ -3589,7 +3624,21 @@ async function intro() {   // 押したら つぎへ（自動で進むと、読�
   nx.textContent = '押すと、はじまる ▶'; nx.classList.add('on'); await tap();
   nx.classList.remove('on'); gc('room');
   enter();
-  setTimeout(() => think(again() ? 'まっくら…（なんだか、見おぼえがある）' : 'まっくら…'), 400);
+  setTimeout(() => think(again() ? 'まっくら…（なんだか、見おぼえがある）' : 'まっくら…（…でも、ねこの目なら）'), 400);
+  firstDark();
+}
+
+async function firstDark() {
+  const dark = $('dark'); dark.setAttribute('opacity', .95);
+  await sleep(1400); tween(2600, k => { if (!S.done[1]) dark.setAttribute('opacity', lerp(.95, LIGHT[0], k)); });
+  const n0 = tapN;
+  await sleep(4200); if (S.done[1]) return;
+  SFX.bell(); say('…スイッチは、扉の左の 上だ。…おまえじゃ、とどかないけどな', 3200);
+  const sw = $('swglow'); for (let i = 0; i < 3; i++) await tween(500, k => sw.setAttribute('opacity', .35 + .65 * Math.sin(k * Math.PI)));
+  sw.setAttribute('opacity', 1);
+  await sleep(8000); if (S.done[1] || view !== 'floor' || busy) return;
+  if (tapN - n0 > 6) return;   // もう 自分で あちこち さがしている
+  G.ping('ball'); think('（棚の上に、まるいもの）', 2400);
 }
 
 function welcomeBack() {
@@ -3771,6 +3820,36 @@ G.flavor({view:'oku', test:p => G.inR(p, 1546, 742, 1654, 858), run() {
   G.SFX.pof();
   G.think(G.rep('touban', ['「かたづけ当番」。ドラせんぱいの欄だけ、○が4つ', 'タマの欄は、まっしろ', '…あとで、○を かこう']), 2600);
 }});
+
+const AFTER = {
+  1: {lines: [['d', '…いま、ボールが1回 ぼよんって 言ったな'], ['t', '（…数えてる）'], ['d', '…監督の ひなたの席、暗幕で ふさがってるな。…監督が おこる']], ping: 'curtL'},
+  2: {lines: [['d', '…監督の形、床に 焼けてるのか。…まるいな'], ['t', '（ドラせんぱいも、だいたい まるい）'], ['d', '…聞こえてるぞ'], ['d', '…タダシの ノートか。あいつ、お茶に うるさい']], ping: 'teaset'},
+  3: {lines: [['d', '…茶わん、何回 まわした'], ['t', '（7回くらい）'], ['d', '…作法は、2回だ']]},
+  4: {lines: [['d', '…作戦名、ぜんぶ 読んだのか'], ['t', '（読んでない）'], ['d', '…それでいい。おれも 読んだことない']]},
+  5: {lines: [['t', '（ドラせんぱいの 数え方、まねした）'], ['d', '…まねするな。……いや、していい'], ['d', '…巻き尺か。ひげより 正直だぞ']], ping: 'p6gaps'},
+  6: {lines: [['t', '（通れた。…しっぽが、まだ 向こう）'], ['d', '…しっぽは、あとから 来る'], ['d', '…奥に、おれの ロッカーがある。…開けるなよ']], ping: 'o_locker'},
+  7: {lines: [['t', '（ねこじゃらし。…ドラせんぱい、これで 遊んでる？）'], ['d', '…練習用だ'], ['t', '（なんの？）'], ['d', '…………']]},
+  8: {lines: [['t', '（ドラせんぱい、ミケちゃんと 話すと、声が ちいさい）'], ['d', '…聞こえてるぞ'], ['d', '…上から見たら、なにか 分かるかもな']]},
+};
+G.ping = async id => {
+  const b = G.elBox(id, 10); if (!b) return;
+  const NS = 'http://www.w3.org/2000/svg', g = document.createElementNS(NS, 'circle');
+  g.setAttribute('cx', (b[0] + b[2]) / 2); g.setAttribute('cy', (b[1] + b[3]) / 2); g.setAttribute('fill', 'none'); g.setAttribute('stroke', '#FFD54A');
+  g.setAttribute('stroke-width', 7); g.setAttribute('pointer-events', 'none'); G.svg.appendChild(g);
+  await G.tween(900, k => { g.setAttribute('r', 24 + 46 * k); g.setAttribute('opacity', 1 - k); });
+  g.remove();
+};
+G.afterSolve = async id => {
+  const a = AFTER[id]; if (!a || G.S.ended) return;
+  const n0 = G.tapN, gone = () => G.tapN !== n0;
+  await G.sleep(id === 1 ? 4600 : 3800); if (gone()) return;
+  for (const [who, t] of a.lines) {
+    if (who === 't') G.think(t, 2400);
+    else { if (who === 'd') G.SFX.bell(); G.say(t, 2400, who === 'm' ? 'ミケ' : 'ドラ'); }
+    await G.sleep(1900 + 70 * t.length); if (gone()) return;
+  }
+  if (a.ping) G.ping(a.ping);
+};
 
 
 G.puzzle({
@@ -4450,7 +4529,7 @@ const def = {
     const w = (G.S.f.p5wrong || 0) + 1; G.S.f.p5wrong = w; G.save();
     const d = dials();
     G.think(d[0] === ANS[0] - 1 && d[1] === ANS[1] && d[2] === ANS[2] ? '（ガタッ）…オレンジが、1つ足りない気がする' : '（ガタッ）…ちがうみたい', 2400);   // 最初に おとしたボールを わすれた人へ（雄山の提案④）
-    G.miss(w >= 3 ? `…ためいき、${w}` : '…ちがう。数えなおせ');
+    G.miss(w < 3 ? '…ちがう。数えなおせ' : G.S.f.p5seenUnder ? '…ちがう。まどの外や、自分で おとしたボールも 数えたか' : '…ちがう。床で ごろんして、棚の下も 数えたか');   // 10/30 初見の人：「ためいき、3」が 失敗の数か ヒントか 分からなかった
     G.busy = false;
   },
   async open() {
@@ -4822,6 +4901,7 @@ const def = {
       G.say('そうそう、そこ。…わたしから見て、右の手前よ', 3400, 'ミケ');
       await G.sleep(2600);
       G.think('…ミケちゃんの右は、ぼくの左…！ 手前と奥も、逆…！', 3200); await G.sleep(2800);   // 気づきは 正解のあとに（雄山の案1）
+      G.say('タマちゃん、またね。…ドラくんにも、よろしくね', 2600, 'ミケ'); await G.sleep(2600);   // 帰る前に ひとこと（10/30 直す順5）
       await G.tween(400, k => $('p8mike').setAttribute('opacity', 1 - k)); showMike(false);
       setTimeout(() => G.say('…ミ、ミケさん、帰ったか。…ふう', 2400), 600);
       await G.sleep(2600); G.think('（ねこじゃらしは、もう いらない。…そっと 置いた）', 2400); await G.sleep(1800);
@@ -4830,7 +4910,8 @@ const def = {
     } else {
       G.think(i === 0 && back ? '左の箱の、奥の、下。…からっぽ。ぜんぶ 逆にしたのに' : `${SIDE[i]}の箱の、${back ? '奥' : '手前'}の、${up ? '上' : '下'}。からっぽ`, 2600);
       G.miss();
-      answering = true; setTimeout(() => { G.say(G.rep('p8mike', ['…ちがうわよ。わたしから見て、よ', '…わたしは、まどの外から 見てるの', '…上と下は、どこから見ても 上と下よ']), 3200, 'ミケ'); answering = false; }, 2200);   // ミケが 見ている向きの 手がかり（雄山の案1）
+      answering = true; setTimeout(() => { G.say(G.rep('p8mike', ['…ちがうわよ。わたしから見て、よ', '…わたしは、まどの外から 見てるの', '…上と下は、どこから見ても 上と下よ']), 3200, 'ミケ'); answering = false; }, 2200);
+      if (G.count('p8miss') === 2) setTimeout(() => G.think('（ミケちゃんは、まどの むこう。…むこうから 見たら、右と左は…？）', 3200), 5800);   // 10/30 手伝い役が 何回も まちがえた   // ミケが 見ている向きの 手がかり（雄山の案1）
     }
     G.busy = false;
   },
@@ -5259,7 +5340,7 @@ const def = {
     if (opened()) {
       if ((view === 'dbox' || view === 'box') && G.inR(p, 606, 888, 706, 936)) {
         G.SFX.paper(); G.S.f.p10read = true; G.save();
-        G.think(G.goronOn ? '「ドラジ ダンク」…「★に ふみきり板」' : '練習ノートの1ページ。…字が、さかさま', 3000); return true;
+        G.think(G.goronOn ? '「ドラジ ダンク」…「★に ふみきり板」' : '練習ノートの1ページ。…字が、さかさま。（ぼくが さかさまに なったら、読める？）', 3200); return true;
       }
       const sdx = G.S.f.p10spring ? STAR_DX : STAR_DX * Math.min(3, G.S.f.p10push || 0) / 3;
       if (view === 'floor' && G.inR(p, 370 + sdx, 1170, 580 + sdx, 1255)) {
@@ -5283,7 +5364,7 @@ const def = {
     }
     // 得点板
     if (view === 'floor' && G.inR(p, 64, 74, 336, 236)) {
-      G.SFX.pof(); G.think(G.goronOn ? '得点板…「61 − 89」？' : '古い得点板。「68 − 19」'); return true;
+      G.SFX.pof(); G.think(G.goronOn ? '得点板…「61 − 89」？' : G.S.sleeps && G.S.sleeps.cage ? '古い得点板。「68 − 19」…（さかさまが すき、って 寝言…）' : '古い得点板。「68 − 19」'); return true;
     }
     // 跳び箱の上の箱（ねごとの あとだけ）
     if (!boxShown()) return false;
