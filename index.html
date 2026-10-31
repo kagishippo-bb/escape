@@ -2031,6 +2031,11 @@ const EN = {
 '…まだ、つづきがあります': "…There's more.",
 'つづきへ ▶': "Continue ▶",
 'おしまい': "The end",
+'請求書': 'INVOICE', 'タマどの': 'To: Tama', '発行　ドラ': 'From: Dora', '合計': 'Total', 'お支払い：ひなたを 半分 ゆずること': 'Payment: half of your sunny spot',
+'倉庫にいた時間': 'Time in the storeroom', 'なめた扉': 'Door licks', 'まちがい': 'Mistakes', 'おれに聞いた': 'Asked me', 'なにもない所を押した': 'Tapped nothing', 'のぼったカーテン': 'Curtains climbed', 'おれのトウモロコシ': 'MY corn',
+'…早いな': '…Fast.', '…まあ、いい': '…Fine.', '…寝てたのか': '…Were you asleep?', '…なめてないのか。えらいな': "…You didn't lick it. Good.", '…味は、しない': "…It doesn't taste like anything.", '…そんなに うまいのか': '…Is it that good?', '…つまらん': '…Boring.', '…おれが 数えてる': "…I'm counting.", '…聞けよ': '…You could have asked.', '…教え代だ': '…Tutoring fee.', '…そこには、なにもない': "…There's nothing there.", '…半分 寝てたな': '…You were half asleep.', '…つめのあと、6': '…Six claw marks.', '…いちばん高いぞ': '…This one costs the most.',
+'※トウモロコシは、おいしいやつで': '* The good kind of corn only',
+'画像を保存': 'Save image', '（…ドラせんぱい、いつ 書いたんだろう）': '(…When did Dora-senpai write this?)',
 'ありますように。': "of sunlight.",
 'あったかい ひなたが': "have a warm patch",
 'あなたの毎日にも、': "May your days, too,",
@@ -3745,7 +3750,7 @@ $('cont').addEventListener('click', () => { audio(); welcomeBack(); });
 return {sleep: ms => { const e = tapN; return new Promise(r => setTimeout(() => { cbEp = e; r(); queueMicrotask(() => { cbEp = null; }); }, ms)); },   // 謎のファイル用（前の場面の ことばが、押した物の返事を 上書きしていた・10/17 公開版4）
   playSong, get moving() { return viewMoving; }, get tapN() { return tapN; }, _ep: e => { cbEp = e; }, _probe: probe, _map: hitMap, _audit: audit, _wb: worldBox, _c2w: c2w, inR0, inEl, elBox, get S() { return S; }, save, count, rep, again, get round() { return S.round; }, bgm, SFX, tween, ease, lerp, sleep, buzz, $, svg, VIEWS, camTo, setCam, setView, go, get view() { return view; },
   gc, keypad, kclose, bang, shake, follow, get cam() { return cam.slice(); }, ball, paw, say, sayGo, think, toast, miss, nudge, dribble, zoom, note, hide, puzzle, cur, solve, light, flavor, inR, near, emptyTap, act, tamaMode, MANGA1,
-  get dribbling() { return dribbling; }, get busy() { return busy; }, get lastTap() { return lastTap; }, touch, _touchBox:touchBox, set busy(v) { busy = v; if (v) fx++; }, learnGoron, setGoron, get goronOn() { return goronOn; },
+  get probing() { return probing; }, get dribbling() { return dribbling; }, get busy() { return busy; }, get lastTap() { return lastTap; }, touch, _touchBox:touchBox, set busy(v) { busy = v; if (v) fx++; }, learnGoron, setGoron, get goronOn() { return goronOn; },
   boot() {
     if (S.started && (Object.keys(S.done).length || S.notes.length || S.elapsed > 5)) $('cont').hidden = false;   // 遊んだ記録が あるときだけ（記録がないのに「つづきから」が出た・10/17 公開版5）
     sndLabel();
@@ -5759,7 +5764,79 @@ async function endRoll() {
   ov.style.transition = 'opacity 1.2s ease'; ov.style.opacity = 0;
   songP.then(stop => stop());   // とじたら すっと消す
   await G.sleep(1200); ov.remove();
+  return back;
 }
+
+function billRows() {
+  const c = G.S.c, S = G.S, miss = S.mistakes || 0, lick = c.lick || 0, hint = c.hint || 0, empty = c.empty || 0, gor = c.goron || 0, corn = !!S.f.k5corn;
+  const min = Math.max(1, Math.round((S.elapsed || 0) / 60));
+  return [
+    ['倉庫にいた時間', [min, '分'], min < 15 ? '…早いな' : min < 30 ? '…まあ、いい' : '…寝てたのか', 0],
+    ['なめた扉', [lick, '回'], !lick ? '…なめてないのか。えらいな' : lick < 10 ? '…味は、しない' : '…そんなに うまいのか', lick],
+    ['まちがい', [miss, '回'], !miss ? '…つまらん' : '…おれが 数えてる', miss],
+    ['おれに聞いた', [hint, '回'], !hint ? '…聞けよ' : '…教え代だ', hint * 2],
+    ['なにもない所を押した', [empty, '回'], '…そこには、なにもない', 0],
+    ['ごろん', [gor, '回'], '…半分 寝てたな', 0],
+    ['のぼったカーテン', [1, '枚'], '…つめのあと、6', 3],
+    ...(corn ? [['おれのトウモロコシ', [1, '本'], '…いちばん高いぞ', 20]] : []),
+  ];
+}
+function billDraw() {
+  const en = document.documentElement.lang === 'en', t = s => (typeof I18N !== 'undefined' ? I18N.t(s) : s);
+  const unit = {'分': ' min', '回': ' x', '枚': '', '本': ''};
+  const W = 1080, H = 1500, cv = document.createElement('canvas'), x = cv.getContext('2d'), FONT = '"Yomogi","Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif', INK = '#5A3A1E';
+  cv.width = W; cv.height = H;
+  x.fillStyle = '#2A2238'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#FBF4E3'; x.strokeStyle = INK; x.lineWidth = 8; x.beginPath(); x.roundRect(40, 40, W - 80, H - 80, 28); x.fill(); x.stroke();
+  const txt = (s, X, Y, size, color = INK, align = 'left') => { x.font = `${size}px ${FONT}`; x.fillStyle = color; x.textAlign = align; x.fillText(s, X, Y); };
+  txt(t('請求書'), W / 2, 170, 96, INK, 'center');
+  txt(t('タマどの'), 100, 262, 46);
+  txt(t('発行　ドラ'), W - 100, 262, 38, '#8E6A45', 'right');
+  const rows = billRows(), step = 104, top = 340;
+  let total = 0;
+  rows.forEach(([label, [n, u], note, price], i) => {
+    const y = top + i * step; total += price;
+    txt(t(label), 100, y, 42);
+    txt(en ? `${n}${unit[u]}` : `${n}${u}`, W - 100, y, 44, INK, 'right');
+    txt(t(note), 130, y + 44, 30, '#8E6A45');
+    x.strokeStyle = '#E2CFAE'; x.lineWidth = 2; x.beginPath(); x.moveTo(100, y + 62); x.lineTo(W - 100, y + 62); x.stroke();
+  });
+  const y = Math.max(top + rows.length * step + 30, 1190);
+  txt(t('合計'), 100, y, 50);
+  txt(en ? `${total} corn cobs` : `トウモロコシ ${total}本`, W - 100, y, 58, '#C4532A', 'right');
+  txt(t('お支払い：ひなたを 半分 ゆずること'), 100, y + 92, 42);
+  txt(t('※トウモロコシは、おいしいやつで'), 100, y + 146, 30, '#8E6A45');
+  x.save(); x.translate(W - 170, H - 140); x.rotate(-.16); x.globalAlpha = .9; x.fillStyle = '#F29CA3';
+  for (const [ex, ey, rx, ry] of [[0, 20, 44, 36], [-48, -22, 16, 21], [-18, -48, 16, 21], [18, -48, 16, 21], [48, -22, 16, 21]]) { x.beginPath(); x.ellipse(ex, ey, rx, ry, 0, 0, 7); x.fill(); }
+  x.restore();
+  return cv;
+}
+async function doraBill() {
+  const first = !G.S.f.k5bill;
+  G.S.f.k5bill = true; G.save();
+  try { await document.fonts.load('40px Yomogi', '請求書タマどの発行ドラ合計お支払いひなたを半分ゆずること倉庫時間扉枚回本分押聞' + billRows().flat(2).join('')); } catch (e) {}   // 字の形は 分けて読みこまれるので、使う字を わたす（一部の字だけ太くなった）
+  const cv = billDraw();
+  const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+  const ov = document.createElement('div');
+  ov.id = 'bill'; ov.style.cssText = 'position:fixed;inset:0;z-index:31;background:rgba(10,8,14,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px 16px;opacity:0;transition:opacity .4s';
+  const img = new Image(); img.src = cv.toDataURL('image/jpeg', .9); img.alt = '請求書'; img.style.cssText = 'max-width:100%;max-height:calc(100dvh - 84px);min-height:0;border-radius:10px';
+  const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:10px;width:100%;max-width:420px';
+  const save = document.createElement('button'), close = document.createElement('button');
+  save.className = 'big'; save.textContent = '画像を保存'; close.className = 'ghost'; close.textContent = 'とじる';
+  row.append(save, close); ov.append(img, row); document.body.appendChild(ov);
+  requestAnimationFrame(() => { ov.style.opacity = 1; });
+  G.SFX.paper();
+  save.addEventListener('click', async () => {
+    const file = new File([blob], 'dora-seikyusho.png', {type: 'image/png'});
+    try { if (navigator.canShare && navigator.canShare({files: [file]})) { await navigator.share({files: [file], text: '#カギしっぽ脱出'}); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'dora-seikyusho.png'; document.body.appendChild(a); a.click(); a.remove();
+    G.toast('画像を保存した');
+  });
+  await new Promise(res => close.addEventListener('click', res, {once: true}));
+  ov.remove();
+  if (first) setTimeout(() => G.think('（…ドラせんぱい、いつ 書いたんだろう）', 3000), 400);
+}
+G._bill = doraBill;   // 作る人が ためす用
 
 G._endRoll = () => endRoll();   // 作る人が ためす用
 function backToTidy() {
@@ -5853,7 +5930,7 @@ G.puzzle({
     if (view === 'floor' || view === 'shelf' || view === 'box') {
       // ねているタマ（ひなた）
       if (view === 'floor' && (G.inEl(p, 'k5tama', 6) || (G.S.f.k5pair && G.inEl(p, 'k5pair', 6)))) {   // 絵の形に（10/17 公開版3）
-        if (G.S.f.k5pair) { G.SFX.purr(); G.think('（すぅ…すぅ…）', 1800); return true; }
+        if (G.S.f.k5pair) { G.SFX.purr(); if (G.S.f.k5bill && !G.probing) { await doraBill(); return true; } G.think('（すぅ…すぅ…）', 1800); return true; }
         if (!G.S.f.k5end && counted() < 2) { G.SFX.pof(); clearTimeout(nudgeT); due = 0; nudgeNow(); return true; }   // まだ 数えていないのに 終わらない（先に タマを押すと、数える場面を 見ずに 終わっていた・10/17 再採点）
         if (!G.S.f.k5end) { G.S.f.k5end = true; G.save(); show(); G.SFX.pof(); G.say('…かたづけ、おわり。……これは、かたづけない', 4200); G.busy = true; await G.sleep(4400); }   // 1回で ならんで寝るまで（2回 押さないと 進まなかった・10/17 公開版5の直し4）
         G.busy = true; G.S.f.k5pair = true; G.save(); marks();
@@ -5863,7 +5940,8 @@ G.puzzle({
         G.say(G.S.f.k5corn ? '…………腹が、いっぱいだ。…ちょっとだけだ' : '…………ちょっとだけだ', 4200);   // トウモロコシを食べたら、おなかいっぱいで ねむくなる（10/18 作者）
         clearTimeout(nudgeT);
         await G.sleep(4800);
-        if (!G.S.f.k5roll) await endRoll();   // ならんで寝る 2匹で、エンドロール（10/18 作者「2匹寝た後に エンディングが流れるのが いちばんいい」）
+        const back = !G.S.f.k5roll && await endRoll();   // ならんで寝る 2匹で、エンドロール（10/18 作者「2匹寝た後に エンディングが流れるのが いちばんいい」）
+        if (!back && !G.S.f.k5bill) await doraBill();   // ドラの請求書（10/31 BJ さん OK）
         G.busy = false;
         mangaBtn();
         return true;
