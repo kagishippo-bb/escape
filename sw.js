@@ -1,5 +1,5 @@
 
-const VERSION = '2649e40106';
+const VERSION = '12118ebcc3';
 const CACHE = 'kagishippo-escape-' + VERSION;
 const FONTS = 'kagishippo-escape-fonts';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'manifest-en.webmanifest', 'icon.png', 'og.png', 'ending.m4a'];
@@ -24,6 +24,7 @@ self.addEventListener('fetch', e => {
     return;
   }
   if (u.origin !== location.origin) return;
+  if (/\.mp4$/.test(u.pathname)) return;   // 動画は 途中から読む（Safari の動画は sw を通すと流れないことがある）。しまわず そのままネットから
   if (r.mode === 'navigate') {
     e.respondWith(fetch(r).then(res => { const cp = res.clone(); caches.open(CACHE).then(c => c.put('index.html', cp)); return res; })
       .catch(() => caches.match('index.html', {ignoreSearch: true}).then(h => h || caches.match('./'))));
