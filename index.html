@@ -2721,8 +2721,11 @@ function placeFloats() {
   if (sayWant) {
     if (sayNew) {
       const h = sy.offsetHeight, at = {'': st.top + 10, low: st.bottom - 10 - h, mid: st.top + st.height * .31};
+      const sayOb = [...avoid];   // 先に出ている 心の声・知らせの帯に、ことばを 重ねない（10/31 6回目の通し：巻き尺・かくし要素・肉球の印）
+      if (thinkWant && th.classList.contains('on')) sayOb.push(th.getBoundingClientRect());
+      if ($('toast').classList.contains('on')) sayOb.push($('toast').getBoundingClientRect());
       const order = forceLow ? ['low'] : S.endTrue ? ['mid', 'low', ''] : [...new Set([sayPref, '', 'low', 'mid'])];   // 片付けは 上の窓の光・カーテンに かけない
-      const pick = order.find(k => !avoid.some(a => hit2(a, {left: st.left, right: st.right, top: at[k], bottom: at[k] + h}))) ?? order[0];
+      const pick = order.find(k => !sayOb.some(a => hit2(a, {left: st.left, right: st.right, top: at[k], bottom: at[k] + h}))) ?? order[0];
       sy.classList.toggle('low', pick === 'low'); sy.classList.toggle('mid', pick === 'mid');
       sy.classList.add('on'); sayNew = false;
       sr = {left: st.left, right: st.right, top: at[pick], bottom: at[pick] + h};
