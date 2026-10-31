@@ -146,7 +146,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .say.go{border-color:var(--orange);box-shadow:0 0 0 2px rgba(242,166,90,.35)}
 .say.go .who::after{content:attr(data-go);margin-top:2px;padding:1px 6px;border-radius:999px;background:var(--orange);color:#2A1A10;font-size:11px;letter-spacing:0}
 .say.mike .who svg{display:none}   
-.think{position:absolute;left:10px;right:10px;bottom:10px;text-align:center;font-weight:700;font-size:clamp(15px,4vw,18px);line-height:1.6;color:var(--ink);text-shadow:0 1px 0 #000,0 0 10px #000,0 0 18px #000;opacity:0;transition:opacity .2s;pointer-events:none;text-wrap:balance;z-index:3}
+.think{position:absolute;left:10px;right:10px;bottom:10px;text-align:center;font-weight:700;font-size:clamp(15px,4vw,18px);line-height:1.6;color:var(--ink);text-shadow:0 0 3px #000,0 0 3px #000,0 1px 2px #000,0 0 10px #000,0 0 18px #000;opacity:0;transition:opacity .2s;pointer-events:none;text-wrap:balance;z-index:3}
 .think.on{opacity:1}
 .think.pop{animation:thinkpop .28s ease-out}
 @keyframes thinkpop{0%{transform:scale(1.1)}100%{transform:none}}
@@ -1569,7 +1569,8 @@ const EN = {
 "（…でも、ドラせんぱいの紙は「倉庫じゅう」。かごの外にも、あるかも）": "(…But Dora's note said \"every ball in the storeroom.\" Maybe there are more outside the basket.)",
 "（ガタッ）…かごの中だけじゃ、足りないみたい": "(Clunk) …Just the basket isn't enough, I guess.",
 "（カチャ）…まだ、数字を 合わせてない": "(Click) …I haven't set the numbers yet.",
-"…4けたの 錠か。…数字は、この倉庫の かべに ずっと 出てるぞ": "…A four-digit lock. …The numbers have been up on a wall in here the whole time.",
+"…跳び箱の上の 箱か。4けたの 錠だ。…数字は、この倉庫の かべに ずっと 出てるぞ": "…The box on the vaulting box? A four-digit lock. …The numbers have been up on a wall in here the whole time.",
+"（カチャ）…今は 数字を合わせても 開かない。ほかの 明かりが 先みたい": "(Click) …Even with the right numbers it won't open yet. Other lights come first.",
 "外の ドン：●●●　●　●●●●　●●": "Thumps outside: ●●●　●　●●●●　●●",
 '（あいた…でも、いまは サンマと出るのが先）': "(it opened… but getting out with Sanma comes first.)",
 "ドン": "Thump",
@@ -2105,7 +2106,8 @@ const EN = {
 '棚のいちばん上。倉庫が、ぜんぶ見下ろせる': "the very top of the shelf. I can see everything",
 '…しっぽ、体、背びれ、目。…サンマの形！': "…tail, body, fin, eye. …it's Sanma's shape!",
 '上から見ると、床の物がサンマの形。口の先に床板': "From above, the stuff on the floor makes Sanma's shape. A floorboard where the mouth points.",
-'サンマの口の先の、床板': "the floorboard where Sanma's mouth points",
+'サンマの口の先の、床板。…おりて、床から 開けよう': "the floorboard where Sanma's mouth points. …let's climb down and open it from the floor",
+'箱の中の、古いボール。…跳び箱に のぼって、近くで見よう': "an old ball in the box. …let's climb the vaulting box for a closer look",
 'サンマはいる。…でも、レバーが高い': "I've got Sanma. …but the lever is so high",
 'サンマ！！': 'SANMA!!',
 '…見つけたか。…よかったな': "…Found it? …Good. Really.",
@@ -2180,7 +2182,7 @@ const PIC = {まど:'window', マット:'rolled-up mat', コーン:'cone', か�
 const RULES = [
   [/^…なめた扉、1。……(\d+)回$/, m => `…The door you licked. One. ……${m[1]} times.`],
   [/^入ってみる（(\d+)cm）$/, m => `Squeeze in (${m[1]} cm)`],
-  [/^…(\d+)。…これは、まちがいの数だ$/, m => `…${m[1]}. …That's your mistake count. Not a code.`],
+  [/^…(\d+)。…おまえの まちがいの数だ。おれが 数えてる$/, m => `…${m[1]}. …That's your mistake count. I'm keeping track. Not a code.`],
   [/^？？？（(.+)）$/, m => sub(m[1]) && `??? (${sub(m[1])})`],
   [/^(オレンジ|白|黄色) (\d+)$/, m => `${sub(m[1])}: ${m[2]}`],
   [/^この話は、漫画の(.+)に。(\d+)\/(\d+) の20時に 投稿します$/, m => sub(m[1]) && `This one is from the comic: ${sub(m[1])}. It goes up on ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m[2] - 1]} ${m[3]}, 8 p.m. (Japan time)`],
@@ -2711,6 +2713,7 @@ function placeFloats() {
   const forceLow = $('toast').classList.contains('on') && $('toast').dataset.trueEnd === '1';   // 672：真のエンディングの帯の間だけ下（片付けの間まで下に固定すると、ドラとタマの顔にかかった・部門）
   if (forceLow !== lastLowSay) { sayNew = true; lastLowSay = forceLow; }
   const st = stage.getBoundingClientRect(), tr = tapRect(st), avoid = tr ? [tr] : [];
+  if (S.done[9]) { const bd = $('p10board'); if (bd && shown(bd)) avoid.push(grow(bd.getBoundingClientRect(), 4)); }   // 真のエンディングの答えの得点板に ことばを かけない（10/31 5回目の通し）
   { const wp = stage.querySelector('.wipe.on'); if (wp) avoid.push(grow(wp.getBoundingClientRect(), 4)); }   // 謎8の「扉の外」の丸に ことばを かけない（10/29 通しで 字の頭が かくれた）
   for (const id of ['k5pair', 'k5tama']) { const el = $(id); if (el && shown(el)) { const r = el.getBoundingClientRect(); if (r.width && r.bottom > st.top && r.top < st.bottom) avoid.push(grow(r, 4)); } }   // ひなたで 寝ている タマ（と 2匹）に ことばを かけない（10/19 遊んだ人の声）
   // ドラのふきだし：上（ふつう）・下・まん中 のうち、押した物に かからない所
@@ -2747,7 +2750,8 @@ function placeToast() {
   const el = $('toast');
   if (!($('title').hidden && $('clear').hidden)) { el.style.top = '14px'; return; }
   const r = stage.getBoundingClientRect(), h = el.offsetHeight || 38, sy = $('say'), th = $('think'), tr = tapRect(r);
-  const ob = [tr, sy.classList.contains('on') && sy.getBoundingClientRect(), th.classList.contains('on') && th.getBoundingClientRect(),
+  const bd = S.done[9] && $('p10board');
+  const ob = [tr, bd && shown(bd) && bd.getBoundingClientRect(), sy.classList.contains('on') && sy.getBoundingClientRect(), th.classList.contains('on') && th.getBoundingClientRect(),
     ...[...document.querySelectorAll('.top, .langfix')].filter(e => e.offsetParent || getComputedStyle(e).position === 'fixed').map(e => e.getBoundingClientRect()).filter(r => r.width)].filter(Boolean);   // 「かくし要素 N/5」が 上の列に かさなった（10/30 2回目の通し）
   const up = sy.classList.contains('on') && !sy.classList.contains('low') && !sy.classList.contains('mid');
   const c = [Math.max(8, r.top + 8), up ? r.top + sy.offsetTop + sy.offsetHeight + 6 : null, r.bottom - h - 8, r.top + r.height * .45].filter(v => v !== null);
@@ -2775,7 +2779,7 @@ function miss(line) {
   // 謎7（4けたの番号）の間は、数が 答えに見えないように、1回目だけ ことわる（雄山 10/16）
   const c7 = !line && cur() && cur().id === 7 && !S.f.p7numsaid;
   if (c7) { S.f.p7numsaid = true; save(); }
-  setTimeout(() => say(c7 || (n === 1 && !line && !r2) ? `…${n}。…これは、まちがいの数だ` : (line || r2 || FING[n] || '…' + n)), 350);   // 1回目は 何の数か 言う（とちゅうの「…1」が 手がかりに見えた・10/17 公開版5の直し3）
+  setTimeout(() => say(c7 || (n === 1 && !line && !r2) ? `…${n}。…おまえの まちがいの数だ。おれが 数えてる` : (line || r2 || FING[n] || '…' + n)), 350);   // 1回目は 何の数か 言う（とちゅうの「…1」が 手がかりに見えた・10/17 公開版5の直し3）
   if (n === 20 && !line && !r2) setTimeout(() => think('‥え？', 1600), 2600);
 }
 
@@ -4511,8 +4515,8 @@ G.VIEWS.cagetop = {box:[0, 1140, 140, 196], h:'shelf', back:'shelf', backLabel:'
 const showByView = name => {
   const $ = G.$;
   // まだ この謎の番でなくても ボタンは出す。押したら「まだ 開けられそうにない」（数字だけ回せて、開ける所が なかった・10/19 遊んだ人の声）
-  if ((name === 'cage' || name === 'cagetop') && !G.S.done[5]) G.act('ふたを開けてみる', () => G.cur() && G.cur().id === 5 ? def.tryOpen() : (G.SFX.pof(), G.think('（カチャ）…まだ、開けられそうにない。ほかを さがそう', 2600)));
-  $('p5inside').setAttribute('opacity', name === 'shelf' || name === 'cagetop' || name === 'cage' || G.S.done[5] ? 1 : 0);   // 床から 大きく見ても、中のボールが見える（棚からしか 見えなかった・10/17 公開版5）
+  if ((name === 'cage' || name === 'cagetop') && !G.S.done[5]) G.act('ふたを開けてみる', () => G.cur() && G.cur().id === 5 ? def.tryOpen() : (G.SFX.pof(), G.think('（カチャ）…今は 数字を合わせても 開かない。ほかの 明かりが 先みたい', 2600)));
+  $('p5inside').setAttribute('opacity', 1);   // どの画面でも 中のボールが見える（床の画面でだけ消えて、絵が矛盾した・10/31 5回目の通し）
   $('p5under').setAttribute('opacity', name === 'floor' && (G.goronOn || G.S.f.p5seenUnder || G.S.done[5]) ? 1 : 0);   // ごろんの目線で 見つけてから（10/29）
   $('p5tennis').setAttribute('opacity', name === 'box' && G.S.done[2] && !G.S.done[5] ? 1 : 0);
   // 謎5の間、跳び箱に のぼると まどの テニスボールが きらっ（小さくて 見落とした・10/17 雄山2回目）
@@ -4834,7 +4838,7 @@ async function listen() {
 
 const def = {
   id: 7, name: '外のドリブル',
-  onView(name) { if (name === 'locker' && !G.S.done[7]) G.act('開けてみる', () => G.cur() && G.cur().id === 7 ? def.tryOpen() : (G.SFX.pof(), G.think('（カチャ）…まだ、開けられそうにない。ほかを さがそう', 2600))); },   // まだ番でなくても ボタンは出す（10/19）
+  onView(name) { if (name === 'locker' && !G.S.done[7]) G.act('開けてみる', () => G.cur() && G.cur().id === 7 ? def.tryOpen() : (G.SFX.pof(), G.think('（カチャ）…今は 数字を合わせても 開かない。ほかの 明かりが 先みたい', 2600))); },   // まだ番でなくても ボタンは出す（10/19）
   hints: ['…監督のメモに、おれのクセが 書いてあるらしいな。…そんなクセ、あったか？', '…ドンは、ひと息ずつ 区切れてるだろ。かたまりで 数えてみろ', 'ドン、のかたまりを数えろ。かたまりごとに、1けただ'],   // 1つ目にも 新しい手がかり（10/17 名人の審査）
   start() { setTimeout(() => G.think('ロッカーに「ドラ」の名札…', 2400), 2800); },
   restore(done) {
@@ -5009,11 +5013,11 @@ const def = {
     if (i === 0 && back && up) {
       pick = null; drawPick(); G.act(null);
       G.SFX.find();
-      G.think('左の箱の、奥の、上。からっぽ。でも、サンマのにおい！ …床の下から', 3600);
+      G.think('左の箱の、奥の、上。からっぽ。でも、サンマのにおい！ …床の下から', 3000);
       answering = true;
-      await G.sleep(1800);
-      G.say('そうそう、そこ。…わたしから見て、右の手前よ', 3400, 'ミケ');
-      await G.sleep(2600);
+      await G.sleep(3200);   // 字が重なって両方読めなかった（10/31 5回目の通し）
+      G.say('そうそう、そこ。…わたしから見て、右の手前よ', 3000, 'ミケ');
+      await G.sleep(3200);
       G.think('…ミケちゃんの右は、ぼくの左…！ 手前と奥も、逆…！', 3200); await G.sleep(2800);   // 気づきは 正解のあとに（雄山の案1）
       G.say('タマちゃん、またね。…ドラくんにも、よろしくね', 2600, 'ミケ'); await G.sleep(2600);   // 帰る前に ひとこと（10/30 直す順5）
       await G.tween(400, k => $('p8mike').setAttribute('opacity', 1 - k)); showMike(false);
@@ -5170,7 +5174,7 @@ G.puzzle({
     }
     if (view === 'top') {
       if (G.inEl(p, 'o_topfish', 6)) { G.SFX.pof(); G.think('…しっぽ、体、背びれ、目。…サンマの形！', 3000); G.S.f.p9saw = true; G.save(); G.note('上から見ると、床の物がサンマの形。口の先に床板'); return true; }
-      if (G.inEl(p, 'topboard', 8)) { G.SFX.pof(); G.think('サンマの口の先の、床板'); G.S.f.p9saw = true; G.save(); return true; }
+      if (G.inEl(p, 'topboard', 8)) { G.SFX.pof(); G.think('サンマの口の先の、床板。…おりて、床から 開けよう', 2800); G.S.f.p9saw = true; G.save(); return true; }
       return false;
     }
     // もう1枚の床板 → 持ち上げると、サンマは 横の すきまの奥（試作）
@@ -5390,7 +5394,7 @@ const URA = {
     '…ねごとは、寝る場所で かわるらしい。…おまえの すきな寝どこ、あるだろ',   // 場所は 少しずつ（3つ全部 言っていた・10/17 雄山の案2）
     '…ひなたとか、やわらかい所とか、せまい所とか。…サクジ監督の ノートにも 書いてあったな',
     '…いちばん あったかい所で 寝てみろ'],
-  box: ['…4けたの 錠か。…数字は、この倉庫の かべに ずっと 出てるぞ',   // 跳び箱の上に もういる人に「跳び箱の上を見ろ」は 役に立たなかった（10/30 4回目の通し）   // ねごとで 箱が出てから（10/17 雄山2回目）
+  box: ['…跳び箱の上の 箱か。4けたの 錠だ。…数字は、この倉庫の かべに ずっと 出てるぞ',   // 跳び箱の上に もういる人に「跳び箱の上を見ろ」は 役に立たなかった（10/30 4回目の通し）   // ねごとで 箱が出てから（10/17 雄山2回目）
     '…ドラジーは、さかさまが すきだった。…かべの 得点板も、さかさまに 見たりしてな',
     '…マットの上でも 寝てみたか。…ねごとが、ちがうぞ',
     '…4けたの 錠だ。…さわるな'],
@@ -5473,6 +5477,7 @@ const def = {
         else { G.S.f.p10spring = true; G.save(); G.SFX.land(); G.think('★のところに、ふみきり板！ …ちょうど 跳び箱の 古いボールの 下だ', 3000); }
         G.busy = false; return true;
       }
+      if (view === 'floor' && G.touch(p, 'p10ball')) { G.SFX.pof(); G.think('箱の中の、古いボール。…跳び箱に のぼって、近くで見よう', 2800); return true; }   // 床からは「なにもない」と出た（10/31 5回目の通し）
       if ((view === 'box' || view === 'dbox') && G.touch(p, 'p10ball')) {   // 跳び箱の画面では 下のはしで 小さいので 広く（10/17 公開版5の直し4）
         if (!G.S.f.p10spring) { G.SFX.pof(); G.think('ドラせんぱいの、古いボール。…どこに落とせばいいんだろう', 2600); return true; }
         // 自分の前足で ちょい、ちょい、ポトッ（押しただけで 自動だった・10/17 雄山の案2）
@@ -5581,7 +5586,7 @@ async function movie() {
     <div id="mv-img" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .6s;pointer-events:none;background:#000"></div>
   </div>
   <p id="mv-t" style="font-family:var(--hand);font-size:22px;color:var(--light);margin:0;min-height:2em;text-align:center;text-wrap:balance"></p>
-  <p style="font-size:12px;color:var(--muted);margin:0">絵を押すと、つぎへ</p>
+  <p id="mv-tap" style="font-size:12px;color:var(--muted);margin:0">絵を押すと、つぎへ</p>
   <button class="ghost" id="mv-skip" style="max-width:200px">とばす</button>`;
   document.body.appendChild(box);
   let skip = false, next = false; box.querySelector('#mv-skip').addEventListener('click', e => { e.stopPropagation(); skip = true; });
@@ -5612,7 +5617,7 @@ async function movie() {
   if (!skip && showF(1)) { t.textContent = ''; await wait(2400); }
   t.textContent = 'ドラ「……まだ、未完成だ」'; await wait(2800);   // 宣伝の前に ドラの ひとことで 余韻（10/17 雄山2回目）
   t.innerHTML = '<span style="font-size:18px;color:var(--orange)">…このつづきは、まんがの 決勝で</span>';   // 宣伝と曲は、2匹が ならんで寝たあとの エンドロールへ（10/18 作者）
-  box.querySelector('#mv-skip').textContent = 'つづきへ ▶';
+  box.querySelector('#mv-skip').textContent = 'つづきへ ▶'; $('mv-tap').hidden = true;   // さいごは ボタンだけで進む（10/31 5回目の通し）
   await new Promise(r => box.querySelector('#mv-skip').addEventListener('click', r, {once:true}));
   box.remove();
   G.toast('真のエンディング　…まだ つづきがあります');
