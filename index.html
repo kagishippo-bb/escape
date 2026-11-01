@@ -1946,6 +1946,7 @@ const EN = {
 'ボールかご。色のダイヤルがついてる': 'the ball cage. it has color dials',
 '…ちがう。数えなおせ': "…Nope. Count again.",
 '…ちがう。床で ごろんして、棚の下も 数えたか': "…Nope. Did you roll over on the floor and count under the shelf too?",
+'…ちがう。棚の下も 数えたか': "…Nope. Did you count under the shelf too?",
 '…ちがう。まどの外や、自分で おとしたボールも 数えたか': "…Nope. Did you count the one by the window, and the ball you knocked down yourself?",
 'かごの中に、巻き尺！': 'a tape measure in the cage!',
 '…ちゃんと数えたな': '…You counted right.',
@@ -3520,6 +3521,7 @@ async function dribble() {
   // メモや手帳を見ている間は、とじるまで待つ（見のがさないように）
   for (let i = 0; i < 60 && document.querySelector('.zoom:not([hidden]), .notebook:not([hidden])'); i++) await sleep(300);
   const sh = $('dribshadow'), box = $('don'); let hidden0 = false;
+  box.style.display = S.done[7] ? 'none' : '';
   drawNotes($('sidenotes'));   // 「外の音を聞く」を「いま、聞こえている」に
   for (const [gi, n] of DRIBBLE.entries()) {
     box.innerHTML = ''; donPlace(n); box.classList.remove('out');
@@ -3529,6 +3531,7 @@ async function dribble() {
     { const t = document.createElement('i'); t.textContent = gi === 0 ? '（はじめ）' : gi === DRIBBLE.length - 1 ? '（さいご）' : `（${gi + 1}つめ）`; box.appendChild(t); }   // まん中の組にも 印（1と4の さかいが 分からなかった・10/17 公開版5の直し）
     for (let i = 0; i < n; i++) {
       SFX.dribble(.55); sh.setAttribute('opacity', .75);
+      box.style.display = S.done[7] ? 'none' : '';   // ロッカーが開いたあとは 字を出さない（音だけ・11/1 BJ さん）
       donPlace(n); const s = document.createElement('span'); s.textContent = 'ドン'; box.appendChild(s);
       await sleep(170); sh.setAttribute('opacity', 0); await sleep(330);
     }
@@ -4533,7 +4536,7 @@ const showByView = name => {
   // まだ この謎の番でなくても ボタンは出す。押したら「まだ 開けられそうにない」（数字だけ回せて、開ける所が なかった・10/19 遊んだ人の声）
   if ((name === 'cage' || name === 'cagetop') && !G.S.done[5]) G.act('ふたを開けてみる', () => G.cur() && G.cur().id === 5 ? def.tryOpen() : (G.SFX.pof(), G.think('（カチャ）…今は 数字を合わせても 開かない。ほかの 明かりが 先みたい', 2600)));
   $('p5inside').setAttribute('opacity', 1);   // どの画面でも 中のボールが見える（床の画面でだけ消えて、絵が矛盾した・10/31 5回目の通し）
-  $('p5under').setAttribute('opacity', name === 'floor' && (G.goronOn || G.S.f.p5seenUnder || G.S.done[5]) ? 1 : 0);   // ごろんの目線で 見つけてから（10/29）
+  $('p5under').setAttribute('opacity', name === 'floor' && (G.goronOn || G.S.f.p5seenUnder || G.S.done[4]) ? 1 : 0);   // 謎5からは 立ったままでも見える（ごろんだけだと 全く見えず 数えられなかった・11/1 BJ さん）
   $('p5tennis').setAttribute('opacity', name === 'box' && G.S.done[2] && !G.S.done[5] ? 1 : 0);
   // 謎5の間、跳び箱に のぼると まどの テニスボールが きらっ（小さくて 見落とした・10/17 雄山2回目）
   if (name === 'box' && G.S.done[2] && G.cur() && G.cur().id === 5 && !G.S.f.p5seenTennis) setTimeout(() => {
@@ -4587,10 +4590,11 @@ const def = {
   hints() {
     const u = !G.S.f.p5seenUnder, t = !G.S.f.p5seenTennis;
     return [u && t ? '…かごの中だけじゃないぞ。高い所も、低い所もだ。おれは、ぜんぶ数えた' : '…かごの中だけじゃないぞ。倉庫じゅうだ。おれは、ぜんぶ数えた',   // 紙の くり返しに ならないように（10/17 雄山2回目）
-      u && t ? '…目線をかえろ。床で ごろんすると、ちがうものが見える' : u ? '…目線をかえろ。床で ごろんして、棚の下を見てみろ' : t ? '…目線をかえろ。跳び箱から、まどのほうを見てみろ' : '…見たものを、ぜんぶ たしたか。わすれてるのが ないか',
+      u && t ? '…目線をかえろ。床から見ると、ちがうものが見える' : u ? '…目線をかえろ。床から、棚の下を見てみろ' : t ? '…目線をかえろ。跳び箱から、まどのほうを見てみろ' : '…見たものを、ぜんぶ たしたか。わすれてるのが ないか',
       u && t ? '棚の下、まどのわく。それと、おまえが 最初におとしたやつもだ' : u ? '棚の下。それと、おまえが 最初におとしたやつもだ' : t ? 'まどのわく。それと、おまえが 最初におとしたやつもだ' : 'おまえが 最初におとしたやつも、数に入るぞ'];
   },
   async start() {
+    showByView(G.view);
     // 扉のすきまから、ドラの紙がすべりこむ
     const pp = G.$('p5paper');
     await G.sleep(900);
@@ -4624,8 +4628,8 @@ const def = {
     // まどのわくのテニスボール（跳び箱の上から）。見えている テニスボールの上だけ（まどの外の かべで 反応した・10/17）
     if (view === 'box' && G.S.done[2] && G.$('p5tennis').getAttribute('opacity') !== '0' && (G.elBox('p5tennis', 0) || [0, 999])[1] < 300 && G.inEl(p, 'p5tennis', 22)) { G.S.f.p5seenTennis = true; G.save(); G.SFX.pof(); G.think('まどのわくに、テニスボールが はさまってる。…黄色、1つ', 3200); G.note(SEEN.tennis); return true; }
     // 棚の下（床の目線）
-    if (view === 'floor' && G.inR(p, 132, 1078, 250, 1145) && !G.S.f.p5seenUnder && !G.S.done[5]) { G.SFX.pof(); G.think(G.goronOn ? '棚の下…' : '棚の下は、暗くて よく見えない。…もっと 低い目線なら', 2600); return true; }
-    if (view === 'floor' && G.inR(p, 132, 1078, 250, 1145, 'p5under')) { G.S.f.p5seenUnder = true; G.save(); G.SFX.pof(); G.think('棚の下に、ボールが ころがってる。…オレンジ1つ、白1つ', 3200); G.note(SEEN.under); return true; }
+    if (view === 'floor' && G.inR(p, 132, 1078, 250, 1145) && !G.S.f.p5seenUnder && !G.S.done[4]) { G.SFX.pof(); G.think(G.goronOn ? '棚の下…' : '棚の下は、暗くて よく見えない。…もっと 低い目線なら', 2600); return true; }
+    if (view === 'floor' && G.inR(p, 78, 1078, 262, 1145, 'p5under')) { G.S.f.p5seenUnder = true; G.save(); G.SFX.pof(); G.think('棚の下に、ボールが ころがってる。…オレンジ1つ、白1つ', 3200); G.note(SEEN.under); return true; }
     if (view === 'shelf' && !G.S.done[5] && G.inEl(p, 'p5cage', 4)) { G.busy = true; await G.go('cagetop', 380); G.think('上から、かごの中が見える。…オレンジ3つ、白2つ、黄色1つ', 3200); G.note(SEEN.cage); G.busy = false; outside(); return true; }
     if ((view === 'cagetop' || view === 'cage') && G.inR(p, 14, 1172, 122, 1252)) { G.SFX.pof(); G.think('かごの中の ボール。…オレンジ3つ、白2つ、黄色1つ', 3200); G.note(SEEN.cage); return true; }
     // かごを押すと、大きく映る（ダイヤルを押しやすく・操作性の直し 10/16）
@@ -4662,7 +4666,7 @@ const def = {
     const w = (G.S.f.p5wrong || 0) + 1; G.S.f.p5wrong = w; G.save();
     const d = dials();
     G.think(d[0] === ANS[0] - 1 && d[1] === ANS[1] && d[2] === ANS[2] ? '（ガタッ）…オレンジが、1つ足りない気がする' : d.join() === '3,2,1' ? '（ガタッ）…かごの中だけじゃ、足りないみたい' : '（ガタッ）…ちがうみたい', 2400);   // かごの中だけ数えた人へ（10/30 2回目の通し）   // 最初に おとしたボールを わすれた人へ（雄山の提案④）
-    G.miss(w < 3 ? '…ちがう。数えなおせ' : G.S.f.p5seenUnder ? '…ちがう。まどの外や、自分で おとしたボールも 数えたか' : '…ちがう。床で ごろんして、棚の下も 数えたか');   // 10/30 初見の人：「ためいき、3」が 失敗の数か ヒントか 分からなかった
+    G.miss(w < 3 ? '…ちがう。数えなおせ' : G.S.f.p5seenUnder ? '…ちがう。まどの外や、自分で おとしたボールも 数えたか' : '…ちがう。棚の下も 数えたか');   // 10/30 初見の人：「ためいき、3」が 失敗の数か ヒントか 分からなかった
     G.busy = false;
   },
   async open() {
