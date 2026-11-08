@@ -110,6 +110,7 @@ button:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
 .kkeys button:active{transform:scale(.94);background:var(--line)}
 .eat{position:absolute;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 50%,rgba(255,236,170,.92),rgba(242,166,90,.88) 55%,rgba(21,18,28,.9));pointer-events:none;opacity:0;transition:opacity .15s;overflow:hidden}   
 .eat.on{opacity:1}
+body:has(.eat) .toast,body:has(.eat) #say,body:has(.eat) #think{visibility:hidden}   
 .wipe{position:absolute;left:4%;bottom:10%;width:44%;aspect-ratio:1;border-radius:50%;overflow:hidden;border:4px solid #FFFFFF;box-shadow:0 0 0 3px #5A3A1E,0 6px 18px rgba(0,0,0,.45);z-index:5;pointer-events:none;opacity:0;transform:scale(.6);transition:opacity .25s,transform .25s}   
 .wipe.on{opacity:1;transform:none}
 .wipe svg{width:100%;height:100%;display:block}
@@ -2958,8 +2959,9 @@ function placeToast() {
   const el = $('toast');
   if (!($('title').hidden && $('clear').hidden)) { el.style.top = '14px'; return; }
   const r = stage.getBoundingClientRect(), h = el.offsetHeight || 38, sy = $('say'), th = $('think'), tr = tapRect(r);
-  const bd = S.done[9] && $('p10board');
-  const ob = [tr, bd && shown(bd) && bd.getBoundingClientRect(), sy.classList.contains('on') && sy.getBoundingClientRect(), th.classList.contains('on') && th.getBoundingClientRect(),
+  const bd = S.done[9] && !S.ended && $('p10board');   // 11/9：脱出のあとは 得点板を よけない（上のはしに出せず、下のはしで ひなたのタマに かぶった）
+  const chars = ['k5dora', 'k5tama', 'k5pair'].map(id => $(id)).filter(e => e && shown(e) && e.getAttribute('opacity') !== '0').map(e => e.getBoundingClientRect()).filter(q => q.width);   // 11/9 BJ さん：知らせを キャラの顔に かけない
+  const ob = [tr, bd && shown(bd) && bd.getBoundingClientRect(), sy.classList.contains('on') && sy.getBoundingClientRect(), th.classList.contains('on') && th.getBoundingClientRect(), ...chars,
     ...[...document.querySelectorAll('.top, .langfix')].filter(e => e.offsetParent || getComputedStyle(e).position === 'fixed').map(e => e.getBoundingClientRect()).filter(r => r.width)].filter(Boolean);   // 「かくし要素 N/5」が 上の列に かさなった（10/30 2回目の通し）
   const up = sy.classList.contains('on') && !sy.classList.contains('low') && !sy.classList.contains('mid');
   const c = [Math.max(8, r.top + 8), up ? r.top + sy.offsetTop + sy.offsetHeight + 6 : null, r.bottom - h - 8, r.top + r.height * .45].filter(v => v !== null);
@@ -6790,7 +6792,7 @@ G.puzzle({
 <script>
 
 
-const BUILD = '1109.0613';
+const BUILD = '1109.0751';
 document.getElementById('ver').textContent = 'v' + BUILD;
 async function verCheck() {
   if (location.protocol !== 'https:' || (window.G && G.busy)) return;
